@@ -32,7 +32,7 @@ class BankAccount(APIView):
     def get(self, *args, **kwargs):
         selected_id = self.request.GET.get('selected_id')
 
-        response = BO.finance.finance.Finance().get_contas(selected_id=selected_id)
+        response = BO.finance.finance.Finance().get_bank_accounts(selected_id=selected_id)
 
         return JsonResponse(response, safe=False)
 
@@ -41,7 +41,7 @@ class CreditCard(APIView):
     def get(self, *args, **kwargs):
         selected_id = self.request.GET.get('selected_id')
 
-        response = BO.finance.finance.Finance().get_cartoes(selected_id=selected_id)
+        response = BO.finance.finance.Finance().get_credit_cards(selected_id=selected_id)
 
         return JsonResponse(response, safe=False)
 

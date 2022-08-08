@@ -42,30 +42,29 @@ class Finance:
 
         self.response = {}
 
-    def get_contas(self, selected_id=''):
-        contas = finance.models.BankAccount.objects.values('id', 'nm_bank').ativos() \
+    def get_bank_accounts(self, selected_id=''):
+        bank_accounts = finance.models.BankAccount.objects.values('id', 'nm_bank').ativos() \
             .annotate(is_selected=Case(When(id=selected_id, then=True),
                                        default=False,
                                        output_field=BooleanField()))
 
         self.response['status'] = True
-        self.response['contas'] = list(contas)
+        self.response['bank_accounts'] = list(bank_accounts)
 
         return self.response
 
-    def get_cartoes(self, selected_id=''):
+    def get_credit_cards(self, selected_id=''):
         # TODO: mudar para receber parametro de status
-        cards = finance.models.CreditCard.objects.values('id', 'name', 'description', 'dat_threshold', 'dat_payment').ativos() \
-            .annotate(id=F('id'),
-                      nm_status=Case(When(status=True, then=Value(_('Ativo'))),
-                                     default=Value(_('Cancelado')),
+        credit_cards = finance.models.CreditCard.objects.values('id', 'name', 'description', 'dat_threshold', 'dat_payment').ativos() \
+            .annotate(nm_status=Case(When(status=True, then=Value('Ativo')),
+                                     default=Value('Cancelado'),
                                      output_field=CharField()),
-                      is_selected=Case(When(nome=selected_id, then=True),
+                      is_selected=Case(When(id=selected_id, then=True),
                                        default=False,
                                        output_field=BooleanField())).order_by('-status', 'id')
 
         self.response['status'] = True
-        self.response['cards'] = list(cards)
+        self.response['credit_cards'] = list(credit_cards)
 
         return self.response
 
