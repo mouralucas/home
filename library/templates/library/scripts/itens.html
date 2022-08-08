@@ -1,0 +1,630 @@
+{# Arquivo para organização de todas as funções pertinentes a library #}
+{# O arquivo é mantido em .html para que funções do django possam ser usadas normarmente #}
+
+<!-- Função para buscar os livros cadastrados -->
+<script>
+    function get_book() {
+        load('on');
+        $.ajax({
+            type: 'GET',
+            url: '{% url 'library:item' %}',
+            data: {
+                'item_type': 'book',
+            },
+            success: function (response) {
+                table_book._options._optionManager._options.dataSource._store._array = response.items;
+                table_book.refresh();
+                load('off')
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                load('off');
+                console.log(xhr.status);
+                console.log(thrownError);
+            }
+        });
+    }
+</script>
+
+<!-- Função para buscar os mangas cadastrados -->
+<script>
+    function get_manga() {
+        load('on');
+        $.ajax({
+            type: 'GET',
+            url: '{% url 'library:item' %}',
+            data: {
+                'item_type': 'manga',
+            },
+            success: function (response) {
+                table_manga._options._optionManager._options.dataSource._store._array = response.items;
+                table_manga.refresh();
+                load('off')
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                load('off');
+                console.log(xhr.status);
+                console.log(thrownError);
+            }
+        });
+    }
+</script>
+
+<!-- Set item -->
+<script>
+    function set_item() {
+        if ($('#add_livro_autor_principal').val() === '0') {
+            toastr.error('É preciso selecionar um autor.', 'Selecione um autor!');
+        } else {
+            let modal = $("#modal_adicionar_livro");
+            load('on');
+            var other_authors = [];
+            $('#add_livro_outros_autores option:selected').each(function () {
+                var val = $(this).val();
+                if (val) {
+                    other_authors.push(val);
+                }
+            });
+            $.ajax({
+                type: "POST",
+                url: "{% url 'library:item' %}",
+                traditional: true,
+                data: {
+                    'item_id': $('#add_livro_id').val(),
+                    'main_author_id': $('#add_livro_autor_principal').val(),
+                    'authors_id': other_authors,
+                    'translator_id': $('#add_livro_tradutor').val(),
+                    'status': $('#combo_status_item_library').val(),
+                    'dat_status': $('#add_livro_status_data').val(),
+                    'title': $('#add_livro_titulo').val(),
+                    'subtitle': $('#add_livro_subtitulo').val(),
+                    'title_original': $('#add_livro_titulo_original').val(),
+                    'subtitle_original': $('#add_livro_subtitulo_original').val(),
+                    'isbn': $('#add_livro_isbn').val(),
+                    'isbn_10': $('#add_livro_isbn10').val(),
+                    'tipo': $('#add_livro_tipo').val(),
+                    'pages': $('#add_livro_pagina').val(),
+                    'volume': $('#add_livro_volume').val(),
+                    'edition': $('#add_livro_edicao').val(),
+                    'dat_published': $('#add_livro_lancamento').val(),
+                    'dat_published_original': $('#add_livro_lancamento_original').val(),
+                    'serie_id': $('#add_livro_serie').val(),
+                    'collection_id': $('#add_livro_colecao').val(),
+                    'publisher_id': $('#add_livro_editora').val(),
+                    'format': $('#add_livro_formato').val(),
+                    'language_id': $('#combo_language_add_book_library').val(),
+                    'cover_price': $("#add_livro_vlr_capa").val().replace('R$ ', ''),
+                    'payed_price': $('#add_livro_vlr_pago').val().replace('R$ ', ''),
+                    'dimensions': $('#add_livro_dimensoes').val(),
+                    'height': $('#add_livro_altura').val(),
+                    'width': $('#add_livro_largura').val(),
+                    'thickness': $('#add_livro_profundidade').val(),
+                    'resumo': $('#add_livro_resumo').val(),
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                success: function (response) {
+                    if (response.status === true) {
+                        modal.modal('hide');
+
+                        limpaModalCadastroItem();
+                        load('off');
+
+                        toastr.success('Livro registrado com sucesso!', 'Cadastro realizado');
+                    } else {
+                        load('off');
+                        toastr.error(response.descricao, 'Erro');
+                    }
+
+                    get_book();
+                    get_manga();
+                },
+                error: function (data) {
+                    load('off');
+                    toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
+                }
+            });
+        }
+    }
+</script>
+
+<!-- Funçao para buscar detalhes de um item -->
+<script>
+    /**
+     * Função Ajax to get a item by id, returns only one item
+     * @param item_id
+     */
+    function get_unique_item(item_id) {
+
+        $.ajax({
+            type: "GET",
+            url: '{% url 'library:item' %}',
+            traditional: true,
+            data: {
+                'item_id': item_id,
+                'is_unique': true,
+            },
+            success: function (response) {
+                console.log(response.items);
+                let modal = $("#modal_adicionar_livro");
+                $('#add_livro_id').val(response.items.id);
+                $('#add_livro_titulo').val(response.items.title);
+                $('#add_livro_subtitulo').val(response.items.subtitle);
+                $('#add_livro_titulo_original').val(response.items.title_original);
+                $('#add_livro_subtitulo_original').val(response.items.subtitle_original);
+                $('#add_livro_isbn').val(response.items.isbn_formatted);
+                $('#add_livro_isbn10').val(response.items.isbn10_formmated);
+                $('#add_livro_pagina').val(response.items.pages);
+                $('#add_livro_volume').val(response.items.volume);
+                $('#add_livro_edicao').val(response.items.edition);
+                if (response.items.dat_published) {
+                    $('#add_livro_lancamento').datepicker("setDate", formatarData(response.items.dat_published, "data"));
+                } else {
+                    $('#add_livro_lancamento').val('')
+                }
+                if (response.items.dat_published_original) {
+                    $('#add_livro_lancamento_original').datepicker("setDate", formatarData(response.items.dat_published_original, "data"));
+                } else {
+                    $('#add_livro_lancamento_original').val('');
+                }
+                $('#add_livro_vlr_capa').maskMoney('mask', parseFloat(response.items.cover_price));
+                $('#add_livro_vlr_pago').maskMoney('mask', parseFloat(response.items.payed_price));
+                $('#add_livro_dimensoes').val(response.items.dimension);
+                $('#add_livro_altura').val(response.items.heigh);
+                $('#add_livro_largura').val(response.items.weight);
+                $('#add_livro_profundidade').val(response.items.thickness);
+                $('#add_livro_resumo').val(response.items.resumo);
+                if (response.items.dat_last_status) {
+                    $('#add_livro_status_data').datepicker("setDate", formatarData(response.items.dat_last_status, "data"));
+                } else {
+                    $('#add_livro_status_data').val(response.items.resumo);
+                }
+                modal.modal('show');
+            },
+            error: function (data) {
+                toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
+            }
+        });
+    }
+</script>
+
+<!-- Função para buscar os dados necessários e abrir o modal de edição de item -->
+<script>
+    function abrir_modal_item(status_id, item_id, tipo_id, serie_id, colecao_id, editora_id, formato_id, idioma_id) {
+        limpaModalCadastroItem();
+        get_item_status(status_id);
+        getItemAuthors(item_id);
+        buscaTiposItens(tipo_id);
+        get_combo_series(serie_id);
+        get_combo_collections(colecao_id);
+        get_publishers(editora_id);
+        buscaFormatosItens(formato_id);
+        get_languages('combo_language_add_book_library', idioma_id);
+        get_unique_item(item_id);
+    }
+</script>
+
+<!-- Busca lista de autores autores -->
+<script>
+    function get_combo_authors() {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'library:author' %}",
+            traditional: true,
+            data: {},
+            success: function (response) {
+
+                // Sets the main author cobo box
+                $("#add_livro_autor_principal").attr('disabled', false);
+                $('#add_livro_autor_principal').find('option').remove().end().append('<option value=0 selected>Selecione</option>');
+                $.each(response.authors, function (key, value) {
+                    if (value.is_main_author_selected) {
+                        $("#add_livro_autor_principal").append('<option value=' + value.id + ' selected>' + value.nm_full + '</option>');
+                    } else {
+                        $("#add_livro_autor_principal").append('<option value=' + value.id + '>' + value.nm_full + '</option>');
+                    }
+                });
+
+                // Sets the main author cobo box
+                $("#add_livro_outros_autores").attr('disabled', false);
+                $('#add_livro_outros_autores').find('option').remove().end().append('<option value=0 selected>Selecione</option>');
+                $.each(response.authors, function (key, value) {
+                    if (value.is_other_author_selected) {
+                        $("#add_livro_outros_autores").append('<option value=' + value.id + ' selected>' + value.nm_full + '</option>');
+                    } else {
+                        $("#add_livro_outros_autores").append('<option value=' + value.id + '>' + value.nm_full + '</option>');
+                    }
+                });
+                load('off');
+            },
+            error: function (data) {
+                load('off');
+                toastr.error('Não foi possível buscar os autores.', 'Erro ao enviar');
+            }
+        });
+    }
+
+    function get_table_authors() {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'library:author' %}",
+            traditional: true,
+            data: {},
+            success: function (response) {
+                table_authors_library._options._optionManager._options.dataSource._store._array = response.authors;
+                table_authors_library.refresh();
+                load('off');
+            },
+            error: function (response) {
+                load('off');
+                toastr.error('Não foi possível buscar os autores.', 'Erro ao enviar');
+            }
+        });
+    }
+</script>
+
+<!-- Create a new author -->
+<script>
+    function set_author(){
+        $.ajax({
+            type: "POST",
+            url: "{% url 'library:author' %}",
+            traditional: true,
+            data: {
+                'nm_full': $("#input_full_name_author_library").val(),
+                'dat_birth': $("#input_fat_birth_author_library").val(),
+                'language_id': $("#combo_language_author_library").val(),
+                'country_id': $("#combo_country_author_library").val(),
+                'is_translator': $("#input_translator_author_library").val(),
+                'description': $("#text_description_author_library").val(),
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+            },
+            success: function (response) {
+                // TODO: colocar sempre uma mensagem de sucesso também
+                toastr.success('Registro salvo com sucesso!', 'Erro ao enviar');
+            },
+            error: function (response) {
+
+            }
+        });
+    }
+</script>
+
+<!-- Busca os autores por item -->
+<script>
+    function getItemAuthors(item_id) {
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'library:item_author' %}",
+            data: {
+                'item_id': item_id,
+            },
+            success: function (response) {
+                load('off');
+                // Sets the main author cobo box
+                $("#add_livro_autor_principal").attr('disabled', false);
+                $('#add_livro_autor_principal').find('option').remove().end().append('<option value=0 selected>Selecione</option>');
+                $.each(response.autores, function (key, value) {
+                    if (value.is_main_author_selected) {
+                        $("#add_livro_autor_principal").append('<option value=' + value.id + ' selected>' + value.nm_full + '</option>');
+                    } else {
+                        $("#add_livro_autor_principal").append('<option value=' + value.id + '>' + value.nm_full + '</option>');
+                    }
+                });
+
+                // Sets the main author cobo box
+                $("#add_livro_outros_autores").attr('disabled', false);
+                $('#add_livro_outros_autores').find('option').remove().end().append('<option value=0 selected>Selecione</option>');
+                $.each(response.autores, function (key, value) {
+                    if (value.is_other_author_selected) {
+                        $("#add_livro_outros_autores").append('<option value=' + value.id + ' selected>' + value.nm_full + '</option>');
+                    } else {
+                        $("#add_livro_outros_autores").append('<option value=' + value.id + '>' + value.nm_full + '</option>');
+                    }
+                });
+                load('off');
+            },
+            error: function (response) {
+                load('off');
+                toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
+            }
+        })
+    }
+</script>
+
+<!-- Busca status de itens -->
+<script>
+    function get_item_status(selected_id) {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'library:status' %}",
+            data: {
+                'selected_id': typeof selected_id == 'undefined' ? null : selected_id,
+            },
+            success: function (response) {
+                $("#combo_status_item_library").attr('disabled', false);
+                $('#combo_status_item_library').find('option').remove().end().append('<option value=0>Status</option>');
+                $.each(response.status_livros, function (key, value) {
+                    if (value.is_selected) {
+                        $("#combo_status_item_library").append('<option value=' + value.id + ' selected>' + value.name + '</option>');
+                    } else {
+                        $("#combo_status_item_library").append('<option value=' + value.id + '>' + value.name + '</option>');
+                    }
+                });
+                load('off');
+            },
+            error: function (data) {
+                load('off');
+                toastr.error('Não foi possível buscar os status.', 'Erro ao enviar');
+            }
+        });
+    }
+</script>
+
+<!-- Busca tipos de itens -->
+<script>
+    function buscaTiposItens(selected) {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'library:tipo' %}",
+            data: {
+                'selected_id': typeof selected == 'undefined' ? null : selected,
+            },
+            success: function (response) {
+                $("#add_livro_tipo").attr('disabled', false);
+                $('#add_livro_tipo').find('option').remove().end().append('<option value=0>Selecione</option>');
+                $.each(response.types, function (key, value) {
+                    if (value.is_selected) {
+                        $("#add_livro_tipo").append('<option value=' + value.value + ' selected>' + value.text + '</option>');
+                    } else {
+                        $("#add_livro_tipo").append('<option value=' + value.value + '>' + value.text + '</option>');
+                    }
+                });
+                load('off');
+            },
+            error: function (data) {
+                load('off');
+                toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
+            }
+        });
+    }
+</script>
+
+<!-- Busca séries de itens -->
+<script>
+    function get_combo_series(selected_id) {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'library:serie' %}",
+            data: {
+                'selected_id': typeof selected_id == 'undefined' ? 0 : selected_id,
+            },
+            success: function (response) {
+                $("#add_livro_serie").attr('disabled', false);
+                $('#add_livro_serie').find('option').remove().end().append('<option value=0>Série</option>');
+                $.each(response.series, function (key, value) {
+                    if (value.is_selected) {
+                        $("#add_livro_serie").append('<option value=' + value.id + ' selected>' + value.name + '</option>');
+                    } else {
+                        $("#add_livro_serie").append('<option value=' + value.id + '>' + value.name + '</option>');
+                    }
+                });
+                load('off');
+            },
+            error: function (data) {
+                load('off');
+                toastr.error('Não foi possível buscar as séries.', 'Erro ao enviar');
+            }
+        });
+    }
+
+    function get_table_series(selected_id) {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'library:serie' %}",
+            data: {
+                'selected_id': typeof selected_id == 'undefined' ? 0 : selected_id,
+            },
+            success: function (response) {
+                table_serie_library._options._optionManager._options.dataSource._store._array = response.series;
+                table_serie_library.refresh();
+                load('off');
+            },
+            error: function (data) {
+                load('off');
+                toastr.error('Não foi possível buscar as séries.', 'Erro ao enviar');
+            }
+        });
+    }
+</script>
+
+<!-- Busca coleções de itens -->
+<script>
+    function get_combo_collections(selected_id) {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'library:colecao' %}",
+            data: {
+                'selected_id': typeof selected_id == 'undefined' || selected_id === '' ? 0 : selected_id,
+            },
+            success: function (response) {
+                $("#add_livro_colecao").attr('disabled', false);
+                $('#add_livro_colecao').find('option').remove().end().append('<option value=0>Coleção</option>');
+                $.each(response.collections, function (key, value) {
+                    if (value.is_selected) {
+                        $("#add_livro_colecao").append('<option value=' + value.id + ' selected>' + value.name + '</option>');
+                    } else {
+                        $("#add_livro_colecao").append('<option value=' + value.id + '>' + value.name + '</option>');
+                    }
+                });
+                load('off');
+            },
+            error: function (data) {
+                load('off');
+                toastr.error('Não foi possível buscar as coleções.', 'Erro ao enviar');
+            }
+        });
+    }
+        function get_table_collections(selected_id) {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'library:colecao' %}",
+            data: {
+                'selected_id': typeof selected_id == 'undefined' || selected_id === '' ? 0 : selected_id,
+            },
+            success: function (response) {
+                table_collection_library._options._optionManager._options.dataSource._store._array = response.collections;
+                table_collection_library.refresh();
+                load('off');
+            },
+            error: function (data) {
+                load('off');
+                toastr.error('Não foi possível buscar as coleções.', 'Erro ao enviar');
+            }
+        });
+    }
+</script>
+
+<!-- Busca coleções de itens -->
+<script></script>
+
+<!-- Get publishers -->
+<script>
+    function get_publishers(selected_id) {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'library:publisher' %}",
+            data: {
+                'selected_id': typeof selected_id == 'undefined' ? -1 : selected_id,
+            },
+            success: function (response) {
+                $("#add_livro_editora").attr('disabled', false);
+                $('#add_livro_editora').find('option').remove().end().append('<option value=0>Selecione</option>');
+                $.each(response.publishers, function (key, value) {
+                    if (value.is_selected) {
+                        $("#add_livro_editora").append('<option value=' + value.id + ' selected>' + value.name + '</option>');
+                    } else {
+                        $("#add_livro_editora").append('<option value=' + value.id + '>' + value.name + '</option>');
+                    }
+                });
+                load('off');
+            },
+            error: function (data) {
+                load('off');
+                toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
+            }
+        });
+    }
+</script>
+
+<!-- Busca formatos de itens -->
+<script>
+    function buscaFormatosItens(selected_id) {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'library:format' %}",
+            data: {
+                'selected_id': typeof selected_id == 'undefined' ? '' : selected_id,
+            },
+            success: function (response) {
+                console.log(response);
+                $("#add_livro_formato").attr('disabled', false);
+                $('#add_livro_formato').find('option').remove().end().append('<option value=0>Formato</option>');
+                $.each(response.formats, function (key, value) {
+                    if (value.is_selected) {
+                        $("#add_livro_formato").append('<option value=' + value.value + ' selected>' + value.text + '</option>');
+                    } else {
+                        $("#add_livro_formato").append('<option value=' + value.value + '>' + value.text + '</option>');
+                    }
+                });
+                load('off');
+            },
+            error: function (data) {
+                load('off');
+                toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
+            }
+        });
+    }
+</script>
+
+<!-- Get all languages -->
+<script>
+    function get_languages(component, selected_id) {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'library:language' %}",
+            data: {
+                'selected_id': typeof selected_id == 'undefined' ? '' : selected_id,
+            },
+            success: function (response) {
+                $("#" + component).attr('disabled', false);
+                $('#add_livro_idioma').find('option').remove().end().append('<option value=0>Selecione</option>');
+                $.each(response.languages, function (key, value) {
+                    if (value.is_selected) {
+                        $("#" + component).append('<option value=' + value.id + ' selected>' + value.name + '</option>');
+                    } else {
+                        $("#" + component).append('<option value=' + value.id + '>' + value.name + '</option>');
+                    }
+                });
+                load('off');
+            },
+            error: function (data) {
+                load('off');
+                toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
+            }
+        });
+    }
+</script>
+
+<!-- Limpa modal de cadastro de itens -->
+<script>
+    function limpaModalCadastroItem() {
+        $('#add_livro_id').val('');
+        $('#add_livro_titulo').val('');
+        $('#add_livro_subtitulo').val('');
+        $('#add_livro_titulo_original').val('');
+        $('#add_livro_subtitulo_original').val('');
+        $('#add_livro_isbn').val('');
+        $('#add_livro_isbn10').val('');
+        $('#add_livro_pagina').val('');
+        $('#add_livro_volume').val('');
+        $('#add_livro_edicao').val('');
+        $('#add_livro_lancamento').val('');
+        $('#add_livro_lancamento_original').val('');
+        $('#add_livro_status_data').val('');
+        $('#add_livro_vlr_capa').val('');
+        $('#add_livro_vlr_pago').val('');
+        $('#add_livro_dimensoes').val('');
+        $('#add_livro_altura').val('');
+        $('#add_livro_largura').val('');
+        $('#add_livro_profundidade').val('');
+        $('#add_livro_resumo').val('');
+    }
+</script>
+
+<!-- Get all the contries -->
+<script>
+    function get_country(component){
+         $.ajax({
+            type: "GET",
+            url: "{% url 'core:country' %}",
+            data: {
+                'selected_id': typeof selected_id == 'undefined' ? '' : selected_id,
+            },
+            success: function (response) {
+                $("#" + component).attr('disabled', false);
+                $('#' + component).find('option').remove().end().append('<option value=0>Selecione</option>');
+                $.each(response.countries, function (key, value) {
+                    if (value.is_selected) {
+                        $("#" + component).append('<option value=' + value.codigo + ' selected>' + value.nome + '</option>');
+                    } else {
+                        $("#" + component).append('<option value=' + value.codigo + '>' + value.nome + '</option>');
+                    }
+                });
+                load('off');
+            },
+            error: function (data) {
+                load('off');
+                toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
+            }
+        });
+    }
+</script>

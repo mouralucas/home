@@ -1,0 +1,226 @@
+{#{% extends 'library/base.html' %}#}
+{##}
+{#{% load static %}#}
+{#{% load humanize %}#}
+{##}
+{#{% block combo_boxes %}#}
+{#{% endblock %}#}
+{##}
+{#{% block cabecalho %}#}
+{#    <div class="container-fluid">#}
+{#        <div class="row">#}
+{#            <div class="col-12" id="div_cabecalho">#}
+{##}
+{#            </div><!-- .cols -->#}
+{#        </div><!-- .row -->#}
+{#    </div>#}
+{#{% endblock %}#}
+{##}
+{#{% block main %}#}
+{#    <!-- Evolução diária -->#}
+{#    <div class="container-fluid">#}
+{#    <div class="row">#}
+{#    </div> <!-- .row -->#}
+{##}
+{#    <!-- Row de Livros -->#}
+{#    <div class="row">#}
+{#        <div class="col-12">#}
+{#            <div class="card">#}
+{#                <div class="card-header d-flex flex-wrap justify-content-between">#}
+{#                    <div>#}
+{#                        <img src="{% static 'img/icons/book.png' %}" alt="Graph icon" width="25">#}
+{#                        Livros#}
+{#                    </div>#}
+{#                </div><!-- .card-header -->#}
+{#                <div class="card-body">#}
+{#                    <div class="row">#}
+{##}
+{#                    </div>#}
+{#                    <div class="row">#}
+{#                        <div id="tabela_livros" class="w-100"></div>#}
+{#                    </div>#}
+{#                </div><!-- .card-body -->#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{##}
+{#    <!-- Row de Mangás -->#}
+{#    <div class="row">#}
+{#        <div class="col-12">#}
+{#            <div class="card">#}
+{#                <div class="card-header d-flex flex-wrap justify-content-between">#}
+{#                    <div>#}
+{#                        <img src="{% static 'img/icons/book.png' %}" alt="Graph icon" width="25">#}
+{#                        Mangás#}
+{#                    </div>#}
+{#                </div><!-- .card-header -->#}
+{#                <div class="card-body">#}
+{#                    <div id="tabela_mangas" class="w-100"></div>#}
+{#                </div><!-- .card-body -->#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{##}
+{#    <!-- Row de Autores -->#}
+{#    <div class="row">#}
+{#        <div class="col-12">#}
+{#            <div class="card">#}
+{#                <div class="card-header d-flex flex-wrap justify-content-between">#}
+{#                    <div>#}
+{#                        <img src="{% static 'img/icons/writing.png' %}" alt="Graph icon" width="25">#}
+{#                        Autores#}
+{#                    </div>#}
+{#                </div><!-- .card-header -->#}
+{#                <div class="card-body">#}
+{#                    <div id="tabela_autores" class="w-100"></div>#}
+{#                </div><!-- .card-body -->#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{##}
+{#{% endblock %}#}
+{##}
+{#{% block modals %}#}
+{#    {% include 'library/modals/item.html' %}#}
+{#    {% include 'library/modals/author.html' %}#}
+{#{% endblock %}#}
+{##}
+{#{% block js %}#}
+{#    {% include 'library/funcoes/itens.html' %}#}
+{##}
+{#    <!-- Inicialização da tabela de itens -->#}
+{#    <script>#}
+{#        let dados_tabela_livros = new DevExpress.data.DataSource({#}
+{#            store: {#}
+{#                type: 'array',#}
+{#                //key: "id",#}
+{#                data: [],#}
+{#            }#}
+{#        });#}
+{#    </script>#}
+{#    {% include 'library/tables/book.html' %}#}
+{##}
+{#    <!-- Inicialização da tabela de itens -->#}
+{#    <script>#}
+{#        let dados_tabela_mangas = new DevExpress.data.DataSource({#}
+{#            store: {#}
+{#                type: 'array',#}
+{#                //key: "id",#}
+{#                data: [],#}
+{#                page: 10,#}
+{#            }#}
+{#        });#}
+{#    </script>#}
+{#    {% include 'library/tables/manga.html' %}#}
+{##}
+{#    <script>#}
+{#        let dados_tabela_autores = new DevExpress.data.DataSource({#}
+{#            store: {#}
+{#                type: 'array',#}
+{#                //key: "id",#}
+{#                data: [],#}
+{#            }#}
+{#        });#}
+{#    </script>#}
+{#    {% include 'library/tables/author.html' %}#}
+{##}
+{#    <!-- Ajax de update da tabela de livros -->#}
+{#    <script>#}
+        {#getItens(table_book);#}
+{#        getAutores(tabela_autores);#}
+        {##}
+        {#function getItens(e) {#}
+            {#load('on');#}
+        {#    $.ajax({#}
+        {#        type: 'GET',#}
+        {#        url: '{% url 'library:item' %}',#}
+        {#        data: {#}
+        {#            'tipo': 'livro',#}
+        {#        },#}
+        {#        success: function (itens) {#}
+                    {#console.log(itens.itens);#}
+        {#            e._options.dataSource._store._array = itens.itens;#}
+        {#            e.refresh();#}
+                    {#console.log(itens.itens)#}
+                    {#load('off')#}
+        {#        },#}
+        {#        error: function (xhr, ajaxOptions, thrownError) {#}
+                    {#load('off');#}
+        {#            console.log(xhr.status);#}
+        {#            console.log(thrownError);#}
+        {#        }#}
+        {#    });#}
+        {# }#}
+{##}
+{#        function getAutores(e) {#}
+            {#load('on');#}
+{##}
+            {#var data = new FormData();#}
+            {#data.append("referencia", anomes);#}
+            {#data.append("operacao", operacao);#}
+            {#data.append("forma_pagamento", forma_pagamento);#}
+            {#data.append("categoria", $('#comboCategoria').children("option:selected").val());#}
+            {#data.append("csrfmiddlewaretoken", '{{ csrf_token }}');#}
+{##}
+{#            $.ajax({#}
+{#                type: 'GET',#}
+{#                url: '{% url 'library:autor' %}',#}
+{#                data: {#}
+                    {#'tipo': 'livro',#}
+                    {#'csrfmiddlewaretoken': '{{ csrf_token }}',#}
+{#                },#}
+{#                success: function (itens) {#}
+{#                    e._options.dataSource._store._array = itens.autores;#}
+{#                    e.refresh();#}
+{#                    console.log(itens.itens);#}
+                    {#load('off')#}
+{#                },#}
+{#                error: function (xhr, ajaxOptions, thrownError) {#}
+                    {#load('off');#}
+{#                    console.log(xhr.status);#}
+{#                    console.log(thrownError);#}
+{#                }#}
+{#            });#}
+{#        }#}
+{#    </script>#}
+{##}
+{#    <!-- Ajax de update da tabela de histórico de faturas -->#}
+{#    <script>#}
+{##}
+        {#historico_faturas(tabela_faturas);#}
+{##}
+{#        function historico_faturas(e) {#}
+{##}
+{#            var anomes = $("#comboPeriodo").val();#}
+{#            var forma_pagamento = $('#comboFormaPagamento').val();#}
+{#            var operacao = $("#comboOperacao").val();#}
+{##}
+            {#var data = new FormData();#}
+            {#data.append("anomes", anomes);#}
+            {#data.append("operacao", "operacao");#}
+            {#data.append("forma_pagamento", "forma_pagamento");#}
+            {#data.append("csrfmiddlewaretoken", '{{ csrf_token }}');#}
+{##}
+{#            $.ajax({#}
+{#                type: 'GET',#}
+{#                url: '{% url 'finance:fatura' %}',#}
+{#                data: {#}
+{#                    'anomes': anomes,#}
+{#                },#}
+                {#processData: false,#}
+                {#contentType: false,#}
+{#                success: function (response) {#}
+{#                    e._options.dataSource._store._array = response;#}
+{#                    e.refresh();#}
+                    {#load('off');#}
+{##}
+{#                },#}
+{#                error: function (xhr, ajaxOptions, thrownError) {#}
+                    {#load('off');#}
+{#                    console.log(xhr.status);#}
+{#                    console.log(thrownError);#}
+{#                }#}
+{#            });#}
+{#        }#}
+{#    </script>#}
+{#{% endblock %}#}

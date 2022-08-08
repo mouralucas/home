@@ -1,0 +1,423 @@
+{#{% extends 'aviacao/base.html' %}#}
+{##}
+{#{% load static %}#}
+{#{% load humanize %}#}
+{##}
+{#{% block css_block %}#}
+{#    <style type="text/css">#}
+{#        .tg {#}
+{#            border-collapse: collapse;#}
+{#            border-spacing: 0;#}
+{#        }#}
+{##}
+{#        .tg td {#}
+{#            font-family: Arial, sans-serif;#}
+{#            font-size: 14px;#}
+{#            padding: 10px 5px;#}
+{#            border-style: solid;#}
+{#            border-width: 1px;#}
+{#            overflow: hidden;#}
+{#            word-break: normal;#}
+{#            border-color: black;#}
+{#        }#}
+{##}
+{#        .tg th {#}
+{#            font-family: Arial, sans-serif;#}
+{#            font-size: 14px;#}
+{#            font-weight: normal;#}
+{#            padding: 10px 5px;#}
+{#            border-style: solid;#}
+{#            border-width: 1px;#}
+{#            overflow: hidden;#}
+{#            word-break: normal;#}
+{#            border-color: black;#}
+{#        }#}
+{##}
+{#        .tg .tg-cbli {#}
+{#            position: -webkit-sticky;#}
+{#            position: sticky;#}
+{#            text-align: left;#}
+{#            top: -1px;#}
+{#            vertical-align: middle;#}
+{#            will-change: transform#}
+{#        }#}
+{##}
+{#        .tg .tg-ul38 {#}
+{#            position: -webkit-sticky;#}
+{#            position: sticky;#}
+{#            text-align: left;#}
+{#            top: -1px;#}
+{#            vertical-align: top;#}
+{#            will-change: transform#}
+{#        }#}
+{##}
+{#        .tg .tg-0lax {#}
+{#            text-align: left;#}
+{#            vertical-align: top#}
+{#        }#}
+{##}
+{#        .tg-sort-header::-moz-selection {#}
+{#            background: 0 0#}
+{#        }#}
+{##}
+{#        .tg-sort-header::selection {#}
+{#            background: 0 0#}
+{#        }#}
+{##}
+{#        .tg-sort-header {#}
+{#            cursor: pointer#}
+{#        }#}
+{##}
+{#        .tg-sort-header:after {#}
+{#            content: '';#}
+{#            float: right;#}
+{#            margin-top: 7px;#}
+{#            border-width: 0 5px 5px;#}
+{#            border-style: solid;#}
+{#            border-color: #404040 transparent;#}
+{#            visibility: hidden#}
+{#        }#}
+{##}
+{#        .tg-sort-header:hover:after {#}
+{#            visibility: visible#}
+{#        }#}
+{##}
+{#        .tg-sort-asc:after, .tg-sort-asc:hover:after, .tg-sort-desc:after {#}
+{#            visibility: visible;#}
+{#            opacity: .4#}
+{#        }#}
+{##}
+{#        .tg-sort-desc:after {#}
+{#            border-bottom: none;#}
+{#            border-width: 5px 5px 0#}
+{#        }#}
+{##}
+{#        @media screen and (max-width: 767px) {#}
+{#            .tg {#}
+{#                width: auto !important;#}
+{#            }#}
+{##}
+{#            .tg col {#}
+{#                width: auto !important;#}
+{#            }#}
+{##}
+{#            .tg-wrap {#}
+{#                overflow-x: auto;#}
+{#                -webkit-overflow-scrolling: touch;#}
+{#            }#}
+{#        }#}
+{#    </style>#}
+{#{% endblock %}#}
+{##}
+{##}
+{##}
+{#{% block combo_boxes %}#}
+{#    <div class="card bg-light border-0 comboboxes-dashboards-margem-menor">#}
+{#        <form>#}
+{#            <div class="card-body bg-light">#}
+{#                <div class="row mb-2">#}
+{#                    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 text-center align-middle">#}
+{#                        <fieldset class="form-group row m-auto">#}
+{#                            <select class="form-control select2-single" id="comboPeriodo">#}
+{#                                {% for i in periodos reversed %}#}
+{#                                    <option value={{ i.value|slugify }}>{{ i.text }}</option>#}
+{#                                {% endfor %}#}
+{#                            </select>#}
+{#                        </fieldset>#}
+{#                    </div><!-- .cols -->#}
+{##}
+{##}
+{#                    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 text-center align-middle">#}
+{#                        <fieldset class="form-group row m-auto">#}
+{#                            <select class="form-control select2-single" id="comboOperacao">#}
+{#                                <option value=0 selected>Todas as operações</option>#}
+{#                                {% for i in operacoes %}#}
+{#                                    <option value={{ i.id|slugify }}>#}
+{#                                        {{ i.descricao }}#}
+{#                                    </option>#}
+{#                                {% endfor %}#}
+{#                            </select>#}
+{#                        </fieldset>#}
+{#                    </div><!-- .cols -->#}
+{#                </div><!-- .row -->#}
+{##}
+{#                <div class="row">#}
+{#                    <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">#}
+{#                        <!-- Forma de Pagamento -->#}
+{#                        <fieldset class="form-group row m-auto">#}
+{#                            <select class="form-control select2-single" id="comboFormaPagamento">#}
+{#                                <option value=0 selected>Todas as formas de pagamento</option>#}
+{#                                {% for i in fomas_pag %}#}
+{#                                    <option value={{ i.id|slugify }}>#}
+{#                                        {{ i.descricao }}#}
+{#                                    </option>#}
+{#                                {% endfor %}#}
+{#                            </select>#}
+{#                        </fieldset>#}
+{#                    </div><!-- .cols -->#}
+{##}
+{#                    <!-- Forma de pagamento -->#}
+{#                    <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">#}
+{#                        <fieldset class="form-group row m-auto">#}
+{#                            <select class="form-control select2-single" id="comboSetor"#}
+{#                                    {% if 'acessar_dash_visao_2' not in request.session.usr_info.pt_funcao %}#}
+{#                                    disabled="" {% endif %}>#}
+{##}
+{#                                <option value=0 disabled selected='selected'> Todos os GD`s/Setores</option>#}
+{#                                {% for i in request.session.usr_info.combo_2 %}#}
+{#                                    {% if i.cd_setor != 0 %}#}
+{#                                        <option value="{{ i.cd_setor }}"  {% if cd_tipo == i.cd_setor and tipo == 'g' %}#}
+{#                                                selected='selected' {% endif %}> {{ i.setor }} ({{ i.gd }} - {{ i.go }})#}
+{#                                        </option>#}
+{#                                    {% endif %}#}
+{#                                {% endfor %}#}
+{#                            </select>#}
+{#                        </fieldset>#}
+{#                    </div>#}
+{##}
+{#                    <!--Cidades-->#}
+{#                    <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">#}
+{#                        <fieldset class="form-group row m-auto">#}
+{#                            <select class="form-control" id="comboCidade" onchange="controleCidade();"#}
+{#                                    {% if 'acessar_dash_visao_3' not in request.session.usr_info.pt_funcao %}#}
+{#                                    disabled="" {% endif %}>#}
+{##}
+{#                                <option value=0 disabled selected='selected'> Todas as Cidades</option>#}
+{##}
+{#                                {% for i in request.session.usr_info.combo_3 %}#}
+{#                                    {% if i.cd_cidade != 0 %}#}
+{#                                        <option value="{{ i.cd_cidade|slugify }}"#}
+{#                                                {% if cd_tipo == i.cd_cidade and tipo == 'c' %}#}
+{#                                                selected='selected' {% endif %}>#}
+{#                                            {{ i.uf }} - {{ i.cidade }}#}
+{#                                        </option>#}
+{#                                    {% endif %}#}
+{#                                {% endfor %}}#}
+{#                            </select>#}
+{#                        </fieldset>#}
+{#                    </div><!-- .cols -->#}
+{#                </div>#}
+{#            </div>#}
+{#        </form>#}
+{#    </div>#}
+{#{% endblock %}#}
+{##}
+{#{% block cabecalho %}#}
+{#    <div class="container-fluid">#}
+{#        <div class="row">#}
+{#            <div class="col-12" id="div_cabecalho">#}
+{##}
+{#            </div><!-- .cols -->#}
+{#        </div><!-- .row -->#}
+{#    </div>#}
+{#{% endblock %}#}
+{##}
+{#{% block main_block %}#}
+{#    <!-- Evolução diária -->#}
+{#    <div class="container-fluid">#}
+{#        <div class="row">#}
+{#        </div> <!-- .row -->#}
+{##}
+{#        <!-- Row de transações no mês -->#}
+{#        <div class="row">#}
+{#            <div class="col-12">#}
+{#                <div class="card">#}
+{#                    <div class="card-header d-flex flex-wrap justify-content-between">#}
+{#                        <div>#}
+{#                            <img src="{% static 'img/icon_graph01.svg' %}" alt="Graph icon" width="25">#}
+{#                            Extrato#}
+{#                        </div>#}
+{#                    </div><!-- .card-header -->#}
+{#                    <div class="card-body">#}
+{#                        <div id="tabela_livros" class="w-100"></div>#}
+{#                    </div><!-- .card-body -->#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{##}
+{#{% endblock %}#}
+{##}
+{#{% block modal %}#}
+{#    <!-- modal de cadastro de extratos -->#}
+{#    {% include 'finance/modals/bank_statement.html' %}#}
+{##}
+{#    <!-- modal de cadastro de faturas -->#}
+{#    <div class="modal modal-padrao-cadastros-modal modal-sem-scroll fade" id="modal_adicionar_fatura" role="dialog" data-backdrop="static" aria-hidden="true">#}
+{#        <div class="modal-dialog modal-xl" role="document">#}
+{#            <div class="modal-content">#}
+{#                <div class="modal-header" ondblclick="fullscreen(this.parentNode.parentNode.parentNode.id, 'modal-dialog');">#}
+{#                    <div class="d-flex justify-content-between align-items-center flex-wrap mb-1">#}
+{#                        <h5 class="modal-title font-3xl">Adicionar Fatura</h5>#}
+{#                        <span class="text-muted ml-1"><!-- código da tela --></span>#}
+{#                    </div><!-- Nome do Header modal e Código da tela -->#}
+{#                    <div class="d-flex flex-nowrap ml-1">#}
+{#                        <div class="icon_expand p-1 mr-3  font-2xl" onclick="fullscreen(this.parentNode.parentNode.parentNode.parentNode.parentNode.id, 'modal-dialog');"></div>#}
+{#                        <a class="icon_close p-1 font-2xl" data-dismiss="modal" aria-label="Close"></a>#}
+{#                    </div><!-- Botões de expandir e fechar modal -->#}
+{#                </div><!-- .modal-header -->#}
+{#                <div class="modal-body">#}
+{#                    <div class="text-left">#}
+{#                        <div class="row">#}
+{#                            <p class="col-2">#}
+{#                                <span class="font-weight-bold">Valor:</span>#}
+{#                                <input type="text" id="add_fatura_valor" tabindex="0" onkeypress="event.keyCode === 13 ? $('#modal_adicionar_produto').find('.seletorBtnSalvar').click() : ''" class="font-2xl form-control text-right">#}
+{#                            </p>#}
+{#                            <p class="col-2">#}
+{#                                <span class="font-weight-bold">Data compra:</span>#}
+{#                                <input type="da" id="add_fatura_data_compra" tabindex="0" class="font-2xl form-control data">#}
+{#                            </p>#}
+{#                            <p class="col-2">#}
+{#                                <span class="font-weight-bold">Data pagamento:</span>#}
+{#                                <input type="da" id="add_fatura_data_pagamento" tabindex="0" class="font-2xl form-control data">#}
+{#                            </p>#}
+{#                            <p class="col-3">#}
+{#                                <span class="font-weight-bold">Categoria:</span>#}
+{#                                <select type="da" id="add_fatura_categoria" class="font-2xl form-control">#}
+{#                                    <option value=0 selected>Categoria</option>#}
+{#                                </select>#}
+{#                            </p>#}
+{#                            <p class="col-3">#}
+{#                                <span class="font-weight-bold">Cartão:</span>#}
+{#                                <select type="da" id="add_fatura_cartao" class="font-2xl form-control">#}
+{#                                    <option value=0 selected>Cartão</option>#}
+{#                                </select>#}
+{#                            </p>#}
+{#                        </div>#}
+{#                        <div class="row">#}
+{#                            <p class="col-12">#}
+{#                                <span class="font-weight-bold">Descricao:</span>#}
+{#                                <input type="text" id="quantidade_pedida_add_produto" tabindex="0" class="font-2xl form-control">#}
+{#                                <textarea class="font-2xl form-control" id="add_fatura_descricao" name="message" placeholder="DIgite a descição da compra"></textarea>#}
+{#                            </p>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div><!-- .modal-body -->#}
+{#                <div class="container-fluid border-top border-light seletorModal-footer-btns">#}
+{#                    <div class="mt-1 mb-2">#}
+{#                        <div class="row pr-2 pl-2 d-flex justify-content-between align-items-center flex-wrap">#}
+{##}
+{#                            <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-12 mt-1">#}
+{#                            </div><!-- .cols -->#}
+{##}
+{#                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mt-1">#}
+{#                            </div><!-- .cols -->#}
+{##}
+{#                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mt-1">#}
+{#                                <div class="d-flex flex-nowrap btnsModal">#}
+{#                                    <a class="btn btn-primary text-white text-center seletorBtnSalvar w-100 mr-1" tabindex="0">#}
+{#                                        Salvar#}
+{#                                    </a>#}
+{#                                    <a class="btn btn-outline-secondary w-100" data-dismiss="modal" tabindex="0">#}
+{#                                        Cancelar#}
+{#                                    </a>#}
+{#                                </div><!-- d-flex -->#}
+{#                            </div><!-- .cols -->#}
+{##}
+{#                        </div><!-- .row -->#}
+{#                    </div><!-- .mt-1 .mb-2 -->#}
+{#                </div><!-- div do modal-footer costumizado, mesmo que não tenha a classe modal footer -->#}
+{#            </div><!-- .modal-content -->#}
+{#        </div><!-- .modal-dialog -->#}
+{#    </div><!-- .modal -->#}
+{#{% endblock %}#}
+{##}
+{#{% block js_block %}#}
+{#    <script src="{% static 'finance/js/evolocao_categoria.js' %}"></script>#}
+{##}
+{#    <script>#}
+{#        $('#comboPeriodo').select2({#}
+{#            theme: 'bootstrap',#}
+{#        });#}
+{#    </script>#}
+{##}
+{#    <!-- Inicialização da tabela -->#}
+{#    <script>#}
+{#        let dados_tabela_livros = new DevExpress.data.DataSource({#}
+{#            store: {#}
+{#                type: 'array',#}
+{#                //key: "id",#}
+{#                data: [],#}
+{#            }#}
+{#        });#}
+{#    </script>#}
+{#    <script src="{% static 'library/js/devexteme/livros.js' %}"></script>#}
+{##}
+{#    <!-- Ajax de update da tabela de extrato -->#}
+{#    <script>#}
+{#        changeFilter(table_book);#}
+{##}
+{#        function changeFilter(e) {#}
+{#            load('on');#}
+{##}
+            {#var data = new FormData();#}
+            {#data.append("referencia", anomes);#}
+            {#data.append("operacao", operacao);#}
+            {#data.append("forma_pagamento", forma_pagamento);#}
+            {#data.append("categoria", $('#comboCategoria').children("option:selected").val());#}
+            {#data.append("csrfmiddlewaretoken", '{{ csrf_token }}');#}
+{##}
+{#            $.ajax({#}
+{#                type: 'GET',#}
+                {#url: '{% url 'library:buscar_dados' %}',#}
+{#                url: '#',#}
+{#                data: {#}
+{#                    'tipo': 'livro',#}
+{#                    'csrfmiddlewaretoken': '{{ csrf_token }}',#}
+{#                },#}
+{#                success: function (itens) {#}
+{#                    e._options.dataSource._store._array = itens.itens;#}
+{#                    e.refresh();#}
+{#                    console.log(itens.itens)#}
+{#                    load('off')#}
+{#                },#}
+{#                error: function (xhr, ajaxOptions, thrownError) {#}
+{#                    load('off');#}
+{#                    alert(thrownError)#}
+{#                    console.log(xhr.status);#}
+{#                    console.log(thrownError);#}
+{#                }#}
+{#            });#}
+{#        }#}
+{#    </script>#}
+{##}
+{#    <!-- Ajax de update da tabela de histórico de faturas -->#}
+{#    <script>#}
+{##}
+        {#historico_faturas(tabela_faturas);#}
+{##}
+{#        function historico_faturas(e) {#}
+{##}
+{#            var anomes = $("#comboPeriodo").val();#}
+{#            var forma_pagamento = $('#comboFormaPagamento').val();#}
+{#            var operacao = $("#comboOperacao").val();#}
+{##}
+            {#var data = new FormData();#}
+            {#data.append("anomes", anomes);#}
+            {#data.append("operacao", "operacao");#}
+            {#data.append("forma_pagamento", "forma_pagamento");#}
+            {#data.append("csrfmiddlewaretoken", '{{ csrf_token }}');#}
+{##}
+{#            $.ajax({#}
+{#                type: 'GET',#}
+{#                url: '{% url 'finance:fatura' %}',#}
+{#                data: {#}
+{#                    'anomes': anomes,#}
+{#                },#}
+                {#processData: false,#}
+                {#contentType: false,#}
+{#                success: function (response) {#}
+                    {#alert('Executou aqui na funcao');#}
+{#                    e._options.dataSource._store._array = response;#}
+{#                    e.refresh();#}
+{#                    load('off');#}
+{##}
+{#                },#}
+{#                error: function (xhr, ajaxOptions, thrownError) {#}
+{#                    load('off');#}
+{#                    console.log(xhr.status);#}
+{#                    console.log(thrownError);#}
+{#                }#}
+{#            });#}
+{#        }#}
+{#    </script>#}
+{#{% endblock %}#}

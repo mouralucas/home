@@ -1,0 +1,174 @@
+<script>
+    var table_authors_library = $("#div_table_author_library").dxDataGrid({
+    dataSource: data_table_authors_library,
+
+    //options default
+    allowColumnReordering: optionsDefaultTables.allowColumnReordering,
+    filterRow: optionsDefaultTables.filterRow,
+    export: optionsDefaultTables.export,
+    onFileSaving: optionsDefaultTables.onFileSaving,
+    headerFilter: optionsDefaultTables.headerFilter,
+    groupPanel: optionsDefaultTables.groupPanel,
+    filterPanel: optionsDefaultTables.filterPanel,
+    filterBuilderPopup: optionsDefaultTables.filterBuilderPopup,
+    paging: optionsDefaultTables.paging,
+    pager: optionsDefaultTables.pager,
+    scrolling: optionsDefaultTables.scrolling,
+    onEditorPreparing: function (e) {
+        searchPanelCustomize(e);
+        addBtnExport(e);
+        resetGroupToolbar(e);
+        btnFilterAdvanced(e);
+        btnClearFilter(e);
+        btnGroupGeneric(e, [
+            [
+                {
+                    btnClass: "btn btn-plus icon_plus seletorBtnAddProduto text-white",
+                    btnTooltip: "Adicionar novo autor",
+                    btnClick: function () {
+                        //Ação do botão
+                        let modal = $("#modal_author_library");
+
+                        // Set all information necessary to create/edit new author
+                        get_languages('combo_language_author_library', null);
+                        get_country('combo_country_author_library');
+
+                        // Set the action to save the information
+                        modal.find('.seletorBtnSalvar').off('click').on('click', function (ev) {
+                            set_author();
+                        });
+                        modal.modal('show');
+                    }
+                },
+            ]
+        ]);
+        addBtnChooser(e);
+        btnAfterEnd(e);
+
+    },
+    onContentReady: optionsDefaultTables.onContentReady,
+    rowAlternationEnabled: optionsDefaultTables.rowAlternationEnabled,
+    searchPanel: optionsDefaultTables.searchPanel,
+    selection: optionsDefaultTables.selection,
+    sorting: optionsDefaultTables.sorting,
+    allowColumnResizing: optionsDefaultTables.allowColumnResizing,
+    columnAutoWidth: optionsDefaultTables.columnAutoWidth,
+    showColumnLines: optionsDefaultTables.showColumnLines,
+    grouping: optionsDefaultTables.grouping,
+    showRowLines: optionsDefaultTables.showRowLines,
+    columnChooser: optionsDefaultTables.columnChooser,
+    columnFixing: optionsDefaultTables.columnFixing,
+
+    columns: [
+        {
+            dataField: "nm_full",
+            caption: "Nome",
+            dataType: "string",
+            visible: true,
+            {#width: 225,#}
+            headerCellTemplate: function (container, options) {
+                // função filterRow(container, options, headerDefault);
+                // 1 parâmetro, container: elemento HTML referente a este header
+                // 2 parâmetro, options: todas as opções referente a esta instancia do datagrid
+                // 3 parâmetro, headerDefault: recebe um booleano, caso você esteja inserindo um html diferente do que existe no ~caption: "NomeDaColuna"~ coloque o parâmetro false, indicando que o header não é default, caso contrário a função irá inserir o caption como nome da coluna por padrão, este parâmetro pode ser opcional.
+                filterRow(container, options);
+            },
+            cellTemplate: function (container, options) {
+                container.css('text-align', 'center');
+                container.html(`
+                    <span class="text-uppercase font-weight-semibold">${options.data[options.column.dataField]}</span>
+                `);
+            }
+        },
+        {
+            dataField: "dat_birth",
+            caption: "Nascimento",
+            dataType: "string",
+            visible: true,
+            width: 225,
+            headerCellTemplate: function (container, options) {
+                // função filterRow(container, options, headerDefault);
+                // 1 parâmetro, container: elemento HTML referente a este header
+                // 2 parâmetro, options: todas as opções referente a esta instancia do datagrid
+                // 3 parâmetro, headerDefault: recebe um booleano, caso você esteja inserindo um html diferente do que existe no ~caption: "NomeDaColuna"~ coloque o parâmetro false, indicando que o header não é default, caso contrário a função irá inserir o caption como nome da coluna por padrão, este parâmetro pode ser opcional.
+                filterRow(container, options);
+            },
+            cellTemplate: function (container, options) {
+                container.css('text-align', 'center');
+                container.html(`
+                    <span class="text-uppercase font-weight-semibold">${options.data[options.column.dataField]}</span>
+                `);
+            }
+        },
+        {
+            dataField: "nm_language",
+            caption: "Idioma",
+            dataType: "string",
+            visible: true,
+            {#width: 150,#}
+            headerCellTemplate: function (container, options) {
+                // função filterRow(container, options, headerDefault);
+                // 1 parâmetro, container: elemento HTML referente a este header
+                // 2 parâmetro, options: todas as opções referente a esta instancia do datagrid
+                // 3 parâmetro, headerDefault: recebe um booleano, caso você esteja inserindo um html diferente do que existe no ~caption: "NomeDaColuna"~ coloque o parâmetro false, indicando que o header não é default, caso contrário a função irá inserir o caption como nome da coluna por padrão, este parâmetro pode ser opcional.
+                filterRow(container, options);
+            },
+            cellTemplate: function (container, options) {
+                var dataField = options.column.dataField;
+                container.css('text-align', 'center');
+                container.html(`
+                    <span class="text-uppercase font-weight-semibold">${options.data[options.column.dataField]}</span>
+                `);
+
+            }
+        },
+        {
+            dataField: "nm_country",
+            caption: "Pais",
+            dataType: "string",
+            visible: true,
+            {#width: 150,#}
+            headerCellTemplate: function (container, options) {
+                // função filterRow(container, options, headerDefault);
+                // 1 parâmetro, container: elemento HTML referente a este header
+                // 2 parâmetro, options: todas as opções referente a esta instancia do datagrid
+                // 3 parâmetro, headerDefault: recebe um booleano, caso você esteja inserindo um html diferente do que existe no ~caption: "NomeDaColuna"~ coloque o parâmetro false, indicando que o header não é default, caso contrário a função irá inserir o caption como nome da coluna por padrão, este parâmetro pode ser opcional.
+                filterRow(container, options);
+            },
+            cellTemplate: function (container, options) {
+                var dataField = options.column.dataField;
+                container.css('text-align', 'center');
+                container.html(`
+                    <span class="text-uppercase font-weight-semibold">${options.data[options.column.dataField]}</span>
+                `);
+
+            }
+        },
+
+        // {
+        //     dataField: "categoria",
+        //     caption: "Categoria",
+        //     dataType: "string",
+        //     visible: true,
+        //     width: 150,
+        //     headerCellTemplate: function (container, options) {
+        //         // função filterRow(container, options, headerDefault);
+        //         // 1 parâmetro, container: elemento HTML referente a este header
+        //         // 2 parâmetro, options: todas as opções referente a esta instancia do datagrid
+        //         // 3 parâmetro, headerDefault: recebe um booleano, caso você esteja inserindo um html diferente do que existe no ~caption: "NomeDaColuna"~ coloque o parâmetro false, indicando que o header não é default, caso contrário a função irá inserir o caption como nome da coluna por padrão, este parâmetro pode ser opcional.
+        //         filterRow(container, options);
+        //     },
+        //     cellTemplate: function (container, options) {
+        //         container.css('text-align', 'center');
+        //         container.html(`
+        //             <span class="text-uppercase font-weight-semibold">${options.data[options.column.dataField]}</span>
+        //             <div class="d-flex justify-content-center">
+        //                 <span class="text-muted"><span class="font-weight-semibold">Grupo:</span> ${options.data.categoria_pai}</span>
+        //             </div>
+        //         `);
+        //     }
+        // },
+    ]
+}).dxDataGrid("instance");
+</script>
+

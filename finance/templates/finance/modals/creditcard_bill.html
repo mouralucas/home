@@ -1,0 +1,77 @@
+<!-- modal de cadastro de faturas -->
+<div class="modal modal-padrao-cadastros-modal modal-sem-scroll fade" id="modal_adicionar_fatura_2" role="dialog" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header" ondblclick="fullscreen(this.parentNode.parentNode.parentNode.id, 'modal-dialog');">
+                <div class="d-flex justify-content-between align-items-center flex-wrap mb-1">
+                    <h5 class="modal-title font-3xl">Adicionar Fatura</h5>
+                    <span class="text-muted ml-1"><!-- código da tela --></span>
+                </div><!-- Nome do Header modal e Código da tela -->
+                <div class="d-flex flex-nowrap ml-1">
+                    <a class="icon_close p-1 font-2xl" data-dismiss="modal" aria-label="Close"></a>
+                </div><!-- Botões de expandir e fechar modal -->
+            </div><!-- .modal-header -->
+            <div class="modal-body">
+                <div class="text-left">
+                    <div class="row">
+                        <p class="col-2">
+                            <span class="font-weight-bold">Valor:</span>
+                            <input type="text" id="add_fatura_valor" tabindex="0" class="form-control text-right currency">
+                        </p>
+                        <p class="col-2">
+                            <span class="font-weight-bold">Data compra:</span>
+                            <input type="da" id="add_fatura_data_compra" tabindex="0" class="form-control data">
+                        </p>
+                        <p class="col-2">
+                            <span class="font-weight-bold">Data pagamento:</span>
+                            <input type="da" id="add_fatura_data_pagamento" tabindex="0" class="form-control data">
+                        </p>
+                        <p class="col-3">
+                            <span class="font-weight-bold">Categoria:</span>
+                            <select type="da" id="add_fatura_categoria" class="form-control">
+                                <option value=0 selected>Categoria</option>
+                            </select>
+                        </p>
+                        <p class="col-3">
+                            <span class="font-weight-bold">Cartão:</span>
+                            <select type="da" id="add_fatura_cartao" class="form-control">
+                                <option value=0 selected>Cartão</option>
+                            </select>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <p class="col-12">
+                            <span class="font-weight-bold">Descricao:</span>
+                            {#                                <input type="text" id="quantidade_pedida_add_produto" tabindex="0" class="form-control">#}
+                            <textarea class="form-control" id="add_fatura_descricao" name="message" placeholder="DIgite a descição da compra"></textarea>
+                        </p>
+                    </div>
+                </div>
+            </div><!-- .modal-body -->
+            <div class="container-fluid border-top border-light seletorModal-footer-btns">
+                <div class="mt-1 mb-2">
+                    <div class="row pr-2 pl-2 d-flex justify-content-between align-items-center flex-wrap">
+
+                        <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-12 mt-1">
+                        </div><!-- .cols -->
+
+                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mt-1">
+                        </div><!-- .cols -->
+
+                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mt-1">
+                            <div class="d-flex flex-nowrap btnsModal">
+                                <a class="btn btn-primary text-white text-center seletorBtnSalvar w-100 mr-1" tabindex="0">
+                                    Salvar
+                                </a>
+                                <a class="btn btn-outline-secondary w-100" data-dismiss="modal" tabindex="0">
+                                    Cancelar
+                                </a>
+                            </div><!-- d-flex -->
+                        </div><!-- .cols -->
+
+                    </div><!-- .row -->
+                </div><!-- .mt-1 .mb-2 -->
+            </div><!-- div do modal-footer costumizado, mesmo que não tenha a classe modal footer -->
+        </div><!-- .modal-content -->
+    </div><!-- .modal-dialog -->
+</div><!-- .modal -->

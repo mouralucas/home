@@ -1,0 +1,85 @@
+{% extends 'projeto/backoffice/base.html' %}
+
+{% load static %}
+{% load humanize %}
+
+{% block meta_name %}
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+{% endblock %}
+
+{% block css_tabela %}
+{% endblock %}
+
+{% block app_header %}
+{% endblock %}
+
+{% block app_body %}
+    <main class="main">
+        <div class="body-login">
+            <div class="container-fluid">
+                <div class="row justify-content-center mt-6">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-5">
+                        <div class="card">
+                            <div class="card-body">
+                                {% block back_button %}
+                                {% endblock %}
+
+                                {% block logo_login %}
+
+                                {% endblock %}
+
+                                {% block body %}
+                                    <div class="form-login">
+                                        <div class="row justify-content-center ">
+                                            <div class="col-12 col-sm-10 col-md-8 col-lg-8 col-xl-8">
+
+                                                {% block titulo_informativo %}
+                                                {% endblock %}
+
+                                                <form action="{% url 'user:login' %}" method="post">
+                                                    {% csrf_token %}
+                                                    <label for="username">Username:</label>
+                                                    <input type="text" name="username" id="username" placeholder="Username" class="form-control"/>
+                                                    <label for="raw_password">Password:</label>
+                                                    <input type="password" name="raw_password" id="raw_password" placeholder="Password" class="form-control"/>
+                                                    <input type="hidden" name="next" value="{{ next }}"/>
+                                                    <div class="clear"></div>
+                                                    <div class="w-100 text-center">
+                                                        <button class="btn btn-primary btn-block mt-2">Entrar</button>
+                                                    </div>
+                                                </form>
+
+                                                <p class="mt-4 text-center">
+                                                    Não consegue acessar?
+                                                    <a href="#">Clique aqui.</a>
+                                                </p>
+                                            </div><!-- .cols -->
+                                        </div><!-- .row -->
+                                    </div><!-- .form-login -->
+                                {% endblock %}
+
+                                <hr class="mt-5 mb-4">
+
+                                <div class="text-center">
+                                    <p class="small text-muted">Powered by:</p>
+                                    <a href="" target="_blank"><img src="{% static 'img/logos/logo_lucas.svg' %}" alt="Logo Lucas" width="150" class="mb-3 mt-2"></a>
+                                </div>
+                            </div><!-- .card-body -->
+                        </div><!-- .card -->
+                    </div><!-- .cols -->
+                </div><!-- .row -->
+            </div><!-- .container-fluid -->
+        </div><!-- .body-login -->
+    </main>
+{% endblock %}
+
+{% block app_footer %}
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(window).on('load', function () {
+            load('off');
+        });
+    </script>
+{% endblock %}

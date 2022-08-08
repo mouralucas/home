@@ -1,0 +1,133 @@
+{% extends 'finance/base.html' %}
+
+{% load static %}
+{% load humanize %}
+
+{% block titulo %}
+    Financeiro
+{% endblock %}
+
+{% block main %}
+    <!-- Row de transações no mês -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex flex-wrap justify-content-between">
+                    <div class="col-6">
+                        {#                        <img src="{% static 'img/icon_graph01.svg' %}" alt="Graph icon" width="25">#}
+                        Faturas
+                    </div>
+                    <div class="col-2"></div>
+                    <div class="col-2">
+                        <select id="combo_cartoes_fatura" onchange="get_bills();">
+                        </select>
+                    </div>
+                    <div class="col-2">
+                        <select id="combo_referencia_fatura" onchange="get_bills();">
+                        </select>
+                    </div>
+                </div><!-- .card-header -->
+                <div class="card-body">
+                    <div id="tabela_fatura_credito" class="w-100"></div>
+                </div><!-- .card-body -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Row de transações no mês -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex flex-wrap justify-content-between">
+                    <div class="col-6">
+                        {#                        <img src="{% static 'img/icon_graph01.svg' %}" alt="Graph icon" width="25">#}
+                        Extratos
+                    </div>
+                    <div class="col-2"></div>
+                    <div class="col-2">
+                        <select id="combo_conta_extrato" onchange="get_statement();">
+                        </select>
+                    </div>
+                    <div class="col-2">
+                        <select id="combo_referencia_extrato" onchange="get_statement();">
+                        </select>
+                    </div>
+                </div><!-- .card-header -->
+                <div class="card-body">
+                    <div id="tabela_extrato_bancario" class="w-100"></div>
+                </div><!-- .card-body -->
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block modals %}
+{#    {% include 'finance/modals/creditcard_bill.html' %}#}
+    {% include 'finance/modals/creditcard_bill_beta.html' %}
+    {% include 'finance/modals/bank_statement.html' %}
+{% endblock %}
+
+{% block js %}
+    <!-- Importação do arquivo com as funções JS -->
+    {% include 'finance/scripts/financeiro.html' %} <!-- May be deprecated -->
+    {% include 'finance/scripts/creditcard.html' %}
+
+    <!-- Inicialização da tabela -->
+    <script>
+        let dados_tabela_extrato_bancario = new DevExpress.data.DataSource({
+            store: {
+                type: 'array',
+                key: "id",
+                data: [],
+            }
+        });
+
+
+        <!-- Inicialização da tabela de extrato de investimentos -->
+        let dados_tabela_extrato_investimento = new DevExpress.data.DataSource({
+            store: {
+                type: 'array',
+                key: "id",
+                data: [],
+            }
+        });
+
+
+        let dados_tabela_faturas_credito = new DevExpress.data.DataSource({
+            store: {
+                type: 'array',
+                key: "id",
+                data: [],
+            }
+        });
+    </script>
+    {% include 'finance/tables/extrato_bancario.html' %}
+    {% include 'finance/tables/extrato_investimento.html' %}
+    {% include 'finance/tables/fatura_credito.html' %}
+
+    <script>
+        $(document).ready(function () {
+
+            $(".data").datepicker('setDate', 'today');
+
+            $(".currency").maskMoney({
+                    thousands: '',
+                    decimal: '.',
+                    allowZero: true,
+                    prefix: 'R$ ',
+                    allowEmpty: false,
+                    allowNegative: true,
+                    selectAllOnFocus: true
+                }
+            );
+        });
+
+        $("#add_fatura_valor").maskMoney('mask');
+
+        getPeriods();
+        get_bank_account();
+        get_creditcard();
+
+    </script>
+
+{% endblock %}

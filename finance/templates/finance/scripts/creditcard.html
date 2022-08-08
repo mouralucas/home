@@ -1,0 +1,150 @@
+<!-- Update fields on credit card bill modal -->
+<script>
+    function updateBillEntry() {
+        // Components
+        var combo_currency = $("#combo_currency_bill_entry_finance");
+        var input_vlr_original = $("#input_vlr_original_bill_entry_finance");
+        var input_iof = $("#input_vlr_tax_bill_entry_finance");
+        var input_vlr_currency = $("#input_vlr_currency_bill_entry_finance");
+        // Define all currency inputs
+        {#$("#input_vlr_bill_entry_finance").maskMoney('mask', 0)#}
+        {#$("#input_vlr_original_bill_entry_finance").maskMoney('mask', 0)#}
+        {#iof.maskMoney('mask', 0)#}
+        {#vlr_currency.maskMoney('mask', 0)#}
+
+        if (combo_currency.val() !== 'BRL') {
+            input_iof.removeAttr('disabled');
+            input_vlr_currency.removeAttr('disabled');
+        } else {
+            input_iof.attr('disabled', 'disabled');
+            input_vlr_currency.attr('disabled', 'disabled');
+            input_iof.maskMoney('mask', 0);
+            input_vlr_currency.maskMoney('mask', 0);
+
+            input_vlr_original.maskMoney('mask', $("#input_vlr_bill_entry_finance").val())
+        }
+
+    }
+</script>
+
+<!-- get all currency -->
+<script>
+    function get_currency() {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'finance:currency' %}",
+            data: {},
+            success: function (response) {
+                var combo = $("#combo_currency_bill_entry_finance");
+                combo.attr('disabled', false);
+                $.each(response.currency, function (key, value) {
+                    combo.append('<option value=' + value.value + '>' + value.text + '</option>');
+                });
+            },
+            error: function (response) {
+            }
+        });
+    }
+</script>
+
+<!-- Save the bill entry -->
+<script>
+    function set_bill() {
+        var price = $('#input_vlr_bill_entry_finance').val() == '' ? 0 : $('#input_vlr_bill_entry_finance').val().replace('R$ ', '');
+        var original_price = $("#input_vlr_original_bill_entry_finance") == '' ? 0 : $("#input_vlr_original_bill_entry_finance").val().replace('R$ ', '');
+        var dat_purchase = $('#input_dat_purchase_bill_entry_finance').val();
+        var dat_payment = $('#input_dat_payment_bill_entry_finance').val();
+        var currency = $("#combo_currency_bill_entry_finance").val();
+        var tax = $("#input_vlr_tax_bill_entry_finance") == '' ? 0 : $("#input_vlr_tax_bill_entry_finance").val().replace('R$', '');
+        var exchange_rate = $("#input_exchange_rate_bill_entry_finance") == '' ? 0 : $("#input_exchange_rate_bill_entry_finance").val().replace('R$', '')
+        var category = $('#combo_category_bill_entry_finance').val();
+        var card_id = $('#combo_creditcard_bill_entry_finance').val();
+        var description = $('#add_fatura_descricao').val();
+
+        alert(card_id);
+        $.ajax({
+            type: "POST",
+            url: "{% url 'finance:fatura' %}",
+            // url: "#",
+            data: {
+                'valor': price,
+                'original_price': original_price,
+                'dat_compra': dat_purchase,
+                'dat_pagamento': dat_payment,
+                'currency': currency,
+                'tax': tax,
+                'exchange_rate': exchange_rate,
+                'descricao': description,
+                'categoria_id': category,
+                'cartao_id': card_id,
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+            },
+            success: function (response) {
+                if (response.status === true) {
+                    modal.modal('hide');
+                    load('off');
+                    toastr.success('Você alterou um registro com sucesso!', 'Alteração realizada');
+                } else {
+                    load('off');
+                    toastr.error(response.descricao, 'Erro');
+                }
+                load('off');
+            },
+            error: function (data) {
+                load('off');
+                toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
+            }
+        });
+    }
+</script>
+
+<!-- Set the paument date -->
+<script>
+    function set_payment_date() {
+        $.ajax({
+            type: 'GET',
+            url: '{% url 'finance:payment_date' %}',
+            data: {
+                'dat_purchase': $('#input_dat_purchase_bill_entry_finance').val(),
+                'credit_card_id': $('#combo_creditcard_bill_entry_finance').val(),
+            },
+            success: function (response) {
+                load('off');
+                if (response.status) {
+                    $('#input_dat_payment_bill_entry_finance').datepicker("setDate", formatarData(response.dat_payment, "data"));
+                } else {
+                    toastr.error(response.description);
+                }
+            },
+            error: function (response) {
+                load('off');
+                toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
+            }
+        });
+     }
+</script>
+
+<!-- Add stallments -->
+<script>
+    function add_stallment(qtd) {
+
+        qtd = parseInt(qtd);
+
+        var div = `<div class="row" id="div_sortable_son_">
+                            <p class="col-6">
+                                <span class="font-weight-bold">Parcela 2:</span>
+                                <input type="text" id="add_fatura_vlr_parcela_" tabindex="0" class="form-control currency sortTest">
+                            </p>
+                            <p class="col-6">
+                                <span class="font-weight-bold">Pagamento parcela 2:</span>
+                                <input type="text" id="add_fatura_dat_parcela_2" tabindex="0" class="form-control data sortTest">
+                            </p>
+                        </div>`
+
+        for (let i = 0; i < qtd - 1; i++) {
+            $("#div_sortable").append(div);
+        }
+
+    }
+</script>
+

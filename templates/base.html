@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="">
+{% load humanize %}
+{% load static %}
+{% load poll_extras %}
+{% load data_filters %}
+
+<head>
+    <base href="./">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8">
+
+    <link rel="icon" href="{% static 'img/icons/inteliger.ico' %}"/>
+    <title>Home Lucas</title>
+
+    <link href="{% static '@coreui/icons/css/coreui-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'flag-icon-css/css/flag-icon.css' %}" rel="stylesheet">
+    <link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet">
+    <link href="{% static 'simple-line-icons/css/simple-line-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/select2/css/select2.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/iconBtn.css' %}">
+    <link rel="stylesheet" href="{% static 'filepond/filepond.css' %}">
+    <link rel="stylesheet" href="{% static 'filepond/filepond-plugin-image-preview.css' %}">
+    <link rel="stylesheet" href="{% static 'datepicker/datepicker.min.css' %}">
+    <link rel="stylesheet" href="{% static 'carousel/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'carousel/owl.theme.default.min.css' %}">
+
+
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    <link href="{% static 'css/icons_devextreme.css' %}" rel="stylesheet">
+
+    <link href="{% static 'css/toastr/toastr.css' %}" rel="stylesheet"/>
+
+    <link href="{% static 'vendors/pace-progress/css/pace.css' %}" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'devextreme/datatables.css' %}">
+    <script src="{% static 'devextreme/jquery_version_3.3.1.min.js' %}"></script>
+    <style>
+
+        .charts-css {
+            text-align: center;
+            height: 350px;
+            width: 100%;
+        }
+
+
+        .checked {
+            color: #ffe045;
+        }
+
+
+        .table td {
+            padding: 0.1rem;
+        }
+
+
+        body {
+            overflow-x: hidden;
+        }
+
+
+    </style>
+
+    {% block css_block %}
+    {% endblock %}
+
+</head>
+
+<body class="app header-fixed sidebar-minimized aside-menu-minimized sidebar-lg-show" data-spy="scroll" data-target="#navbar-example">
+<div class="loaderBase"></div>
+
+<div id="popup"></div>
+<header class="app-header navbar">
+    <button id="FechaMenuEsquerdo" value="0" class="navbar-toggler sidebar-toggler d-lg-none" type="button"
+            data-toggle="sidebar-show">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <button class="sidebar-minimizer brand-minimizer d-md-down-none isDisabled" data-toggle="sidebar-lg-show" value="0" id="rolagem" type="button">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="#">
+        <div class="d-none d-md-block">
+            <img src="{% static 'img/brand/logo_Voai_SaoJoao.svg' %}" alt="Voái São João">
+        </div>
+        <div class="d-md-none">
+            <img src="{% static 'img/brand/logo_Voai_SaoJoao_min.svg' %}" class="mw-100px" alt="Voái São João">
+        </div>
+    </a>
+
+    <div class="m-auto"></div>
+    {% if 'acessar_pg_dev' in request.session.usr_info.pt_funcao %}
+        <!-- suporte -->
+        <div class="btn-group">
+            <a href="#" class="mr-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img src="{% static 'img/icon_collapse-menu.svg' %}" alt="Ícone menuzinho" width="22">
+            </a>
+        </div>
+    {% endif %}
+
+    <ul class="nav navbar-nav">
+        <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+               aria-expanded="false">
+                <img src="{% static 'img/icon_messages_color.svg' %}" alt="Ícone mensagens" width="35">
+                <div id="qtd_msg">
+                    {% if qtd_msg_naolidas > 0 %}
+                        <span class="badge badge-pill badge-info"> {{ qtd_msg_naolidas }} </span>
+                    {% endif %}
+                </div>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg" id="div_com_notifications">
+                <div class="dropdown-header text-center">
+                    <div id="info_qtd_msg">
+                        {% if qtd_msg_naolidas == 0 %}
+                            <strong>Você não tem novas mensagens</strong>
+                        {% elif qtd_msg_naolidas == 1 %}
+                            <strong>Você tem 1 mensagem não lida</strong>
+                        {% elif qtd_msg_naolidas > 1 %}
+                            <strong>Você tem {{ qtd_msg_naolidas }} mensagens não lidas</strong>
+                        {% endif %}
+                    </div>
+                </div>
+                {% for msg_naolida in lista_msg_naolidas %}
+                    <a class="dropdown-item" href="#">
+                        <div class="d-flex align-items-center small">
+                            <div class="mr-2">
+                                <img src="{{ msg_naolida.user_from_photo }}" alt="Foto perfil"
+                                     class="rounded-circle w-30px h-30px">
+                            </div>
+
+                            <div class="w-100">
+                                <div class="d-flex justify-content-between align-items-center mb-1 w-100">
+                                    <div>
+                                        <p class="font-weight-semibold">
+                                            {{ msg_naolida.user_from_fullname|title }}
+                                        </p>
+                                    </div>
+
+                                </div>
+
+                                <div class="w-100"><p><span class="text-muted">Postou em</span>
+                                    {{ msg_naolida.com_pg }}</p></div>
+
+                                <div>
+                                    <p class="small text-muted">{{ msg_naolida.dt_envio|tempo_desde_data }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                {% endfor %}
+                <a class="dropdown-item text-center" href="#"><strong>Ir para os comunicados</strong> </a>
+            </div>
+            </div><!-- .dropdown-menu -->
+        </li>
+    </ul>
+    <button class="navbar-toggler aside-menu-toggler d-md-down-none" type="button" data-toggle="aside-menu-lg-show" id="botaoMenuDireito" value="0">
+        <img id="avatar1" class="img-avatar rounded-circle" src="{{ user.profile.photo.url }}" alt="{{ user.username }}" width="30" height="30">
+    </button>
+    <button class="navbar-toggler aside-menu-toggler d-lg-none" id="FechaMenuDireito" type="button" data-toggle="aside-menu-show">
+        <img id="avatar2" class="img-avatar rounded-circle w-30px h-30px" src="{{ user.profile.photo.url }}"
+             alt="{{ user.profile.nm_completo }}">
+    </button>
+
+</header>
+
+<div class="app-body">
+    <!--Menu esquerdo-->
+    {% block menu_esquerdo %}
+        <div class="sidebar">
+            <nav class="sidebar-nav">
+                <div id="fixaMenu">
+                    <ul class="nav">
+                        <!-- Home -->
+                        {% if 'acessar_intranet_home' in request.session.usr_info.pt_funcao %}
+                            <li class="nav-item nav-dropdown">
+                                <a class="nav-link" href="#">
+                                    <img src="{% static 'img/menu-left-icon_home.svg' %}" alt="Ícone home" class="nav-icon">
+                                    Home
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item nav-dropdown">
+                            <a class="nav-link" href="{% url 'library:home' %}">
+                                <img src="{% static 'img/menu-left-icon_relatorio.svg' %}" alt="Ícone relatórios" class="nav-icon">
+                                Biblioteca
+                            </a>
+                        </li>
+                        <li class="nav-item nav-dropdown">
+                            <a class="nav-link" href="{% url 'financeiro:home' %}">
+                                <img src="{% static 'img/menu-left-icon_directory.svg' %}" alt="Ícone arquivos" class="nav-icon">
+                                Financeiro
+                            </a>
+                        </li>
+                        <li class="nav-item nav-dropdown">
+                            <a class="nav-link" href="#">
+                                <img src="{% static 'img/menu-left-icon_checklist.svg' %}" alt="Ícone arquivos" class="nav-icon">
+                                Checklist
+                            </a>
+                        </li>
+                        <li class="nav-item nav-dropdown">
+                            <a class="nav-link nav-dropdown-toggle" href="#">
+                                <img src="{% static 'img/agendamento/vacina/menu-left-icon_venda-mais.svg' %}" alt="Ícone arquivos" class="nav-icon">
+                                Venda+
+                            </a>
+                            <ul class="nav-dropdown-items">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <img src="{% static 'img/menu-left-icon_vacinas.svg' %}" alt="Ícone arquivos" class="nav-icon">
+                                        Vacinas
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <img src="{% static 'img/menu-left-icon_exames.svg' %}" alt="Ícone arquivos" class="nav-icon">
+                                        Exames
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item nav-dropdown">
+                            <a class="nav-link" href="#">
+                                <img src="{% static 'img/menu-left-icon_bonificacao.svg' %}" alt="Ícone incentivo" class="nav-icon">
+                                Incentivo
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    {% endblock %}
+
+    <main class="main">
+        <!-- Breadcrumb-->
+        {% block menu_superior %}
+            <div class="breaking-news d-flex align-items-center">
+                <div class="marquee">
+                    <span id="msg_breakingnews">{{ breaking_news.mensagem }}</span>
+                </div><!-- .marquee -->
+
+                <div class="d-flex ml-2">
+                    <!-- só aparece pra quem pode criar/editar -->
+                    <a class="cursor-pointer" onclick="editar_breakingnews({{ breaking_news.id }}, `{{ breaking_news.mensagem }}`) ">
+                        <img src="{% static 'img/icon_edit-breakingnews.svg' %}" alt="Ícone editar" width="25">
+                    </a>
+
+                    {#            <a href="#" data-toggle="modal" data-target="#modal_criar_breaknews">#}
+                    {#                <img src="{% static 'img/icon_create-breakingnews.svg' %}" alt="Ícone criar" width="25" class="ml-1">#}
+                    {#            </a>#}
+                </div>
+            </div><!-- .breaking-news -->
+        {% endblock %}
+
+        {% block alertas %}
+            <div class="row mt-5" id="alertas">
+            </div><!-- .row -->
+        {% endblock %}
+
+        {% block combo_boxes %}
+        {% endblock %}
+
+        {% block cabecalho %}
+            <!--Cabeçalho  -->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-8 col-md-6 col-sm-12 col-12">
+
+                                        <p class="small text-muted text-uppercase font-weight-semibold" id="cabecalho-tipo">
+                                            {% if tipo != None %}
+                                                {{ tipo|map_name }}
+                                            {% endif %}
+                                        </p>
+                                        <h2 class="title-rede" id="cabecalho-nome">{% if nm_display %}{{ nm_display|title }}{% endif %}</h2>
+                                    </div><!-- .cols -->
+
+                                    <div class="col-lg-1 col-md-2 col-sm-6 col-4 d-flex align-items-center">
+                                        {% block badges %} {% endblock %}
+                                    </div>
+
+                                    <div class="col-lg-3 col-md-4 col-sm-6 col-8 d-flex justify-content-end align-items-center">
+                                        {% block info_cab %} {% endblock %}
+                                    </div>
+                                </div>
+                            </div><!-- .card-body -->
+                        </div><!-- .card -->
+                    </div><!-- .cols -->
+                </div><!-- .row -->
+            </div>
+        {% endblock %}
+        {% block main_block %}
+            {#            <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#modal_editar_breaknews">Open Modal</button>#}
+        {% endblock %}
+    </main>
+
+    {% block menu_direito %}
+        <!--Menu Direito-->
+        <aside class="aside-menu">
+            <div id="fixaMenuDireito">
+                <!--Barra superior menu direito-->
+
+                <!-- profile -->
+                <div class="user-cover">
+                    <div class="card-body p-2">
+                        <div class="d-flex align-items-center">
+                            <a href="#">
+                                <img id="avatar3" src="{{ user.profile.photo.url }}" alt="User picture profile" width="70" class="rounded-circle border border-white">
+                            </a>
+                            <a href="#" class="ml-3">
+                                <p class="font-weight-bold">{{ user.profile.nm_completo.title }}</p>
+                                <p class="small text-muted">{{ user.profile.cargo.title }}</p>
+                            </a>
+                        </div><!-- .d-flex -->
+                        <div class="mt-3 d-flex justify-content-around">
+                        </div>
+                    </div><!-- card-body -->
+                </div><!-- .user-cover -->
+                <!-- navs #timeline, #messages, #settings -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#timeline" role="tab">
+                            <img src="{% static 'img/icon_employee.png' %}" alt="Icon user profile" width="20">
+                        </a>
+                    </li>
+                </ul>
+                <!-- Tab panes-->
+                <div class="tab-content">
+                    <div class="tab-pane active" id="timeline" role="tabpanel" style="height:calc(100vh - (0.8rem * 20))">
+                        <!-- Perfil do usuário -->
+                        <div class="user-menu_canalcomunicacao">
+
+                            <div class="card-body">
+                                {% if pag_comunicados_participante or 'criar_com' in request.session.usr_info.pt_funcao %}
+                                    <div class="row mt-2 mb-3" id="div_com_new">
+                                        <div class="col-12">
+                                            <a href="#" class="small btn btn-outline-primary btn-sm">
+                                                <img src="{% static 'img/icon_edit-primary.svg' %}" alt="" width="20">
+                                                Criar comunicado
+                                            </a>
+                                        </div><!-- .cols -->
+                                    </div><!-- .row -->
+                                {% endif %}
+                                {% if 'acessar_com_feed' in request.session.usr_info.pt_funcao %}
+                                    <ul class="list-group">
+                                        <li class="list-group-item2">
+                                            <a href="#">Meu Feed</a>
+                                        </li>
+                                        <li class="list-group-item2">
+                                            <a href="#">Minhas atividades</a>
+                                        </li>
+                                    </ul>
+                                {% endif %}
+                                {% if 'acessar_com_feed' in request.session.usr_info.pt_funcao %}
+                                    <p class="small text-muted text-uppercase font-weight-bold mt-4 mb-2">Meus canais</p>
+
+                                    <ul class="list-group">
+                                        {% for m in pag_comunicados_participante %}
+                                            <li class="list-group-item2">
+                                                <a href="#"> {{ m.pagina.nm_pagina }} </a>
+                                            </li>
+                                        {% empty %}
+                                            <p class="small text-muted">Você não participa de um canal ainda.</p>
+                                        {% endfor %}
+                                    </ul>
+
+
+                                    <p class="small text-muted text-uppercase font-weight-bold mt-4 mb-2">Seguindo</p>
+
+                                    <ul class="list-group">
+                                        {% for m in pag_comunicados_seguindo %}
+                                            <li class="list-group-item2">
+                                                <a href="#"> {{ m.pagina.nm_pagina }} </a>
+                                            </li>
+                                        {% empty %}
+                                            <p class="small text-muted">Você não segue um canal ainda.</p>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                                <p class="small text-muted text-uppercase font-weight-bold mt-4 mb-2">
+                                    {#                                    <a href="{% url 'usr:logout' %}">#}
+                                    <a href="#">
+                                        Sair
+                                    </a>
+                                </p>
+                            </div><!-- .card-body -->
+                        </div><!-- .user-menu_canalcomunicacao -->
+                    </div>
+                    <!-- Fim perfil do usuário -->
+                    <!-- Messages -->
+                    <!-- Fim do Settings -->
+                </div>
+            </div>
+        </aside>
+    {% endblock %}
+
+    <!-- Modal editar break news -->
+    <div class="modal fade" id="modal_editar_breaknews" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Editar o break news</h5>
+                    <a href="#" data-dismiss="modal">
+                        <img src="{% static 'img/icon_close-dark.svg' %}" alt="Ícone fechar" width="15">
+                    </a>
+                </div>
+
+                <div class="modal-body">
+                    <input type="text" id="breakingnews_texto" class="form-control rounded w-100">
+                    <input type="hidden" id="breakingnews_id">
+                </div><!-- .modal-body -->
+
+                <div class="modal-footer">
+                    <button type="button" onclick="ajax_edit_breakingnews()" class="btn btn-primary">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div><!-- .modal edição break news -->
+</div>
+
+{% block modal %}
+{% endblock %}
+
+<footer class="app-footer">
+    <span class="small">Powered by</span>
+    <a href="http://www.inteliger.com.br" target="_blank">
+        <img src="{% static 'img/logo_inteliger_colour.svg' %}" alt="Logo Inteliger" width="80">
+    </a>
+</footer>
+
+<!-- Bootstrap and necessary plugins-->
+
+{#<script src="{% static 'pace-progress/pace.min.js' %}"></script>#}
+<script src="{% static 'perfect-scrollbar/dist/perfect-scrollbar.js' %}"></script>
+<script src="{% static '@coreui/coreui-pro/dist/js/coreui.js' %}"></script>
+<script src="{% static 'jquery/dist/jquery.min.js' %}"></script>
+<script src="{% static 'jquery.moneymask.min.js' %}"></script>
+<script src="{% static 'jquery.mask.js' %}"></script>
+<script src="{% static 'sumernote/dist/popper.min.js' %}"></script>
+<script src="{% static 'sumernote/dist/bootstrap4.4.1.min.js' %}"></script>
+
+
+<!-- Plugins and scripts required by this view-->
+<script src="{% static 'chart.js/dist/Chart.js' %}"></script>
+<script src="{% static 'vendors/select2/js/select2.min.js' %}"></script>
+<script src="{% static 'echarts/echarts_local.js' %}"></script>
+<script src="{% static '@coreui/coreui-plugin-chartjs-custom-tooltips/dist/js/custom-tooltips.js' %}"></script>
+<script src="{% static 'js/confirmar_presenca_validarCampos.js' %}"></script>
+<script src="{% static 'devextreme/jszip.js' %}"></script>
+<script src="{% static 'datepicker/datepicker.min.js' %}"></script>
+<script src="{% static 'devextreme/padronizacao_tabelas.js' %}"></script>
+<script src="{% static 'devextreme/datatables.js' %}"></script>
+<script src="{% static 'filepond/filepond.min.js' %}"></script>
+<script src="{% static 'filepond/filepond.jquery.js' %}"></script>
+<script src="{% static 'filepond/filepond-plugin-image-preview.min.js' %}"></script>
+<script src="{% static 'filepond/filepond-plugin-image-resize.js' %}"></script>
+<script src="{% static 'filepond/filepond-plugin-image-transform.js' %}"></script>
+<script src="{% static 'filepond/filepond-plugin-image-crop.js' %}"></script>
+
+
+<!--Style dos Comboboxes-->
+<script>
+    $('#comboPeriodo, #add_extrato_categoria,#add_extrato_conta, #add_fatura_cartao, #add_fatura_categoria, #add_livro_status, #add_livro_tipo, #add_livro_serie, #add_livro_editora, #add_livro_formato, #add_livro_idioma, #add_livro_autor, #add_autor_pais, #add_autor_idioma').select2({
+        theme: 'bootstrap'
+    });
+</script>
+
+<!-- Ajax -->
+<!-- Quantidade de mensagens não lidas -->
+<script>
+    /**
+     * Exemplo de uso: "2020-05-28".formatarInputDate()
+     * @return {string}
+     */
+    String.prototype.formatarInputDate = function () {
+        if (this.length === 10)
+            if (this.indexOf('-') > -1)
+                if (this.split('-').length === 3) {
+                    let formatado = this.split('-');
+                    formatado = [formatado[2], formatado[1], formatado[0]];
+                    formatado = formatado.join('/');
+                    return formatado;
+                }
+    };
+
+    {#function load(status) {#}
+    {#    switch (status) {#}
+    {#        case "off":#}
+    {#            document.getElementsByClassName('main')[0].style.opacity = "1";#}
+    {#            $(document.getElementsByClassName('main')[0]).removeClass('isDisabled');#}
+    {#            document.getElementsByClassName('loaderBase')[0].style.display = "none";#}
+    {#            break;#}
+    {#        case "on":#}
+    {#            document.getElementsByClassName('main')[0].style.opacity = "0.5";#}
+    {#            $(document.getElementsByClassName('main')[0]).addClass('isDisabled');#}
+    {#            document.getElementsByClassName('loaderBase')[0].style.display = "block";#}
+    {#            break;#}
+    {#    }#}
+    {# }#}
+
+    // Função para converter um decimal, obs: receber parâmetro inteiro 2 para deixar formatado exemplo: 2.000.000,00
+    Number.prototype.toLocaleFixed = function (n) {
+        if (typeof parseFloat(this) === 'number') {
+            return parseFloat(this).toLocaleString('pt-BR', {
+                minimumFractionDigits: n,
+                maximumFractionDigits: n
+            });
+        } else {
+            return this;
+        }
+    };
+    $(window).on('load', function () {
+        load('off');
+    });
+</script>
+
+<!-- funcao para gerar os alertas -->
+<script>
+    let init = 1;
+</script>
+
+
+{% block js_block %}
+{% endblock %}
+
+{% block js_base_modulo %}
+{% endblock %}
+
+<!-- Toastr, alertas de sucesso e erros JS -->
+<script src="{% static 'js/toastr.js' %}"></script>
+<script>
+    toastr.options = {
+        "closeButton": true,
+        "debug": true,
+        "newestOnTop": true,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": true,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "5000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
+</script>
+<script>
+    //Mostrar e esconder menu do topo conforme scroll
+    if (window.matchMedia("(max-width: 900px)").matches) {
+        let posicao;
+        $(window).on('scroll', function () {
+            if (window.scrollY > posicao && window.scrollY > 0) {
+                $('.breadcrumb').css('display', 'none');
+                $('.breaking-news').css('display', 'none');
+                posicao = window.scrollY;
+            } else {
+                $('.breadcrumb').css('display', 'block');
+                $('.breaking-news').css('display', 'block');
+                posicao = window.scrollY;
+            }
+        });
+    }
+</script>
+
+<script>
+    //Função para mostrar barra de rolagem somente quando estourar a tela.
+    //Quando clicar em qualquer lugar da página no mobile, fecha o menu.
+    document.onclick = function () {
+        $(".sidebar-show").removeClass("sidebar-show"),
+            $(".aside-menu-show").removeClass("aside-menu-show")
+    };
+    $("#FechaMenuDireito").click(function () {
+        $(".sidebar-show").removeClass("sidebar-show")
+    });
+    $("#FechaMenuEsquerdo").click(function () {
+        $(".aside-menu-show").removeClass("aside-menu-show");
+        if (this.value === 0) {
+            $("#fixaMenu").addClass("fixaMenu");
+            this.value = 1;
+        } else {
+            $("#fixaMenu").removeClass("fixaMenu");
+            this.value = 0;
+        }
+    })
+    $("#rolagem").click(function () {
+        if (this.value === 0) {
+            $("#fixaMenu").addClass("fixaMenu");
+            $(".sidebar .nav").css("position", "relative");
+            //ajustar o feed comunicados conforme abre o menu esquerdo
+            $(".menu_lateral").animate({
+                width: "-=45"
+            }, 200);
+            this.value = 1;
+        } else {
+            $("#fixaMenu").removeClass("fixaMenu");
+            $(".sidebar .nav").css("position", "fixed");
+            //ajustar o feed comunicados conforme fecha o menu esquerdo
+            $(".menu_lateral").animate({
+                width: "+=45"
+            }, 200);
+            $('li').removeClass('open');
+            this.value = 0
+        }
+    });
+    $("#botaoMenuDireito").click(function () {
+        if (this.value === 0) {
+            $(".menu_lateral").animate({
+                width: "-=70"
+            }, 200);
+            this.value = 1;
+        } else {
+            $(".menu_lateral").animate({
+                width: "+=70"
+            }, 200);
+            this.value = 0;
+        }
+    });
+    window.onload = function () {
+        $("#rolagem").removeClass("isDisabled");
+    }
+</script>
+
+{% include 'scripts/main.html' %}
+</body>
+
+</html>

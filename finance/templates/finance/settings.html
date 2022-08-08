@@ -1,0 +1,96 @@
+{% extends 'finance/base.html' %}
+
+{% block titulo %}
+    Adm financeiro
+{% endblock %}
+
+{% block main %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex flex-wrap justify-content-between">
+                    <div class="col-6">
+                        {#                        <img src="{% static 'img/icon_graph01.svg' %}" alt="Graph icon" width="25">#}
+                        Aplicações financeiras
+                    </div>
+                </div><!-- .card-header -->
+                <div class="card-body">
+                    <div id="tabela_aplicacoes" class="w-100"></div>
+                </div><!-- .card-body -->
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex flex-wrap justify-content-between">
+                    <div class="col-6">
+                        {#                        <img src="{% static 'img/icon_graph01.svg' %}" alt="Graph icon" width="25">#}
+                        Cartões de crédito
+                    </div>
+                </div><!-- .card-header -->
+                <div class="card-body">
+                    <div id="tabela_cartoes_credito" class="w-100"></div>
+                </div><!-- .card-body -->
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex flex-wrap justify-content-between">
+                    <div class="col-6">
+                        {#                        <img src="{% static 'img/icon_graph01.svg' %}" alt="Graph icon" width="25">#}
+                        Contas bancárias
+                    </div>
+                </div><!-- .card-header -->
+                <div class="card-body">
+                    <div id="tabela_contas_bancarias" class="w-100"></div>
+                </div><!-- .card-body -->
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block js %}
+    {% include 'finance/scripts/adm_financeiro.html' %}
+
+    <!-- Inicialização da tabela -->
+    <script>
+        let dados_tabela_cartoes_credito = new DevExpress.data.DataSource({
+            store: {
+                type: 'array',
+                key: "id",
+                data: [],
+            }
+        });
+
+
+        <!-- Inicialização da tabela de extrato de investimentos -->
+        let dados_tabela_contas_bancarias = new DevExpress.data.DataSource({
+            store: {
+                type: 'array',
+                key: "id",
+                data: [],
+            }
+        });
+
+
+        let dados_tabela_aplicacoes = new DevExpress.data.DataSource({
+            store: {
+                type: 'array',
+                key: "id",
+                data: [],
+            }
+        });
+    </script>
+    {% include 'finance/tables/cartoes.html' %}
+    {% include 'finance/tables/contas.html' %}
+    {% include 'finance/tables/aplicacoes.html' %}
+
+    <script>
+        $(document).ready(function () {
+            load('off');
+        });
+
+        get_investment_table();
+        get_creditcard_table();
+    </script>
+{% endblock %}

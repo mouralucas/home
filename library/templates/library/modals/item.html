@@ -1,0 +1,206 @@
+<!-- modal de cadastro de novos livros -->
+<div class="modal modal-padrao-cadastros-modal modal-sem-scroll fade" id="modal_adicionar_livro" role="dialog" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <!-- header -->
+            <div class="modal-header" ondblclick="fullscreen(this.parentNode.parentNode.parentNode.id, 'modal-dialog');">
+                <div class="col-6">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap mb-1">
+                        <h5 class="modal-title font-3xl">Adicionar novo item</h5>
+                    </div><!-- Nome do Header modal e Código da tela -->
+                </div>
+
+                <card class="col-5">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="d-flex justify-content-between align-items-end flex-wrap mb-1">
+                                <select type="da" id="combo_status_item_library" class="font-2xl form-control">
+                                    <option value=0 selected>Status atual</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <input type="da" id="add_livro_status_data" class="form-control data">
+                        </div>
+                    </div>
+                </card>
+                <div class="d-flex flex-nowrap ml-1">
+                    <a class="icon_close p-1 font-2xl" data-dismiss="modal" aria-label="Close"></a>
+                </div><!-- Botões de expandir e fechar modal -->
+            </div><!-- .modal-header -->
+            <!-- Body -->
+            <div class="modal-body">
+                <div class="text-left">
+                    <div class="row">
+                        <p class="col-4" id="main_author">
+                            <span class="font-weight-bold">Autor principal:</span>
+                            <select type="da" id="add_livro_autor_principal" class="font-2xl form-control">
+                                <option value=0 selected>Autor principal</option>
+                            </select>
+                        </p>
+                        <p class="col-4">
+                            <span class="font-weight-bold">Outros autores:</span>
+                            <select type="da" id="add_livro_outros_autores" class="font-2xl form-control" multiple="multiple">
+                                <option value=0 selected>Outros autores</option>
+                            </select>
+                        </p>
+                        <p class="col-4">
+                            <span class="font-weight-bold">Tradutor:</span>
+                            <select type="da" id="add_livro_tradutor" class="font-2xl form-control" multiple="multiple">
+                                <option value=0 selected>Tradutor</option>
+                            </select>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <p class="col-6">
+                            <span class="font-weight-bold">Título:</span>
+                            <input type="text" id="add_livro_titulo" tabindex="0" class="form-control">
+                            <input type="hidden" id="add_livro_id" tabindex="0" class="form-control">
+                        </p>
+                        <p class="col-6">
+                            <span class="font-weight-bold">Subtítulo:</span>
+                            <input type="text" id="add_livro_subtitulo" tabindex="0" class="form-control">
+                        </p>
+                    </div>
+                    <div class="row">
+                        <p class="col-6">
+                            <span class="font-weight-bold">Título original:</span>
+                            <input type="text" id="add_livro_titulo_original" tabindex="0" class="form-control">
+                        </p>
+                        <p class="col-6">
+                            <span class="font-weight-bold">Subtítulo original:</span>
+                            <input type="text" id="add_livro_subtitulo_original" tabindex="0" class="form-control">
+                        </p>
+                    </div>
+                    <div class="row">
+                        <p class="col-3">
+                            <span class="font-weight-bold">ISBN:</span>
+                            <input type="text" id="add_livro_isbn" tabindex="0" class="form-control">
+                        </p>
+                        <p class="col-3">
+                            <span class="font-weight-bold">ISBN 10:</span>
+                            <input type="text" id="add_livro_isbn10" tabindex="0" class="form-control">
+                        </p>
+                        <p class="col-3">
+                            <span class="font-weight-bold">Tipo:</span>
+                            <select type="da" id="add_livro_tipo" class="form-control">
+                                <option value=0 selected>Tipo</option>
+                            </select>
+                        </p>
+                        <p class="col-1">
+                            <span class="font-weight-bold">Páginas:</span>
+                            <input type="text" id="add_livro_pagina" tabindex="0" class="form-control text-right">
+                        </p>
+                        <p class="col-1">
+                            <span class="font-weight-bold">Volume:</span>
+                            <input type="text" id="add_livro_volume" tabindex="0" class="form-control text-right">
+                        </p>
+                        <p class="col-1">
+                            <span class="font-weight-bold">Edição:</span>
+                            <input type="text" id="add_livro_edicao" tabindex="0" class="form-control text-right">
+                        </p>
+                    </div>
+                    <div class="row">
+                        <p class="col-2">
+                            <span class="font-weight-bold">Lançamento:</span>
+                            <input type="da" id="add_livro_lancamento" tabindex="0" class="form-control data">
+                        </p>
+                        <p class="col-2">
+                            <span class="font-weight-bold">Lançamento original:</span>
+                            <input type="da" id="add_livro_lancamento_original" tabindex="0" class="form-control data">
+                        </p>
+                        <p class="col-4">
+                            <span class="font-weight-bold">Série:</span>
+                            <select type="da" id="add_livro_serie" class="form-control">
+                                <option value=0 selected>Série</option>
+                            </select>
+                        </p>
+                        <p class="col-4">
+                            <span class="font-weight-bold">Coleção:</span>
+                            <select type="da" id="add_livro_colecao" class="form-control">
+                                <option value=0 selected>Coleção</option>
+                            </select>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <p class="col-4">
+                            <span class="font-weight-bold">Editora:</span>
+                            <select type="da" id="add_livro_editora" class="form-control">
+                                <option value=0 selected>Editora</option>
+                            </select>
+                        </p>
+                        <p class="col-4">
+                            <span class="font-weight-bold">Formato:</span>
+                            <select type="da" id="add_livro_formato" class="form-control">
+                                <option value=0 selected>Formato</option>
+                            </select>
+                        </p>
+                        <p class="col-4">
+                            <span class="font-weight-bold">Idioma:</span>
+                            <select type="da" id="combo_language_add_book_library" class="form-control">
+                                <option value=0 selected>Idioma</option>
+                            </select>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <p class="col-3">
+                            <span class="font-weight-bold">Valor capa:</span>
+                            <input type="text" id="add_livro_vlr_capa" tabindex="0" class="form-control text-right currency">
+                        </p>
+                        <p class="col-3">
+                            <span class="font-weight-bold">Valor pago:</span>
+                            <input type="text" id="add_livro_vlr_pago" tabindex="0" class="form-control text-right currency">
+                        </p>
+                        <p class="col-3">
+                            <span class="font-weight-bold">Dimensões:</span>
+                            <input type="text" id="add_livro_dimensoes" tabindex="0" class="form-control text-right">
+                        </p>
+                        <p class="col-1">
+                            <span class="font-weight-bold">Altura:</span>
+                            <input type="text" id="add_livro_altura" tabindex="0" class="form-control text-right">
+                        </p>
+                        <p class="col-1">
+                            <span class="font-weight-bold">largura:</span>
+                            <input type="text" id="add_livro_largura" tabindex="0" class="form-control text-right">
+                        </p>
+                        <p class="col-1">
+                            <span class="font-weight-bold">Profund.:</span>
+                            <input type="text" id="add_livro_profundidade" tabindex="0" class="form-control text-right">
+                        </p>
+                    </div>
+                    <div class="row">
+                        <p class="col-12">
+                            <span class="font-weight-bold">Resumo:</span>
+                            {#                                <input type="text" id="quantidade_pedida_add_produto" tabindex="0" class="form-control">#}
+                            <textarea class="form-control" id="add_livro_resumo" name="message" placeholder="Digite o resumo do livro"></textarea>
+                        </p>
+                    </div>
+                </div>
+            </div><!-- .modal-body -->
+            <div class="container-fluid border-top border-light seletorModal-footer-btns">
+                <div class="mt-1 mb-2">
+                    <div class="row pr-2 pl-2 d-flex justify-content-between align-items-center flex-wrap">
+
+                        <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-12 mt-1">
+                        </div><!-- .cols -->
+
+                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mt-1">
+                        </div><!-- .cols -->
+
+                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mt-1">
+                            <div class="d-flex flex-nowrap btnsModal">
+                                <a class="btn btn-primary text-white text-center seletorBtnSalvar w-100 mr-1" tabindex="0" onclick="set_item();">
+                                    Salvar
+                                </a>
+                                <a class="btn btn-outline-secondary w-100" data-dismiss="modal" tabindex="0">
+                                    Cancelar
+                                </a>
+                            </div><!-- d-flex -->
+                        </div><!-- .cols -->
+
+                    </div><!-- .row -->
+                </div><!-- .mt-1 .mb-2 -->
+            </div><!-- div do modal-footer costumizado, mesmo que não tenha a classe modal footer -->
+        </div><!-- .modal-content -->
+    </div><!-- .modal-dialog -->
+</div><!-- .modal -->

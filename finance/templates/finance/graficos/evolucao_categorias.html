@@ -1,0 +1,45 @@
+<script>
+    var dom = document.getElementById("chart_categorias");
+    var myChart = echarts.init(dom);
+    var app = {};
+    option = null;
+    option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        legend: {
+            data: ['Valor 1', 'Valor 2', 'Valor 3', 'Valor 4', 'valor 5', 'Valor 6', 'Valor 7', 'Valor 8', 'Valor 9']
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: [
+            {
+                type: 'category',
+                data: referencia_evolucao_categoria,
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value'
+            }
+        ],
+        series: [
+            {
+                name: 'Valor 1',
+                type: 'line',
+                data: [320, 332, 301, 334]
+            },
+        ]
+    };
+
+    if (option && typeof option === "object") {
+        myChart.setOption(option, true);
+    }
+</script>
