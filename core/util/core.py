@@ -84,7 +84,7 @@ class Inteliger(metaclass=InteligerMeta):
         :return:
         """
         tipo = apps.get_model('core', 'Tipo')
-        tempo = tipo.normal_objects.values('informacao').filter(tipo='SISTEMA.TEMPO_QUERY', status=True).order_by('-dat_insercao').first()
+        tempo = tipo.normal_objects.values('informacao').filter(tipo='SISTEMA.TEMPO_QUERY', status=True).order_by('-dat_created').first()
         try:
             self.tempo_pesquisa = int(tempo['informacao']) if tempo is not None else 0
         except:

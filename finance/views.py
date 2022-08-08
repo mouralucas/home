@@ -32,7 +32,7 @@ class BankAccount(APIView):
     def get(self, *args, **kwargs):
         selected_id = self.request.GET.get('selected_id')
 
-        response = BO.financeiro.finance.Financeiro().get_contas(selected_id=selected_id)
+        response = BO.finance.finance.Finance().get_contas(selected_id=selected_id)
 
         return JsonResponse(response, safe=False)
 
@@ -41,7 +41,7 @@ class CreditCard(APIView):
     def get(self, *args, **kwargs):
         selected_id = self.request.GET.get('selected_id')
 
-        response = BO.financeiro.finance.Financeiro().get_cartoes(selected_id=selected_id)
+        response = BO.finance.finance.Finance().get_cartoes(selected_id=selected_id)
 
         return JsonResponse(response, safe=False)
 
@@ -50,7 +50,7 @@ class Category(APIView):
     def get(self, *args, **kwargs):
         selected_id = self.request.GET.get('selected_id')
 
-        response = BO.financeiro.finance.Financeiro().get_categorias(selected_id=selected_id)
+        response = BO.finance.finance.Finance().get_categorias(selected_id=selected_id)
 
         return JsonResponse(response, safe=False)
 
@@ -64,7 +64,7 @@ class Statement(APIView):
         if conta_id in ['', '0']:
             conta_id = None
 
-        response = BO.financeiro.finance.Financeiro(referencia=referencia, conta_id=conta_id).get_extrato()
+        response = BO.finance.finance.Finance(referencia=referencia, conta_id=conta_id).get_extrato()
 
         return JsonResponse(response, safe=False)
 
@@ -77,8 +77,8 @@ class Statement(APIView):
         categoria_id = self.request.POST.get('categoria_id')
         conta_id = self.request.POST.get('conta_id')
 
-        response = BO.financeiro.finance.Financeiro(extrato_id=extrato_id, referencia=referencia, valor=valor, dat_compra=dat_compra, descricao=descricao,
-                                                    categoria_id=categoria_id, conta_id=conta_id) \
+        response = BO.finance.finance.Finance(extrato_id=extrato_id, referencia=referencia, valor=valor, dat_compra=dat_compra, descricao=descricao,
+                                              categoria_id=categoria_id, conta_id=conta_id) \
             .set_extrato(request=self.request)
 
         return JsonResponse(response, safe=False)
@@ -93,7 +93,7 @@ class Bill(APIView):
         if card_id in ['', '0']:
             card_id = None
 
-        response = BO.financeiro.finance.Financeiro(referencia=referencia, cartao_id=card_id).get_bills()
+        response = BO.finance.finance.Finance(referencia=referencia, cartao_id=card_id).get_bills()
 
         return JsonResponse(response, safe=False)
 
@@ -110,9 +110,9 @@ class Bill(APIView):
         categoria_id = self.request.POST.get('categoria_id')
         cartao_id = self.request.POST.get('cartao_id')
 
-        response = BO.financeiro.finance.Financeiro(fatura_id=bill_id, valor=price, vlr_dolar=vlr_dolar, dat_compra=dat_purchase, dat_pagamento=dat_payment,
-                                                    nr_parcela=nr_parcela, tot_parcela=tot_parcela, currency_id=currency, descricao=descricao,
-                                                    categoria_id=categoria_id, cartao_id=cartao_id) \
+        response = BO.finance.finance.Finance(fatura_id=bill_id, valor=price, vlr_dolar=vlr_dolar, dat_compra=dat_purchase, dat_pagamento=dat_payment,
+                                              nr_parcela=nr_parcela, tot_parcela=tot_parcela, currency_id=currency, descricao=descricao,
+                                              categoria_id=categoria_id, cartao_id=cartao_id) \
             .set_bill(request=self.request)
 
         return JsonResponse(response, safe=False)
@@ -123,7 +123,7 @@ class FaturaEvolucao(View):
     def get(self, *args, **kwargs):
         referencia = self.request.GET.get('referencia')
 
-        response = BO.financeiro.finance.Financeiro(referencia=referencia).get_evolucao_categoria()
+        response = BO.finance.finance.Finance(referencia=referencia).get_evolucao_categoria()
 
         return JsonResponse(response, safe=False)
 
@@ -133,7 +133,7 @@ class Investment(View):
     def get(self, *args, **kwargs):
         referencia = self.request.GET.get('referencia')
 
-        response = BO.financeiro.finance.Financeiro().get_investments()
+        response = BO.finance.finance.Finance().get_investments()
 
         return JsonResponse(response, safe=False)
 
@@ -142,7 +142,7 @@ class Csv(APIView):
     def get(self, *args, **kwargs):
         path = self.request.POST.get('pah')
 
-        response = BO.financeiro.finance.Financeiro().import_csv_fatura(path='/run/media/lucas/Dados/Projetos/Financeiro/dados_csv/nubank-2021-11.csv')
+        response = BO.finance.finance.Finance().import_csv_fatura(path='/run/media/lucas/Dados/Projetos/Financeiro/dados_csv/nubank-2021-11.csv')
         # response = BO.finance.finance.Financeiro().import_csv_investimento(path='/run/media/lucas/Dados/System/Documents/mega/Financeiro/2021/202106-PreFixado.xlsx')
         return JsonResponse(response, safe=False)
 
@@ -166,6 +166,6 @@ class PaymentDate(View):
         dat_purchase = self.request.GET.get('dat_purchase')
         credit_card_id = self.request.GET.get('credit_card_id')
 
-        response = BO.financeiro.finance.Financeiro().get_payment_date(dat_purchase=dat_purchase, credit_card_id=credit_card_id)
+        response = BO.finance.finance.Finance().get_payment_date(dat_purchase=dat_purchase, credit_card_id=credit_card_id)
 
         return JsonResponse(response, safe=False)
