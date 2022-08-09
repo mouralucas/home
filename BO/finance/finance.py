@@ -14,7 +14,7 @@ import finance.serializers
 import util.datetime
 
 
-class Financeiro:
+class Finance:
 
     def __init__(self, mes=None, ano=None, extrato_id=None, fatura_id=None, referencia=None, conta_id=None, cartao_id=None, valor=None,
                  vlr_original=None, vlr_dolar=None, vlr_moeda=None, iof=None, nr_parcela=None, tot_parcela=None, dat_compra=None, dat_pagamento=None,
@@ -24,7 +24,7 @@ class Financeiro:
 
         self.extrato_id = extrato_id
         self.fatura_id = fatura_id
-        self.referencia = referencia
+        self.reference = referencia
         self.valor = valor
         self.vlr_original = vlr_original
         self.vlr_dolar = vlr_dolar
@@ -42,41 +42,40 @@ class Financeiro:
 
         self.response = {}
 
-    def get_contas(self, selected_id=''):
-        contas = finance.models.ContaBancaria.objects.values('nome', 'nm_banco').ativos() \
-            .annotate(is_selected=Case(When(nome=selected_id, then=True),
+    def get_bank_accounts(self, selected_id=''):
+        bank_accounts = finance.models.BankAccount.objects.values('id', 'nm_bank').ativos() \
+            .annotate(is_selected=Case(When(id=selected_id, then=True),
                                        default=False,
                                        output_field=BooleanField()))
 
         self.response['status'] = True
-        self.response['contas'] = list(contas)
+        self.response['bank_accounts'] = list(bank_accounts)
 
         return self.response
 
-    def get_cartoes(self, selected_id=''):
+    def get_credit_cards(self, selected_id=''):
         # TODO: mudar para receber parametro de status
-        cards = finance.models.CartaoCredito.objects.values('nome', 'nm_descritivo', 'descricao', 'dat_fechamento', 'dat_vencimento').ativos() \
-            .annotate(id=F('nome'),
-                      nm_status=Case(When(status=True, then=Value('Ativo')),
+        credit_cards = finance.models.CreditCard.objects.values('id', 'name', 'description', 'dat_threshold', 'dat_payment').ativos() \
+            .annotate(nm_status=Case(When(status=True, then=Value('Ativo')),
                                      default=Value('Cancelado'),
                                      output_field=CharField()),
-                      is_selected=Case(When(nome=selected_id, then=True),
+                      is_selected=Case(When(id=selected_id, then=True),
                                        default=False,
-                                       output_field=BooleanField())).order_by('-status', 'nome')
+                                       output_field=BooleanField())).order_by('-status', 'id')
 
         self.response['status'] = True
-        self.response['cards'] = list(cards)
+        self.response['credit_cards'] = list(credit_cards)
 
         return self.response
 
     def get_categorias(self, selected_id=''):
-        categorias = core.models.Categoria.objects.values('nome', 'descricao').ativos() \
-            .annotate(is_selected=Case(When(nome=selected_id, then=True),
+        categorias = core.models.Category.objects.values('id', 'description').ativos() \
+            .annotate(is_selected=Case(When(id=selected_id, then=True),
                                        default=False,
                                        output_field=BooleanField()))
 
         self.response['status'] = True
-        self.response['categorias'] = list(categorias)
+        self.response['categories'] = list(categorias)
         return self.response
 
     def set_extrato(self, request=None):
@@ -86,16 +85,17 @@ class Financeiro:
             return self.response
 
         if self.extrato_id:
-            extrato = finance.models.Extrato.objects.filter(pk=self.extrato_id).first()
+            extrato = finance.models.BankStatement.objects.filter(pk=self.extrato_id).first()
         else:
-            extrato = finance.models.Extrato()
+            extrato = finance.models.BankStatement()
 
+        # Não modificado nomes
         dat_compra_date = util.datetime.data_to_datetime(self.dat_compra, formato='%d/%m/%Y')
         referencia_ano = dat_compra_date.year
         referencia_mes = dat_compra_date.month
-        self.referencia = referencia_ano * 100 + referencia_mes
+        self.reference = referencia_ano * 100 + referencia_mes
 
-        extrato.referencia = self.referencia
+        extrato.reference = self.reference
         extrato.valor = float(self.valor) * -1
         extrato.dat_compra = dat_compra_date
         extrato.descricao = self.descricao
@@ -105,19 +105,19 @@ class Financeiro:
 
     def get_extrato(self):
         filters = {
-            'referencia': self.referencia
+            'reference': self.reference
         }
 
         if self.conta_id:
-            filters['conta_id'] = self.conta_id
+            filters['account_id'] = self.conta_id
 
-        extrato = finance.models.Extrato.objects.values('id', 'referencia', 'dat_compra', 'descricao') \
-            .filter(**filters).annotate(total=Sum('valor'),
-                                        conta=F('conta__nm_banco')) \
-            .order_by('conta_id', 'dat_compra')
+        extrato = finance.models.BankStatement.objects.values('id', 'reference', 'dat_purchase', 'description') \
+            .filter(**filters).annotate(total=Sum('amount'),
+                                        conta=F('account__nm_bank')) \
+            .order_by('account_id', 'dat_purchase')
 
         self.response['status'] = True
-        self.response['extrato'] = list(extrato)
+        self.response['statement'] = list(extrato)
         return self.response
 
     def set_bill(self, request=None):
@@ -127,17 +127,18 @@ class Financeiro:
             return self.response
 
         if self.fatura_id:
-            fatura = finance.models.FaturaCredito.objects.filter(pk=self.fatura_id).first()
+            fatura = finance.models.CreditCardBill.objects.filter(pk=self.fatura_id).first()
         else:
-            fatura = finance.models.FaturaCredito()
+            fatura = finance.models.CreditCardBill()
 
+        # Não modificado
         dat_pagamento_date = util.datetime.data_to_datetime(self.dat_pagamento, formato='%d/%m/%Y')
         referencia_ano = dat_pagamento_date.year
         referencia_mes = dat_pagamento_date.month
-        self.referencia = referencia_ano * 100 + referencia_mes
+        self.reference = referencia_ano * 100 + referencia_mes
 
         fatura.cartao_credito_id = self.cartao_id
-        fatura.referencia = self.referencia
+        fatura.reference = self.reference
         fatura.dat_pagamento = dat_pagamento_date
         fatura.dat_compra = util.datetime.data_to_datetime(self.dat_compra, formato='%d/%m/%Y')
         fatura.valor = float(self.valor) * -1
@@ -152,32 +153,32 @@ class Financeiro:
 
     def get_bills(self):
         filters = {
-            'referencia': self.referencia
+            'reference': self.reference
         }
 
         if self.cartao_id:
-            filters['cartao_credito_id'] = self.cartao_id
+            filters['credit_card_id'] = self.cartao_id
 
-        faturas = finance.models.FaturaCredito.objects \
-            .values('id', 'referencia', 'dat_compra', 'dat_pagamento',
-                    'nr_parcela', 'tot_parcela', 'descricao') \
+        faturas = finance.models.CreditCardBill.objects \
+            .values('id', 'reference', 'dat_purchase', 'dat_payment',
+                    'stallment', 'tot_stallment', 'description') \
             .filter(**filters) \
-            .annotate(total=Sum('valor'),
-                      cartao=F('cartao_credito__nm_descritivo'),
-                      nm_categoria=F('categoria__descricao')).order_by('dat_compra')
+            .annotate(total=Sum('amount'),
+                      cartao=F('credit_card__name'),
+                      nm_categoria=F('category__description')).order_by('dat_purchase')
 
         self.response['status'] = True
-        self.response['faturas'] = list(faturas)
+        self.response['bill'] = list(faturas)
+
         return self.response
-        # return list(faturas)
 
     def get_evolucao_faturas(self, months=13):
-        evolucao = finance.models.FaturaCredito.objects.values('referencia') \
-            .filter(referencia__range=(202001, 202112)).annotate(total=Sum('valor'),
-                                                                 cartao=F('cartao_credito__nm_descritivo')).order_by('referencia', 'cartao_credito_id')
+        evolucao = finance.models.CreditCardBill.objects.values('reference') \
+            .filter(refence__range=(202001, 202112)).annotate(total=Sum('valor'),
+                                                              cartao=F('cartao_credito__nm_descritivo')).order_by('reference', 'credit_card_id')
 
         evolucao = pd.DataFrame(evolucao)
-        saida = evolucao.pivot(index='referencia', columns='cartao', values='total').fillna(0)
+        saida = evolucao.pivot(index='reference', columns='cartao', values='total').fillna(0)
 
         self.response['status'] = True
         self.response['faturas'] = saida.values.tolist()
@@ -185,30 +186,30 @@ class Financeiro:
         return self.response
 
     def get_evolucao_categoria(self, months=13):
-        evolucao_credito = finance.models.FaturaCredito.objects.values('referencia', 'categoria__descricao') \
-            .filter(referencia__range=(202001, 202112), categoria__categoriaagrupamento__tipo_agrupamento='gasto_fixo').annotate(total=Sum('valor')).order_by('referencia')
+        evolucao_credito = finance.models.CreditCardBill.objects.values('reference', 'category__description') \
+            .filter(reference__range=(202001, 202112), categoria__categoriaagrupamento__tipo_agrupamento='gasto_fixo').annotate(total=Sum('valor')).order_by('reference')
 
-        evolucao_contas = finance.models.Extrato.objects.values('referencia', 'categoria__descricao') \
-            .filter(referencia__range=(202001, 202112), categoria__categoriaagrupamento__tipo_agrupamento='gasto_fixo').annotate(total=Sum('valor')).order_by('referencia')
+        evolucao_contas = finance.models.BankStatement.objects.values('reference', 'category__description') \
+            .filter(reference__range=(202001, 202112), categoria__categoriaagrupamento__tipo_agrupamento='gasto_fixo').annotate(total=Sum('valor')).order_by('reference')
 
         evolucao = evolucao_contas.union(evolucao_credito)
 
         default = defaultdict(float)
 
         for i in list(evolucao):
-            default[str(i.get('referencia', '')) + '.' + i.get('categoria__descricao', '')] += float(i.get('total', 0))
+            default[str(i.get('reference', '')) + '.' + i.get('category__description', '')] += float(i.get('total', 0))
 
-        default = [{'referencia': i.split('.')[0], 'categoria': i.split('.')[1], 'total': default[i]} for i in sorted(default)]
+        default = [{'reference': i.split('.')[0], 'categoria': i.split('.')[1], 'total': default[i]} for i in sorted(default)]
 
         self.response['status'] = True
         self.response['faturas'] = default
         return self.response
 
     def get_investments(self):
-        investments = finance.models.Aplicacao.objects.values('pk', 'nm_descritivo', 'dat_aplicacao', 'vlr_investido', 'preco_aplicacao',
-                                                                 'qtd_titulos', 'rent_contratada', 'descricao') \
+        investments = finance.models.Investment.objects.values('pk', 'name', 'dat_investment', 'amount_invested', 'price_investiment',
+                                                               'qtd_titles', 'profit_contracted', 'description') \
             .annotate(id=F('pk'),
-                      tipo=F('tipo__nm_descritivo'))
+                      tipo=F('type__name'))
 
         response = {
             'status': True,
@@ -220,7 +221,7 @@ class Financeiro:
 
     def get_extrato_investimentos(self):
         invest = finance.models.ExtratoAplicacao.objects.values('id', 'vlr_investido', 'vlr_bruto', 'vlr_liquido', 'referencia') \
-            .filter(referencia=self.referencia).annotate(nm_investimento=F('aplicacao__nm_descritivo')).order_by('aplicacao__nm_descritivo')
+            .filter(referencia=self.reference).annotate(nm_investimento=F('aplicacao__nm_descritivo')).order_by('aplicacao__nm_descritivo')
 
         self.response['status'] = True
         self.response['investimentos'] = list(invest)
@@ -232,7 +233,7 @@ class Financeiro:
 
         base_name = os.path.basename(path)
         name = os.path.splitext(base_name)
-        self.referencia = name[0].split('-')[1] + name[0].split('-')[2]
+        self.reference = name[0].split('-')[1] + name[0].split('-')[2]
 
         for df in pd.read_csv(path, iterator=True, chunksize=10000, skiprows=skiprows):
             itens = itens.append(pd.DataFrame(df))
@@ -241,7 +242,7 @@ class Financeiro:
         lista_itens = []
         for index, row in itens.iterrows():
             item = finance.models.FaturaImported()
-            item.referencia = self.referencia
+            item.reference = self.reference
             item.data = datetime.strptime(row['date'], '%Y-%m-%d').date()
             item.valor = row['amount']
             item.vlr_original = row['amount']
@@ -268,7 +269,7 @@ class Financeiro:
             print(row)
 
     def get_payment_date(self, dat_purchase, credit_card_id):
-        card = finance.models.CartaoCredito.objects.filter(pk=credit_card_id, status=True).first()
+        card = finance.models.CreditCard.objects.filter(pk=credit_card_id, status=True).first()
 
         if not card or not dat_purchase:
             response = {
@@ -277,8 +278,8 @@ class Financeiro:
             }
             return response
 
-        day_close = card.dat_fechamento
-        day_payment = card.dat_vencimento
+        day_close = card.dat_threshold
+        day_payment = card.dat_payment
 
         dat_purchase = util.datetime.data_to_datetime(dat_purchase, formato='%d/%m/%Y')
         day_purchase = dat_purchase.day
@@ -301,4 +302,4 @@ class Financeiro:
         dat_compra_date = util.datetime.data_to_datetime(self.dat_compra, formato='%d/%m/%Y')
         referencia_ano = dat_compra_date.year
         referencia_mes = dat_compra_date.month
-        self.referencia = referencia_ano * 100 + referencia_mes
+        self.reference = referencia_ano * 100 + referencia_mes

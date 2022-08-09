@@ -14,7 +14,7 @@
             {#contentType: false,#}
             success: function (response) {
                 if (response.status) {
-                    tabela_fatura_credito._options._optionManager._options.dataSource._store._array = response.faturas;
+                    tabela_fatura_credito._options._optionManager._options.dataSource._store._array = response.bill;
                     tabela_fatura_credito.refresh();
                 }
                 load('off');
@@ -92,7 +92,7 @@
             },
             success: function (response) {
                 if (response.status) {
-                    tabela_extrato_bancario._options._optionManager._options.dataSource._store._array = response.extrato;
+                    tabela_extrato_bancario._options._optionManager._options.dataSource._store._array = response.statement;
                     tabela_extrato_bancario.refresh();
                 }
                 load('off');
@@ -158,11 +158,11 @@
             data: {},
             success: function (response) {
                 var combos_cartoes = $("#combo_creditcard_bill_entry_finance, #combo_cartoes_fatura");
-                console.log(response.cards)
+
                 combos_cartoes.attr('disabled', false);
                 combos_cartoes.find('option').remove().end().append('<option value=0>Cartões</option>');
-                $.each(response.cards, function (key, value) {
-                    combos_cartoes.append('<option value=' + value.nome + '>' + value.nm_descritivo + '</option>');
+                $.each(response.credit_cards, function (key, value) {
+                    combos_cartoes.append('<option value=' + value.id + '>' + value.name + '</option>');
                 });
                 load('off');
             },
