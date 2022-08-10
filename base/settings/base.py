@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'aviacao',
 
     'core',
+    'core.temp',
     'core.user',
 
     'django.contrib.admin',
@@ -52,7 +53,7 @@ INSTALLED_APPS = [
 
     'finance',
 
-    'library'
+    'library',
 ]
 
 MIDDLEWARE = [
