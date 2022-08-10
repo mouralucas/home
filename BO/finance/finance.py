@@ -16,28 +16,28 @@ import util.datetime
 
 class Finance:
 
-    def __init__(self, mes=None, ano=None, extrato_id=None, fatura_id=None, referencia=None, conta_id=None, cartao_id=None, valor=None,
-                 vlr_original=None, vlr_dolar=None, vlr_moeda=None, iof=None, nr_parcela=None, tot_parcela=None, dat_compra=None, dat_pagamento=None,
-                 descricao=None, categoria_id=None, currency_id=None):
+    def __init__(self, mes=None, ano=None, statement_id=None, bill_id=None, reference=None, account_id=None, credit_card_id=None, amount=None,
+                 vlr_original=None, vlr_dolar=None, vlr_moeda=None, tax=None, nr_parcela=None, tot_parcela=None, dat_compra=None, dat_pagamento=None,
+                 description=None, categoria_id=None, currency_id=None):
         self.mes = mes
         self.ano = ano
 
-        self.extrato_id = extrato_id
-        self.fatura_id = fatura_id
-        self.reference = referencia
-        self.valor = valor
+        self.statement_id = statement_id
+        self.bill_id = bill_id
+        self.reference = reference
+        self.amount = amount
         self.vlr_original = vlr_original
         self.vlr_dolar = vlr_dolar
         self.vlr_moeda = vlr_moeda
-        self.iof = iof
+        self.tax = tax
         self.nr_parcela = nr_parcela
         self.tot_parcela = tot_parcela
         self.dat_compra = dat_compra
         self.dat_pagamento = dat_pagamento
-        self.descricao = descricao
+        self.description = description
         self.categoria_id = categoria_id
-        self.conta_id = conta_id
-        self.cartao_id = cartao_id
+        self.conta_id = account_id
+        self.credit_card_id = credit_card_id
         self.currency = currency_id
 
         self.response = {}
@@ -79,13 +79,13 @@ class Finance:
         return self.response
 
     def set_extrato(self, request=None):
-        if not self.dat_compra or not self.valor or not self.categoria_id or not self.conta_id:
+        if not self.dat_compra or not self.amount or not self.categoria_id or not self.conta_id:
             self.response['status'] = False
             self.response['descricao'] = 'Todos os parâmetros são obrigatórios'
             return self.response
 
-        if self.extrato_id:
-            extrato = finance.models.BankStatement.objects.filter(pk=self.extrato_id).first()
+        if self.statement_id:
+            extrato = finance.models.BankStatement.objects.filter(pk=self.statement_id).first()
         else:
             extrato = finance.models.BankStatement()
 
@@ -96,14 +96,14 @@ class Finance:
         self.reference = referencia_ano * 100 + referencia_mes
 
         extrato.reference = self.reference
-        extrato.valor = float(self.valor) * -1
+        extrato.valor = float(self.amount) * -1
         extrato.dat_compra = dat_compra_date
-        extrato.descricao = self.descricao
+        extrato.descricao = self.description
         extrato.categoria_id = self.categoria_id
         extrato.conta_id = self.conta_id
         extrato.save(request_=request)
 
-    def get_extrato(self):
+    def get_statement(self):
         filters = {
             'reference': self.reference
         }
@@ -111,23 +111,23 @@ class Finance:
         if self.conta_id:
             filters['account_id'] = self.conta_id
 
-        extrato = finance.models.BankStatement.objects.values('id', 'reference', 'dat_purchase', 'description') \
+        statement = finance.models.BankStatement.objects.values('id', 'reference', 'dat_purchase', 'description') \
             .filter(**filters).annotate(total=Sum('amount'),
-                                        conta=F('account__nm_bank')) \
+                                        account=F('account__nm_bank')) \
             .order_by('account_id', 'dat_purchase')
 
         self.response['status'] = True
-        self.response['statement'] = list(extrato)
+        self.response['statement'] = list(statement)
         return self.response
 
     def set_bill(self, request=None):
-        if not self.dat_compra or not self.valor or not self.categoria_id or not self.cartao_id:
+        if not self.dat_compra or not self.amount or not self.categoria_id or not self.credit_card_id:
             self.response['status'] = False
             self.response['descricao'] = 'Todos os parâmetros são obrigatórios'
             return self.response
 
-        if self.fatura_id:
-            fatura = finance.models.CreditCardBill.objects.filter(pk=self.fatura_id).first()
+        if self.bill_id:
+            fatura = finance.models.CreditCardBill.objects.filter(pk=self.bill_id).first()
         else:
             fatura = finance.models.CreditCardBill()
 
@@ -137,17 +137,17 @@ class Finance:
         referencia_mes = dat_pagamento_date.month
         self.reference = referencia_ano * 100 + referencia_mes
 
-        fatura.cartao_credito_id = self.cartao_id
+        fatura.cartao_credito_id = self.credit_card_id
         fatura.reference = self.reference
         fatura.dat_pagamento = dat_pagamento_date
         fatura.dat_compra = util.datetime.data_to_datetime(self.dat_compra, formato='%d/%m/%Y')
-        fatura.valor = float(self.valor) * -1
+        fatura.valor = float(self.amount) * -1
         fatura.categoria_id = self.categoria_id
-        fatura.vlr_original = float(self.valor) * -1
+        fatura.vlr_original = float(self.amount) * -1
         fatura.currency = self.currency
         fatura.nr_parcela = self.nr_parcela
         fatura.tot_parcela = self.tot_parcela
-        fatura.descricao = self.descricao
+        fatura.descricao = self.description
         print(fatura)
         fatura.save(request_=request)
 
@@ -156,8 +156,8 @@ class Finance:
             'reference': self.reference
         }
 
-        if self.cartao_id:
-            filters['credit_card_id'] = self.cartao_id
+        if self.credit_card_id:
+            filters['credit_card_id'] = self.credit_card_id
 
         faturas = finance.models.CreditCardBill.objects \
             .values('id', 'reference', 'dat_purchase', 'dat_payment',
@@ -244,12 +244,12 @@ class Finance:
             item = finance.models.FaturaImported()
             item.reference = self.reference
             item.data = datetime.strptime(row['date'], '%Y-%m-%d').date()
-            item.valor = row['amount']
+            item.amount = row['amount']
             item.vlr_original = row['amount']
             item.moeda_codigo = 'real'
             item.is_validado = False
             item.cat_referencia = row['category']
-            item.descricao = row['title']
+            item.description = row['title']
             item.cartao_credito_id = 'nubank'
             lista_itens_retorno.append(finance.serializers.FaturaSerializer(item).data)
             lista_itens.append(item)
