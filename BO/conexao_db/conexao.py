@@ -17,7 +17,7 @@ class SqlAlchemyMeta(type):
         return cls._instance
 
 
-class SqlAlchemy(metaclass=SqlAlchemyMeta):
+class SqlAlchemy:
     def __init__(self, user=DATABASES['default']['USER'], senha=DATABASES['default']['PASSWORD'], host=DATABASES['default']['HOST'],
                  porta=DATABASES['default']['PORT'], database=DATABASES['default']['NAME']):
         self.user = user
@@ -71,7 +71,7 @@ class SqlAlchemy(metaclass=SqlAlchemyMeta):
         for i in self.resultset:
             for column, value in i.items():
                 d = {**d, **{column: value}}
-                d = {k: 0 if not v else v for k, v in d.items()}
+                # d = {k: 0 if not v else v for k, v in d.items()}
             resultlist.append(d)
 
         return resultlist

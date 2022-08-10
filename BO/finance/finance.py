@@ -164,8 +164,8 @@ class Finance:
                     'stallment', 'tot_stallment', 'description') \
             .filter(**filters) \
             .annotate(total=Sum('amount'),
-                      cartao=F('credit_card__name'),
-                      nm_categoria=F('category__description')).order_by('dat_purchase')
+                      card=F('credit_card__name'),
+                      nm_category=F('category__description')).order_by('dat_purchase')
 
         self.response['status'] = True
         self.response['bill'] = list(faturas)
