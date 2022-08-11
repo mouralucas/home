@@ -8,7 +8,7 @@
                     <span class="text-muted ml-1"><!-- código da tela --></span>
                 </div><!-- Nome do Header modal e Código da tela -->
                 <div class="d-flex flex-nowrap ml-1">
-                    <a class="icon_close p-1 font-2xl" data-dismiss="modal" aria-label="Close"></a>
+                    <a class="icon_close p-1 font-2xl" data-dismiss="modal" aria-label="Close" onclick="resetFieldsCreditCardBill();"></a>
                 </div><!-- Botões de expandir e fechar modal -->
             </div><!-- .modal-header -->
             <div class="modal-body">
@@ -28,7 +28,7 @@
                     <div class="row">
                         <p class="col-6">
                             <span class="font-weight-bold">Data compra:</span>
-                                <input type="text" id="input_dat_purchase_bill_entry_finance" tabindex="0" class="form-control data" onchange="set_payment_date();">
+                                <input type="text" id="input_dat_purchase_bill_entry_finance" tabindex="0" class="form-control data">
                         </p>
                         <p class="col-6">
                             <span class="font-weight-bold">Data pagamento:</span>
@@ -64,7 +64,7 @@
                         <p class="col-4">
                             <!-- TODO: Se maior que 1 chamar uma função para add novas divs com as demais parcelas -->
                             <span class="font-weight-bold">Parcelas:</span>
-                            <select type="da" id="add_fatura_parcelas" class="form-control" onchange="add_stallment(this.value)">
+                            <select type="da" id="combo_stallment_bill_entry_finance" class="form-control" onchange="add_stallment(this.value)">
                                 <option value=1 selected>01</option>
                                 <option value=2>02</option>
                                 <option value=3>03</option>
@@ -78,17 +78,8 @@
                             </select>
                         </p>
                     </div>
-                    <div id="div_sortable">
-                        <div class="row" id="div_sortable_son_1">
-                            <p class="col-6">
-                                <span class="font-weight-bold">Parcela 2:</span>
-                                <input type="text" id="add_fatura_vlr_parcela_" tabindex="0" class="form-control currency sortTest">
-                            </p>
-                            <p class="col-6">
-                                <span class="font-weight-bold">Pagamento parcela 2:</span>
-                                <input type="text" id="add_fatura_dat_parcela_2" tabindex="0" class="form-control data sortTest">
-                            </p>
-                        </div>
+                    <div id="div_stallments">
+
                     </div>
                 </div>
 
@@ -98,13 +89,10 @@
                     <div class="row pr-2 pl-2 d-flex justify-content-between align-items-center flex-wrap">
 
                         <div class="col-4 mt-1">
-                            <a class="btn btn-outline-secondary w-100" data-dismiss="modal" tabindex="0">
+                            <a class="btn btn-outline-secondary w-100" data-dismiss="modal" tabindex="0" onclick="resetFieldsCreditCardBill();">
                                 Fechar
                             </a>
                         </div><!-- .cols -->
-
-                        {#                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mt-1">#}
-                        {#                        </div><!-- .cols -->#}
 
                         <div class="col-8 mt-1">
                             <div class="d-flex flex-nowrap btnsModal">

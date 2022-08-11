@@ -98,7 +98,7 @@
     }
 </script>
 
-<!-- Set the paument date -->
+<!-- Set the payment date -->
 <script>
     function set_payment_date() {
         $.ajax({
@@ -121,7 +121,7 @@
                 toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
             }
         });
-     }
+    }
 </script>
 
 <!-- Add stallments -->
@@ -130,21 +130,29 @@
 
         qtd = parseInt(qtd);
 
-        var div = `<div class="row" id="div_sortable_son_">
+
+        for (let i = 1; i <= qtd; i++) {
+            var div = `<div class="row" id="div_sortable_son_${i}">
                             <p class="col-6">
-                                <span class="font-weight-bold">Parcela 2:</span>
-                                <input type="text" id="add_fatura_vlr_parcela_" tabindex="0" class="form-control currency sortTest">
+                                <span class="font-weight-bold">Parcela ${i}:</span>
+                                <input type="text" id="add_fatura_vlr_parcela_${i}" tabindex="0" class="form-control currency sortTest">
                             </p>
                             <p class="col-6">
-                                <span class="font-weight-bold">Pagamento parcela 2:</span>
-                                <input type="text" id="add_fatura_dat_parcela_2" tabindex="0" class="form-control data sortTest">
+                                <span class="font-weight-bold">Pagamento parcela ${i}:</span>
+                                <input type="text" id="add_fatura_dat_parcela_${i}" tabindex="0" class="form-control data sortTest">
                             </p>
                         </div>`
 
-        for (let i = 0; i < qtd - 1; i++) {
-            $("#div_sortable").append(div);
+            $("#div_stallments").append(div);
         }
 
     }
 </script>
 
+<!-- Clean credit card bill modal -->
+<script>
+    function resetFieldsCreditCardBill() {
+        $("#combo_stallment_bill_entry_finance").val(1).change();
+        $("#div_stallments").empty();
+    }
+</script>

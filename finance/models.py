@@ -78,25 +78,26 @@ class BankStatement(core.models.Log):
 
 class CreditCardBill(core.models.Log):
     credit_card = models.ForeignKey('finance.CreditCard', on_delete=models.DO_NOTHING, null=True)
-    reference = models.IntegerField(null=True, help_text='Anomes de referência')
+    reference = models.IntegerField(null=True, help_text=_('Anomes de referência'))
     dat_payment = models.DateField(null=True)
     dat_purchase = models.DateField(null=True)
-    amount = models.DecimalField(max_digits=14, decimal_places=2, help_text='Sempre em reais, valor final')
+    amount = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Sempre em reais, valor final na fatura'))
+    amount_total = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Total da compra, quando existe parcelas'))
     category = models.ForeignKey('core.Category', on_delete=models.DO_NOTHING, null=True)
 
     currency = models.CharField(max_length=30, choices=core.models.CyrruncyTypes.choices, default=core.models.CyrruncyTypes.REAL)
-    amount_currency = models.DecimalField(max_digits=14, decimal_places=2, null=True, help_text='Sempre real da compra, na moeda original')
-    price_dollar = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text='Usado em compra em outra moeda, em relação ao real')
-    price_currency_dollar = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text='Valor da moeda em relação ao dolar, usado na conversão')
-    tax = models.DecimalField(max_digits=7, decimal_places=2, default=0, null=True, help_text='Iof total da compra, quando aplicável')
-    stallment = models.SmallIntegerField(null=True, default=1)
-    tot_stallment = models.SmallIntegerField(null=True, default=1)
-    is_stallment = models.BooleanField(default=False, null=True)
+    amount_currency = models.DecimalField(max_digits=14, decimal_places=2, null=True, help_text=_('Sempre real da compra, na moeda original'))
+    price_dollar = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Usado em compra em outra moeda, em relação ao real'))
+    price_currency_dollar = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Valor da moeda em relação ao dolar, usado na conversão'))
+    tax = models.DecimalField(max_digits=7, decimal_places=2, default=0, help_text=_('Iof total da compra, quando aplicável'))
+    stallment = models.SmallIntegerField(default=1)
+    tot_stallment = models.SmallIntegerField(default=1)
+    is_stallment = models.BooleanField(default=False)
     father = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
     description = models.TextField(null=True)
 
     # Campos de controle
-    origin = models.CharField(max_length=50, default='SISTEMA', null=True)
+    origin = models.CharField(max_length=50, default='SYSTEM')
     is_validated = models.BooleanField(default=False)
 
     class Meta:
