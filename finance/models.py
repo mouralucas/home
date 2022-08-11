@@ -88,7 +88,7 @@ class CreditCardBill(core.models.Log):
     amount_currency = models.DecimalField(max_digits=14, decimal_places=2, null=True, help_text='Sempre real da compra, na moeda original')
     price_dollar = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text='Usado em compra em outra moeda, em relação ao real')
     price_currency_dollar = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text='Valor da moeda em relação ao dolar, usado na conversão')
-    iof = models.DecimalField(max_digits=7, decimal_places=2, default=0, null=True, help_text='Iof total da compra, quando aplicável')
+    tax = models.DecimalField(max_digits=7, decimal_places=2, default=0, null=True, help_text='Iof total da compra, quando aplicável')
     stallment = models.SmallIntegerField(null=True, default=1)
     tot_stallment = models.SmallIntegerField(null=True, default=1)
     is_stallment = models.BooleanField(default=False, null=True)

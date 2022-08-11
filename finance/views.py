@@ -58,13 +58,13 @@ class Category(APIView):
 class Statement(APIView):
     @method_decorator(login_required)
     def get(self, *args, **kwargs):
-        referencia = self.request.GET.get('referencia')
+        reference = self.request.GET.get('referencia')
         conta_id = self.request.GET.get('conta_id')
 
         if conta_id in ['', '0']:
             conta_id = None
 
-        response = BO.finance.finance.Finance(referencia=referencia, conta_id=conta_id).get_extrato()
+        response = BO.finance.finance.Finance(reference=reference, account_id=conta_id).get_statement()
 
         return JsonResponse(response, safe=False)
 
@@ -77,8 +77,8 @@ class Statement(APIView):
         categoria_id = self.request.POST.get('categoria_id')
         conta_id = self.request.POST.get('conta_id')
 
-        response = BO.finance.finance.Finance(extrato_id=extrato_id, referencia=referencia, valor=valor, dat_compra=dat_compra, descricao=descricao,
-                                              categoria_id=categoria_id, conta_id=conta_id) \
+        response = BO.finance.finance.Finance(statement_id=extrato_id, reference=referencia, amount=valor, dat_compra=dat_compra, description=descricao,
+                                              categoria_id=categoria_id, account_id=conta_id) \
             .set_extrato(request=self.request)
 
         return JsonResponse(response, safe=False)
@@ -93,7 +93,7 @@ class Bill(APIView):
         if card_id in ['', '0']:
             card_id = None
 
-        response = BO.finance.finance.Finance(referencia=referencia, cartao_id=card_id).get_bills()
+        response = BO.finance.finance.Finance(reference=referencia, credit_card_id=card_id).get_bills()
 
         return JsonResponse(response, safe=False)
 
@@ -110,9 +110,9 @@ class Bill(APIView):
         categoria_id = self.request.POST.get('categoria_id')
         cartao_id = self.request.POST.get('cartao_id')
 
-        response = BO.finance.finance.Finance(fatura_id=bill_id, valor=price, vlr_dolar=vlr_dolar, dat_compra=dat_purchase, dat_pagamento=dat_payment,
-                                              nr_parcela=nr_parcela, tot_parcela=tot_parcela, currency_id=currency, descricao=descricao,
-                                              categoria_id=categoria_id, cartao_id=cartao_id) \
+        response = BO.finance.finance.Finance(bill_id=bill_id, amount=price, vlr_dolar=vlr_dolar, dat_compra=dat_purchase, dat_pagamento=dat_payment,
+                                              nr_parcela=nr_parcela, tot_parcela=tot_parcela, currency_id=currency, description=descricao,
+                                              categoria_id=categoria_id, credit_card_id=cartao_id) \
             .set_bill(request=self.request)
 
         return JsonResponse(response, safe=False)
@@ -123,7 +123,7 @@ class FaturaEvolucao(View):
     def get(self, *args, **kwargs):
         referencia = self.request.GET.get('referencia')
 
-        response = BO.finance.finance.Finance(referencia=referencia).get_evolucao_categoria()
+        response = BO.finance.finance.Finance(reference=referencia).get_evolucao_categoria()
 
         return JsonResponse(response, safe=False)
 
