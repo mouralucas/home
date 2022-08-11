@@ -8,6 +8,23 @@
 {% endblock %}
 
 {% block main %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex flex-wrap justify-content-between">
+                    <div class="col-6">
+                        {#                        <img src="{% static 'img/icon_graph01.svg' %}" alt="Graph icon" width="25">#}
+                        Evolução
+                    </div>
+                    <div class="col-2"><a onclick="">Clique aqui</a></div>
+                </div><!-- .card-header -->
+                <div class="card-body">
+                    <div id="pie_test" class="container"></div>
+                </div><!-- .card-body -->
+            </div>
+        </div>
+    </div>
+
     <!-- Row de transações no mês -->
     <div class="row">
         <div class="col-12">
@@ -62,7 +79,7 @@
 {% endblock %}
 
 {% block modals %}
-{#    {% include 'finance/modals/creditcard_bill.html' %}#}
+    {#    {% include 'finance/modals/creditcard_bill.html' %}#}
     {% include 'finance/modals/creditcard_bill_beta.html' %}
     {% include 'finance/modals/bank_statement.html' %}
 {% endblock %}
@@ -129,5 +146,63 @@
         get_creditcard();
 
     </script>
+
+    <script>
+        {#let data_chart_test = new DevExpress.data.DataSource({});#}
+        {#const data_chart_test = []#}
+
+        <!-- Inicialização da tabela de extrato de investimentos -->
+        let data_pie_category = new DevExpress.data.DataSource({});
+        data_pie_category = [{
+            country: 'Russia',
+            area: 12,
+        }, {
+            country: 'Canada',
+            area: 7,
+        }, {
+            country: 'USA',
+            area: 7,
+        }, {
+            country: 'China',
+            area: 7,
+        }, {
+            country: 'Brazil',
+            area: 6,
+        }, {
+            country: 'Australia',
+            area: 5,
+        }, {
+            country: 'India',
+            area: 2,
+        }, {
+            country: 'Others',
+            area: 55,
+        }];
+
+
+        {#function teste() {#}
+        {#    nova_lista = [{#}
+        {#        state: 'Germany',#}
+        {#        maleyoung: 6.679,#}
+        {#        malemiddle: 28.638,#}
+        {#        maleolder: 5.133,#}
+        {#        femaleyoung: 6.333,#}
+        {#        femalemiddle: 27.693,#}
+        {#        femaleolder: 8.318,#}
+        {#    }, {#}
+        {#        state: 'United Kindom',#}
+        {#        maleyoung: 5.816,#}
+        {#        malemiddle: 19.622,#}
+        {#        maleolder: 3.864,#}
+        {#        femaleyoung: 5.519,#}
+        {#        femalemiddle: 19.228,#}
+        {#        femaleolder: 5.459,#}
+        {#    }]#}
+        {##}
+        {#    chart_teste.dxChart("option", "dataSource", nova_lista)#}
+        {# }#}
+
+    </script>
+    {% include 'finance/charts/category.html' %}
 
 {% endblock %}
