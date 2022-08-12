@@ -270,16 +270,19 @@ class Finance:
         bill = finance.models.CreditCardBill.objects.values('category').annotate(total=Sum('amount')).filter(**filters)
 
         expenses = statement.union(bill)
-        import collections
-        counter = collections.Counter()
-        for d in expenses:
-            counter.update(d)
+
+        snowfall = defaultdict(float)
+        for info in list(expenses):
+            snowfall[info['category']] += float(info['total'])
+
+        snowfall = [{'category': year, 'total_amount': snowfall[year]} for year in sorted(snowfall, reverse=True)]
 
         response = {
             'status': True,
-            'expenses': None
+            'expenses': list(snowfall)
         }
 
+        return response
 
     def import_csv_investimento(self, path=None, skiprows=0):
         itens = pd.DataFrame([])
