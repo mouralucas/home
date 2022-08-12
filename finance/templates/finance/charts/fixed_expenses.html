@@ -1,0 +1,55 @@
+<script>
+    var chart_pie_fixed_expenses_finance = $('#chart_fixed_expenses_finance').dxPieChart({
+        size: {
+            width: 500,
+        },
+        palette: 'bright',
+        dataSource: data_chart_pie_fixed_expenses_finance,
+        series: [
+            {
+                argumentField: 'category',
+                valueField: 'total_amount',
+                {#smallValuesGrouping: {#}
+                {#    mode: 'smallValueThreshold',#}
+                {#    threshold: -700,#}
+                {# },#}
+                label: {
+                    visible: true,
+                    customizeText(arg) {
+                        return `${arg.argumentText} (${arg.percentText})`;
+                    },
+                },
+                {#label: {#}
+                {#    visible: true,#}
+                {#    connector: {#}
+                {#        visible: true,#}
+                {#        width: 1,#}
+                {#    },#}
+                {# },#}
+            },
+
+        ],
+        title: 'Gastos Fixos',
+        export: {
+            enabled: true,
+        },
+        onPointClick(e) {
+            const point = e.target;
+
+            toggleVisibility(point);
+        },
+        onLegendClick(e) {
+            const arg = e.target;
+
+            toggleVisibility(this.getAllSeries()[0].getPointsByArg(arg)[0]);
+        },
+    });
+
+    function toggleVisibility(item) {
+        if (item.isVisible()) {
+            item.hide();
+        } else {
+            item.show();
+        }
+    }
+</script>

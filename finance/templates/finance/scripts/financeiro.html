@@ -250,3 +250,43 @@
         });
     }
 </script>
+
+<!-- Get fixed expenses chart -->
+<script>
+    function get_fixed_expenses_chart() {
+        $.ajax({
+            type: 'GET',
+            url: '{% url 'finance:fixed_expenses' %}',
+            data: {
+                'reference': 202207,
+            },
+            traditional: true,
+            success: function (response) {
+                chart_pie_fixed_expenses_finance.dxPieChart("option", "dataSource", response.expenses);
+            },
+            error: function (response) {
+
+            }
+        });
+    }
+</script>
+
+<!-- Get expenses evolution chart -->
+<script>
+    function get_expenses_evolution_chart() {
+        $.ajax({
+            type: 'GET',
+            url: '{% url 'finance:evolution_expenses' %}',
+            data: {
+                'reference': 202207,
+            },
+            traditional: true,
+            success: function (response) {
+                data_chart_line_expenses_evolution_finance.dxPieChart("option", "dataSource", response.expenses);
+            },
+            error: function (response) {
+
+            }
+        });
+    }
+</script>

@@ -118,7 +118,7 @@ class Bill(APIView):
         return JsonResponse(response, safe=False)
 
 
-class FaturaEvolucao(View):
+class ExpensesEvolution(View):
     @method_decorator(login_required)
     def get(self, *args, **kwargs):
         referencia = self.request.GET.get('referencia')

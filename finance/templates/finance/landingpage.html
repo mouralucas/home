@@ -8,18 +8,50 @@
 {% endblock %}
 
 {% block main %}
+
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex flex-wrap justify-content-between">
                     <div class="col-6">
                         {#                        <img src="{% static 'img/icon_graph01.svg' %}" alt="Graph icon" width="25">#}
-                        Evolução
+                        Evolução das despesas
                     </div>
-                    <div class="col-2"><a onclick="">Clique aqui</a></div>
+                    <div class="col-2"></div>
                 </div><!-- .card-header -->
                 <div class="card-body">
-                    <div id="pie_test" class="container"></div>
+                    <div id="chart_expenses_evolution_finance" class="container"></div>
+                </div><!-- .card-body -->
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header d-flex flex-wrap justify-content-between">
+                    <div class="col-6">
+                        {#                        <img src="{% static 'img/icon_graph01.svg' %}" alt="Graph icon" width="25">#}
+                        Despesas Fixas
+                    </div>
+                    <div class="col-2"></div>
+                </div><!-- .card-header -->
+                <div class="card-body">
+                    <div id="chart_fixed_expenses_finance" class="container"></div>
+                </div><!-- .card-body -->
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header d-flex flex-wrap justify-content-between">
+                    <div class="col-6">
+                        {#                        <img src="{% static 'img/icon_graph01.svg' %}" alt="Graph icon" width="25">#}
+                        Despesas Fixas
+                    </div>
+                    <div class="col-2"></div>
+                </div><!-- .card-header -->
+                <div class="card-body">
+                    <div id="" class="container"></div>
                 </div><!-- .card-body -->
             </div>
         </div>
@@ -117,11 +149,15 @@
                 data: [],
             }
         });
+
+        let data_chart_pie_fixed_expenses_finance = new DevExpress.data.DataSource({});
+        let data_chart_line_expenses_evolution_finance = new DevExpress.data.DataSource({});
     </script>
     {% include 'finance/tables/extrato_bancario.html' %}
     {% include 'finance/tables/extrato_investimento.html' %}
     {% include 'finance/tables/fatura_credito.html' %}
-    {% include 'finance/charts/category.html' %}
+    {% include 'finance/charts/fixed_expenses.html' %}
+    {% include 'finance/charts/evolution_expenses.html' %}
 
     <script>
         $(document).ready(function () {
@@ -146,65 +182,54 @@
         get_bank_account();
         get_creditcard();
         get_fixed_expenses_chart();
-
+        get_expenses_evolution_chart();
     </script>
 
     <script>
-        {#let data_chart_test = new DevExpress.data.DataSource({});#}
-        {#const data_chart_test = []#}
-
-        <!-- Inicialização da tabela de extrato de investimentos -->
-        let data_pie_category = new DevExpress.data.DataSource({});
-        {#data_pie_category = [{#}
-        {#    country: 'Russia',#}
-        {#    area: 12,#}
-        {#}, {#}
-        {#    country: 'Canada',#}
-        {#    area: 7,#}
-        {#}, {#}
-        {#    country: 'USA',#}
-        {#    area: 7,#}
-        {#}, {#}
-        {#    country: 'China',#}
-        {#    area: 7,#}
-        {#}, {#}
-        {#    country: 'Brazil',#}
-        {#    area: 6,#}
-        {#}, {#}
-        {#    country: 'Australia',#}
-        {#    area: 5,#}
-        {#}, {#}
-        {#    country: 'India',#}
-        {#    area: 2,#}
-        {#}, {#}
-        {#    country: 'Others',#}
-        {#    area: 55,#}
-        {#}];#}
-
-
-        {#function teste() {#}
-        {#    nova_lista = [{#}
-        {#        state: 'Germany',#}
-        {#        maleyoung: 6.679,#}
-        {#        malemiddle: 28.638,#}
-        {#        maleolder: 5.133,#}
-        {#        femaleyoung: 6.333,#}
-        {#        femalemiddle: 27.693,#}
-        {#        femaleolder: 8.318,#}
-        {#    }, {#}
-        {#        state: 'United Kindom',#}
-        {#        maleyoung: 5.816,#}
-        {#        malemiddle: 19.622,#}
-        {#        maleolder: 3.864,#}
-        {#        femaleyoung: 5.519,#}
-        {#        femalemiddle: 19.228,#}
-        {#        femaleolder: 5.459,#}
-        {#    }]#}
-        {##}
-        {#    chart_teste.dxChart("option", "dataSource", nova_lista)#}
-        {# }#}
-
+    var lista = [{
+            country: 'USA',
+            hydro: 59.8,
+            oil: 937.6,
+            gas: 582,
+            coal: 564.3,
+            nuclear: 187.9,
+        }, {
+            country: 'China',
+            hydro: 74.2,
+            oil: 308.6,
+            gas: 35.1,
+            coal: 956.9,
+            nuclear: 11.3,
+        }, {
+            country: 'Russia',
+            hydro: 40,
+            oil: 128.5,
+            gas: 361.8,
+            coal: 105,
+            nuclear: 32.4,
+        }, {
+            country: 'Japan',
+            hydro: 22.6,
+            oil: 241.5,
+            gas: 64.9,
+            coal: 120.8,
+            nuclear: 64.8,
+        }, {
+            country: 'India',
+            hydro: 19,
+            oil: 119.3,
+            gas: 28.9,
+            coal: 204.8,
+            nuclear: 3.8,
+        }, {
+            country: 'Germany',
+            hydro: 6.1,
+            oil: 123.6,
+            gas: 77.3,
+            coal: 85.7,
+            nuclear: 37.8,
+        }];
+        chart_line_expenses_evolution_finance.dxChart("option", "dataSource", lista);
     </script>
-
 
 {% endblock %}

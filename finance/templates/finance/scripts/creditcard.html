@@ -149,25 +149,7 @@
     }
 </script>
 
-<!-- Get fixed expenses chart -->
-<script>
-    function get_fixed_expenses_chart() {
-        $.ajax({
-            type: 'GET',
-            url: '{% url 'finance:fixed_expenses' %}',
-            data: {
-                'reference': 202207,
-            },
-            traditional: true,
-            success: function (response) {
-                chart_pie_category_finance.dxChart("option", "dataSource", response.expenses);
-            },
-            error: function (response) {
 
-            }
-        });
-    }
-</script>
 
 <!-- Clean credit card bill modal -->
 <script>

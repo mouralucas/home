@@ -186,11 +186,17 @@ class Finance:
         return self.response
 
     def get_evolucao_categoria(self, months=13):
+        fixed_expenses = finance.models.CategoryGroup.objects.values_list('category', flat=True).filter(group='fixed_expenses')
+        filters = {
+            'reference__range': (202001, 202112),
+            'category__in': list(fixed_expenses)
+        }
+
         evolucao_credito = finance.models.CreditCardBill.objects.values('reference', 'category__description') \
-            .filter(reference__range=(202001, 202112), categoria__categoriaagrupamento__tipo_agrupamento='gasto_fixo').annotate(total=Sum('valor')).order_by('reference')
+            .filter(**filters).annotate(total=Sum('amount')).order_by('reference')
 
         evolucao_contas = finance.models.BankStatement.objects.values('reference', 'category__description') \
-            .filter(reference__range=(202001, 202112), categoria__categoriaagrupamento__tipo_agrupamento='gasto_fixo').annotate(total=Sum('valor')).order_by('reference')
+            .filter(**filters).annotate(total=Sum('amount')).order_by('reference')
 
         evolucao = evolucao_contas.union(evolucao_credito)
 
@@ -203,6 +209,7 @@ class Finance:
 
         self.response['status'] = True
         self.response['faturas'] = default
+
         return self.response
 
     def get_investments(self):
@@ -266,20 +273,19 @@ class Finance:
         fixed_expenses = finance.models.CategoryGroup.objects.values_list('category', flat=True).filter(group='fixed_expenses')
         filters['category__in'] = list(fixed_expenses)
 
-        statement = finance.models.BankStatement.objects.values('category').annotate(total=Sum('amount')).filter(**filters)
-        bill = finance.models.CreditCardBill.objects.values('category').annotate(total=Sum('amount')).filter(**filters)
+        statement = finance.models.BankStatement.objects.values('category__description').annotate(total=Sum('amount')).filter(**filters)
+        bill = finance.models.CreditCardBill.objects.values('category__description').annotate(total=Sum('amount')).filter(**filters)
 
         expenses = statement.union(bill)
 
-        snowfall = defaultdict(float)
+        grouped_values = defaultdict(float)
         for info in list(expenses):
-            snowfall[info['category']] += float(info['total'])
+            grouped_values[info['category__description']] += float(info['total'])
 
-        snowfall = [{'category': year, 'total_amount': snowfall[year]} for year in sorted(snowfall, reverse=True)]
-
+        grouped_values = [{'category': year, 'total_amount': grouped_values[year]} for year in sorted(grouped_values, reverse=True)]
         response = {
             'status': True,
-            'expenses': list(snowfall)
+            'expenses': list(grouped_values)
         }
 
         return response
