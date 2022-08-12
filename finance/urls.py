@@ -21,4 +21,5 @@ urlpatterns = [
     re_path(r'^ajax/periodos', views.Periodos.as_view(), name='periods'),
     re_path(r'^ajax/currency', views.Currency.as_view(), name='currency'),
     re_path(r'^ajax/payment/date', views.PaymentDate.as_view(), name='payment_date'),
+    re_path(r'^ajax/expenses/fixed', views.FixedExpenses.as_view(), name='fixed_expenses')
 ]

@@ -130,8 +130,12 @@ class CreditCardBill(core.models.Log):
 #         db_table = u'"finance\".\"extrato_investimento"'
 
 class CategoryGroup(core.models.Log):
+    class GroupType(models.TextChoices):
+        FIXED_EXPENSES = ('fixed_expenses', _('Despesas fixas'))
+        VARIABLE_EXPENSES = ('variable_expenses', _('Despesas variáveis'))
+
     category = models.ForeignKey('core.Category', on_delete=models.CASCADE, null=True)
-    group = models.CharField(max_length=50, null=True)
+    group = models.CharField(max_length=50, choices=GroupType.choices, default=GroupType.VARIABLE_EXPENSES)
 
     class Meta:
         db_table = 'finance"."category_group'
