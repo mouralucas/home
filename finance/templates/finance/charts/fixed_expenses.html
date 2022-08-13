@@ -1,8 +1,8 @@
 <script>
     var chart_pie_fixed_expenses_finance = $('#chart_fixed_expenses_finance').dxPieChart({
-        size: {
-            width: 500,
-        },
+        {#size: {#}
+        {#    width: 500,#}
+        {# },#}
         palette: 'bright',
         dataSource: data_chart_pie_fixed_expenses_finance,
         series: [
@@ -18,6 +18,7 @@
                     customizeText(arg) {
                         return `${arg.argumentText} (${arg.percentText})`;
                     },
+                    position: 'outside'
                 },
                 {#label: {#}
                 {#    visible: true,#}
@@ -30,6 +31,13 @@
 
         ],
         title: 'Gastos Fixos',
+        legend: {
+            verticalAlignment: 'bottom',
+            horizontalAlignment: 'center',
+            itemTextPosition: 'right',
+            rowCount: 2,
+        },
+        resolveLabelOverlapping: 'shift',
         export: {
             enabled: true,
         },

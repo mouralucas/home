@@ -258,7 +258,7 @@
             type: 'GET',
             url: '{% url 'finance:fixed_expenses' %}',
             data: {
-                'reference': 202207,
+                'reference': 202206,
             },
             traditional: true,
             success: function (response) {
@@ -278,11 +278,11 @@
             type: 'GET',
             url: '{% url 'finance:evolution_expenses' %}',
             data: {
-                'reference': 202207,
+                'reference': 202206,
             },
             traditional: true,
             success: function (response) {
-                data_chart_line_expenses_evolution_finance.dxPieChart("option", "dataSource", response.expenses);
+                {#chart_line_expenses_evolution_finance.dxPieChart("option", "dataSource", response.expenses);#}
             },
             error: function (response) {
 
