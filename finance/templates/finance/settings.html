@@ -32,6 +32,7 @@
                 </div><!-- .card-body -->
             </div>
         </div>
+
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex flex-wrap justify-content-between">
@@ -42,6 +43,20 @@
                 </div><!-- .card-header -->
                 <div class="card-body">
                     <div id="tabela_contas_bancarias" class="w-100"></div>
+                </div><!-- .card-body -->
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex flex-wrap justify-content-between">
+                    <div class="col-6">
+                        {#                        <img src="{% static 'img/icon_graph01.svg' %}" alt="Graph icon" width="25">#}
+                        Categorias
+                    </div>
+                </div><!-- .card-header -->
+                <div class="card-body">
+                    <div id="table_category_finance" class="w-100"></div>
                 </div><!-- .card-body -->
             </div>
         </div>
@@ -72,8 +87,15 @@
             }
         });
 
-
         let dados_tabela_aplicacoes = new DevExpress.data.DataSource({
+            store: {
+                type: 'array',
+                key: "id",
+                data: [],
+            }
+        });
+
+        let data_table_category_finance = new DevExpress.data.DataSource({
             store: {
                 type: 'array',
                 key: "id",
@@ -84,6 +106,7 @@
     {% include 'finance/tables/credit_card.html' %}
     {% include 'finance/tables/bank_account.html' %}
     {% include 'finance/tables/investiment.html' %}
+    {% include 'finance/tables/category.html' %}
 
     <script>
         $(document).ready(function () {

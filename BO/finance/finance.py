@@ -68,11 +68,13 @@ class Finance:
 
         return self.response
 
-    def get_categorias(self, selected_id=''):
-        categorias = core.models.Category.objects.values('id', 'description').ativos() \
+    def get_category(self, selected_id=''):
+        categorias = core.models.Category.objects.values('id', 'description', 'comments').ativos() \
             .annotate(is_selected=Case(When(id=selected_id, then=True),
                                        default=False,
-                                       output_field=BooleanField()))
+                                       output_field=BooleanField()),
+                      id_father=F('father_id'),
+                      nm_father=F('father__description'))
 
         self.response['status'] = True
         self.response['categories'] = list(categorias)
@@ -261,7 +263,7 @@ class Finance:
             lista_itens_retorno.append(finance.serializers.FaturaSerializer(item).data)
             lista_itens.append(item)
 
-        finance.models.FaturaCredito.objects.bulk_create(lista_itens)
+        finance.models.CreditCardBill.objects.bulk_create(lista_itens)
 
         return lista_itens_retorno
 

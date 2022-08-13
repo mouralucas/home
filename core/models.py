@@ -342,6 +342,7 @@ class Module(Log):
 
 class Category(Log):
     id = models.CharField(max_length=200, primary_key=True)
+    name = models.CharField(max_length=250, null=True)
     description = models.CharField(max_length=500)
     comments = models.TextField(null=True)
     father = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)

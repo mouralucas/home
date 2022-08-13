@@ -14,8 +14,8 @@
             {#contentType: false,#}
             success: function (response) {
                 if (response.status) {
-                    tabela_fatura_credito._options._optionManager._options.dataSource._store._array = response.bill;
-                    tabela_fatura_credito.refresh();
+                    table_credit_card_bill_finance._options._optionManager._options.dataSource._store._array = response.bill;
+                    table_credit_card_bill_finance.refresh();
                 }
                 load('off');
             },
@@ -233,12 +233,12 @@
                 var combo = $("#" + origem);
 
                 combo.attr('disabled', false);
-                combo.find('option').remove().end().append('<option value=0>Categorias</option>');
-                $.each(response.categorias, function (key, value) {
+                combo.find('option').remove().end().append('<option value=0>Selecione</option>');
+                $.each(response.categories, function (key, value) {
                     if (value.is_selected) {
-                        combo.append('<option value=' + value.nome + ' selected>' + value.descricao + '</option>');
+                        combo.append('<option value=' + value.id + ' selected>' + value.name + '</option>');
                     } else {
-                        combo.append('<option value=' + value.nome + '>' + value.descricao + '</option>');
+                        combo.append('<option value=' + value.id + '>' + value.name + '</option>');
                     }
                 });
                 load('off');

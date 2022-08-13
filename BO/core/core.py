@@ -1,4 +1,4 @@
-from django.db.models import Case, When, BooleanField
+from django.db.models import Case, When, BooleanField, F
 
 import core.models
 import core.serializers
@@ -59,6 +59,21 @@ class Misc:
             'status': True,
             'qtd': len(currency),
             'currency': currency
+        }
+
+        return response
+
+    def get_category(self, module, id_selected=''):
+        categorias = core.models.Category.objects.values('id', 'name', 'description', 'comments').ativos() \
+            .annotate(is_selected=Case(When(id=id_selected, then=True),
+                                       default=False,
+                                       output_field=BooleanField()),
+                      id_father=F('father_id'),
+                      nm_father=F('father__description')).filter(module=module)
+
+        response = {
+            'status': True,
+            'categories': list(categorias)
         }
 
         return response
