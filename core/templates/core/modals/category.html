@@ -1,0 +1,114 @@
+<!-- modal de cadastro de faturas -->
+<div class="modal modal-padrao-cadastros-modal modal-sem-scroll fade" id="modal_category_finance" role="dialog" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" ondblclick="fullscreen(this.parentNode.parentNode.parentNode.id, 'modal-dialog');">
+                <div class="d-flex justify-content-between align-items-center flex-wrap mb-1">
+                    <h5 class="modal-title font-3xl">Categoria</h5>
+                    <span class="text-muted ml-1"><!-- código da tela --></span>
+                </div><!-- Nome do Header modal e Código da tela -->
+                <div class="d-flex flex-nowrap ml-1">
+                    <a class="icon_close p-1 font-2xl" data-dismiss="modal" aria-label="Close" onclick="resetFieldsCreditCardBill();"></a>
+                </div><!-- Botões de expandir e fechar modal -->
+            </div><!-- .modal-header -->
+            <div class="modal-body">
+                <div class="text-left">
+                    <div class="row">
+                        <p class="col-6">
+                            <span class="font-weight-bold">Tipo de investimento:</span>
+                            <select type="da" id="combo_creditcard_bill_entry_finance" class="form-control">
+                                <option value=0 selected>Selecione</option>
+                            </select>
+                        </p>
+                        <p class="col-6">
+                            <span class="font-weight-bold">Valor:</span>
+                            <input type="text" id="input_vlr_bill_entry_finance" tabindex="0" class="form-control text-right currency" onfocusout="updateBillEntry()">
+                        </p>
+                    </div>
+                    <div class="row">
+                        <p class="col-6">
+                            <span class="font-weight-bold">Data compra:</span>
+                                <input type="text" id="input_dat_purchase_bill_entry_finance" tabindex="0" class="form-control data">
+                        </p>
+                        <p class="col-6">
+                            <span class="font-weight-bold">Data pagamento:</span>
+                            <input type="da" id="input_dat_payment_bill_entry_finance" tabindex="0" class="form-control data">
+                        </p>
+                    </div>
+                    <div class="row">
+                        <p class="col-3">
+                            <span class="font-weight-bold">Moeda:</span>
+                            <select type="da" id="combo_currency_bill_entry_finance" class="form-control" onchange="updateBillEntry();">
+                            </select>
+                        </p>
+                        <p class="col-3">
+                            <span class="font-weight-bold">Vlr original:</span>
+                            <input type="text" id="input_vlr_original_bill_entry_finance" tabindex="0" class="form-control currency">
+                        </p>
+                        <p class="col-3">
+                            <span class="font-weight-bold">IOF:</span>
+                            <input type="text" id="input_vlr_tax_bill_entry_finance" disabled tabindex="0" class="form-control currency">
+                        </p>
+                        <p class="col-3">
+                            <span class="font-weight-bold" title="Valor da moeda em relação ao dólar">Vlr moeda:</span>
+                            <input type="text" id="input_exchange_rate_bill_entry_finance" disabled tabindex="0" class="form-control currency">
+                        </p>
+                    </div>
+                    <div class="row">
+                        <p class="col-8">
+                            <span class="font-weight-bold">Categoria:</span>
+                            <select type="da" id="combo_category_bill_entry_finance" class="form-control">
+                                <option value=0 selected>Categoria</option>
+                            </select>
+                        </p>
+                        <p class="col-4">
+                            <!-- TODO: Se maior que 1 chamar uma função para add novas divs com as demais parcelas -->
+                            <span class="font-weight-bold">Parcelas:</span>
+                            <select type="da" id="combo_stallment_bill_entry_finance" class="form-control" onchange="add_stallment(this.value)">
+                                <option value=1 selected>01</option>
+                                <option value=2>02</option>
+                                <option value=3>03</option>
+                                <option value=4>04</option>
+                                <option value=5>05</option>
+                                <option value=6>06</option>
+                                <option value=7>07</option>
+                                <option value=8>08</option>
+                                <option value=9>09</option>
+                                <option value=10>10</option>
+                            </select>
+                        </p>
+                    </div>
+                    <div id="div_stallments">
+
+                    </div>
+                </div>
+
+            </div><!-- .modal-body -->
+            <div class="container-fluid border-top border-light seletorModal-footer-btns">
+                <div class="mt-1 mb-2">
+                    <div class="row pr-2 pl-2 d-flex justify-content-between align-items-center flex-wrap">
+
+                        <div class="col-4 mt-1">
+                            <a class="btn btn-outline-secondary w-100" data-dismiss="modal" tabindex="0" onclick="resetFieldsCreditCardBill();">
+                                Fechar
+                            </a>
+                        </div><!-- .cols -->
+
+                        <div class="col-8 mt-1">
+                            <div class="d-flex flex-nowrap btnsModal">
+                                <a class="btn btn-outline-secondary w-100 seletorBtnSalvar" id="btn_fechar_comanda" tabindex="0">
+                                    Salvar
+                                </a>
+                            </div><!-- d-flex -->
+                        </div><!-- .cols -->
+
+                    </div><!-- .row -->
+                </div><!-- .mt-1 .mb-2 -->
+            </div><!-- div do modal-footer costumizado, mesmo que não tenha a classe modal footer -->
+        </div><!-- .modal-content -->
+    </div><!-- .modal-dialog -->
+</div><!-- .modal -->
+
+<script>
+
+</script>

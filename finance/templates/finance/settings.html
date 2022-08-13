@@ -63,6 +63,11 @@
     </div>
 {% endblock %}
 
+{% block modals %}
+    {% include 'finance/modals/investment.html' %}
+    <!-- It is used core/modal becouse every category are the same, only change the module -->
+    {% include 'core/modals/category.html' %}
+{% endblock %}
 
 {% block js %}
     {% include 'finance/scripts/adm_financeiro.html' %}

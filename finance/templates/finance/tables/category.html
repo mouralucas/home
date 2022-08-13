@@ -46,16 +46,14 @@
                 [
                     {
                         btnClass: "btn btn-plus icon_plus seletorBtnAddProduto text-white",
-                        btnTooltip: "Adicionar Compra",
+                        btnTooltip: "Adicionar Categoria",
                         btnClick: function () {
                             //Ação do botão
-                            let modal = $("#modal_adicionar_extrato");
-
-                            get_categories_combo("add_extrato_categoria");
+                            let modal = $("#modal_category_finance");
 
                             modal.find('.seletorBtnSalvar').off('click').on('click', function (ev) {
                                 // load('on');
-                                set_statement();
+                                alert('Salvar nova categoria');
                             });
                             modal.modal('show');
                         }

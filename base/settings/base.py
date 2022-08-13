@@ -37,8 +37,6 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'aviacao',
-
     'core',
     'core.temp',
     'core.user',

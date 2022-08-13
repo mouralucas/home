@@ -53,13 +53,11 @@
                         btnTooltip: "Adicionar Compra",
                         btnClick: function () {
                             //Ação do botão
-                            let modal = $("#modal_adicionar_extrato");
-
-                            get_categories_combo("add_extrato_categoria");
+                            let modal = $("#modal_investment_finance");
 
                             modal.find('.seletorBtnSalvar').off('click').on('click', function (ev) {
                                 // load('on');
-                                set_statement();
+                                alert('salvar investimento');
                             });
                             modal.modal('show');
                         }
