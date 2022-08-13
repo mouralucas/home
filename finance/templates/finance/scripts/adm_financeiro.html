@@ -5,8 +5,12 @@
             url: "{% url 'finance:credit_card' %}",
             data: {},
             success: function (response) {
-                tabela_cartoes_credito._options._optionManager._options.dataSource._store._array = response.cartoes;
-                tabela_cartoes_credito.refresh();
+                if (response.status) {
+                    table_credit_card_finance._options._optionManager._options.dataSource._store._array = response.credit_cards;
+                    table_credit_card_finance.refresh();
+                } else {
+                    toastr.error('Ocorreu um erro inesperado: ' + response.description, 'Erro ao enviar')
+                }
                 load('off');
             },
             error: function (data) {

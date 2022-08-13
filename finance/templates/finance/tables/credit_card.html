@@ -1,6 +1,6 @@
 <script>
-    var tabela_cartoes_credito = $("#tabela_cartoes_credito").dxDataGrid({
-        dataSource: dados_tabela_cartoes_credito,
+    var table_credit_card_finance = $("#table_credit_card_finance").dxDataGrid({
+        dataSource: data_table_credit_card_finance,
 
         //options default
         focusedRowEnabled: true,
@@ -69,7 +69,7 @@
         columns: [
             {
                 dataField: "id",
-                caption: "Id",
+                caption: "Código",
                 dataType: "string",
                 visible: true,
                 {#width: 225,#}
@@ -90,7 +90,7 @@
                 }
             },
             {
-                dataField: "nm_descritivo",
+                dataField: "name",
                 caption: "Cartão",
                 dataType: "string",
                 visible: true,
@@ -112,7 +112,7 @@
                 }
             },
             {
-                dataField: "descricao",
+                dataField: "description",
                 caption: "Descrição",
                 dataType: "string",
                 visible: true,
@@ -134,12 +134,12 @@
                         valueFormatado = formatDateTime(value, "data");
                     }
 
-                    var tdContent = `<p class="text-center">${valueFormatado}</p>`;
+                    var tdContent = `<p class="text-center">${value}</p>`;
                     container.html(tdContent);
                 }
             },
             {
-                dataField: "dat_fechamento",
+                dataField: "dat_threshold",
                 caption: "Fechamento",
                 dataType: "number",
                 visible: true,
@@ -168,7 +168,7 @@
                 }
             },
            {
-                dataField: "dat_vencimento",
+                dataField: "dat_payment",
                 caption: "Vencimento",
                 dataType: "number",
                 visible: true,
