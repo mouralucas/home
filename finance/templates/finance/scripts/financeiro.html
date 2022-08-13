@@ -27,57 +27,6 @@
         });
     }
 
-    {#function set_bill() {#}
-    {#    var valor = $('#add_fatura_valor').val() == '' ? 0 : $('#add_fatura_valor').val().replace('R$ ', '')#}
-    {##}
-    {#    $.ajax({#}
-    {#        type: "POST",#}
-    {#        url: "{% url 'finance:fatura' %}",#}
-    {#        // url: "#",#}
-    {#        data: {#}
-    {#            'valor': valor,#}
-    {#            'dat_compra': $('#add_fatura_data_compra').val(),#}
-    {#            'dat_pagamento': $('#add_fatura_data_pagamento').val(),#}
-    {#            'descricao': $('#add_fatura_descricao').val(),#}
-    {#            'categoria_id': $('#add_fatura_categoria').val(),#}
-    {#            'cartao_id': $('#add_fatura_cartao').val(),#}
-    {#            'csrfmiddlewaretoken': '{{ csrf_token }}',#}
-    {#        },#}
-    {#        success: function (response) {#}
-    {#            if (response.status === true) {#}
-    {#                _itsSave = true;#}
-    {#                modal.modal('hide');#}
-    {#                load('off');#}
-    {#                // let produto = {};#}
-    {#                // //criacao de um novo objeto produto#}
-    {#                // $.each(response.produto[0], function (index, obj) {#}
-    {#                //     if (response.produto[0][index])#}
-    {#                //         produto[index] = obj;#}
-    {#                // });#}
-    {#                //#}
-    {#                // //criacao de um novo array para substituir o da tabela com a linha adicionada#}
-    {#                // let array = [];#}
-    {#                // array.push(produto);#}
-    {#                // for (let item of e.component._options._optionManager._options.dataSource._store._array) {#}
-    {#                //     array.push(item)#}
-    {#                // }#}
-    {#                //#}
-    {#                // e.component._options._optionManager._options.dataSource._store._array = array;#}
-    {#                // e.component.refresh();#}
-    {#                toastr.success('Você alterou um registro com sucesso!', 'Alteração realizada');#}
-    {#            } else {#}
-    {#                load('off');#}
-    {#                toastr.error(response.descricao, 'Erro');#}
-    {#            }#}
-    {#            load('off');#}
-    {#        },#}
-    {#        error: function (data) {#}
-    {#            load('off');#}
-    {#            toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');#}
-    {#        }#}
-    {#    });#}
-    {# }#}
-
     function get_statement() {
         load('on');
         var referencia = $("#combo_referencia_extrato").val();
@@ -223,14 +172,17 @@
             }
         });
     }
+</script>
 
-    function getCategorias(origem) {
+<!-- Get finance categories -->
+<script>
+    function get_categories_combo(origin) {
         $.ajax({
             type: "GET",
-            url: "{% url 'finance:categoria' %}",
+            url: "{% url 'finance:category' %}",
             data: {},
             success: function (response) {
-                var combo = $("#" + origem);
+                var combo = $("#" + origin);
 
                 combo.attr('disabled', false);
                 combo.find('option').remove().end().append('<option value=0>Selecione</option>');

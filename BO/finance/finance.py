@@ -43,7 +43,8 @@ class Finance:
         self.response = {}
 
     def get_bank_accounts(self, selected_id=''):
-        bank_accounts = finance.models.BankAccount.objects.values('id', 'nm_bank').ativos() \
+        bank_accounts = finance.models.BankAccount.objects.values('id', 'nm_bank', 'branch_formatted', 'account_number_formatted', 'dat_start',
+                                                                  'dat_end').ativos() \
             .annotate(is_selected=Case(When(id=selected_id, then=True),
                                        default=False,
                                        output_field=BooleanField()))
@@ -218,7 +219,7 @@ class Finance:
         investments = finance.models.Investment.objects.values('pk', 'name', 'dat_investment', 'amount_invested', 'price_investiment',
                                                                'qtd_titles', 'profit_contracted', 'description') \
             .annotate(id=F('pk'),
-                      tipo=F('type__name'))
+                      type=F('type__name'))
 
         response = {
             'status': True,

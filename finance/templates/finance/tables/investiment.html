@@ -55,7 +55,7 @@
                             //Ação do botão
                             let modal = $("#modal_adicionar_extrato");
 
-                            getCategorias("add_extrato_categoria");
+                            get_categories_combo("add_extrato_categoria");
 
                             modal.find('.seletorBtnSalvar').off('click').on('click', function (ev) {
                                 // load('on');
@@ -93,7 +93,7 @@
                 }
             },
             {
-                dataField: "tipo",
+                dataField: "type",
                 caption: "Tipo aplicação",
                 dataType: "string",
                 visible: true,
@@ -116,7 +116,7 @@
                 }
             },
             {
-                dataField: "nm_descritivo",
+                dataField: "name",
                 caption: "Nome",
                 dataType: "string",
                 visible: true,
@@ -138,7 +138,7 @@
                 }
             },
             {
-                dataField: "dat_aplicacao",
+                dataField: "dat_investment",
                 caption: "Data",
                 dataType: "string",
                 visible: true,
@@ -165,7 +165,7 @@
                 }
             },
             {
-                dataField: "vlr_investido",
+                dataField: "amount_invested",
                 caption: "Valor",
                 dataType: "number",
                 visible: true,
@@ -199,7 +199,7 @@
                 }
             },
             {
-                dataField: "preco_aplicacao",
+                dataField: "price_investiment",
                 caption: "Preço",
                 dataType: "number",
                 visible: true,
@@ -233,7 +233,7 @@
                 }
             },
             {
-                dataField: "qtd_titulos",
+                dataField: "qtd_titles",
                 caption: "Qtd",
                 dataType: "number",
                 visible: true,
@@ -267,7 +267,7 @@
                 }
             },
             {
-                dataField: "rent_contratada",
+                dataField: "profit_contracted",
                 caption: "Rentabilidade",
                 dataType: "string",
                 visible: true,

@@ -1,6 +1,6 @@
 <script>
-    var tabela_contas_bancarias = $("#tabela_contas_bancarias").dxDataGrid({
-        dataSource: dados_tabela_contas_bancarias,
+    var table_bank_account_finance = $("#table_bank_account_finance").dxDataGrid({
+        dataSource: data_table_bank_account_finance,
 
         //options default
         focusedRowEnabled: true,
@@ -51,7 +51,7 @@
                             //Ação do botão
                             let modal = $("#modal_adicionar_extrato");
 
-                            getCategorias("add_extrato_categoria");
+                            get_categories_combo("add_extrato_categoria");
 
                             modal.find('.seletorBtnSalvar').off('click').on('click', function (ev) {
                                 // load('on');
@@ -70,7 +70,7 @@
 
         columns: [
             {
-                dataField: "conta",
+                dataField: "nm_bank",
                 caption: "Conta",
                 dataType: "string",
                 visible: true,
@@ -92,10 +92,60 @@
                 }
             },
             {
-                dataField: "dat_compra",
-                caption: "Data",
+                dataField: "branch_formatted",
+                caption: "Agência",
                 dataType: "string",
                 visible: true,
+                headerCellTemplate: function (container, options) {
+                    // função filterRow(container, options, headerDefault);
+                    // 1 parâmetro, container: elemento HTML referente a este header
+                    // 2 parâmetro, options: todas as opções referente a esta instancia do datagrid
+                    // 3 parâmetro, headerDefault: recebe um booleano, caso você esteja inserindo um html diferente do que existe no ~caption: "NomeDaColuna"~ coloque o parâmetro false, indicando que o header não é default, caso contrário a função irá inserir o caption como nome da coluna por padrão, este parâmetro pode ser opcional.
+                    filterRow(container, options);
+                },
+                cellTemplate: function (container, options) {
+                    var dataField = options.column.dataField;
+                    var value = options.data[dataField]
+
+                    var valueFormatado = "--"
+
+                    {#if (parseFloat(value).toString() === "NaN" || parseFloat(value).toString() === "undefined") {#}
+                    {# } else {#}
+                    {#    valueFormatado = formatDateTime(value, "data");#}
+                    {# }#}
+
+                    var tdContent = `<p class="text-center">${value}</p>`;
+                    container.html(tdContent);
+                }
+            },
+            {
+                dataField: "account_number_formatted",
+                caption: "Conta",
+                dataType: "string",
+                visible: true,
+                {#width: 150,#}
+                headerCellTemplate: function (container, options) {
+                    // função filterRow(container, options, headerDefault);
+                    // 1 parâmetro, container: elemento HTML referente a este header
+                    // 2 parâmetro, options: todas as opções referente a esta instancia do datagrid
+                    // 3 parâmetro, headerDefault: recebe um booleano, caso você esteja inserindo um html diferente do que existe no ~caption: "NomeDaColuna"~ coloque o parâmetro false, indicando que o header não é default, caso contrário a função irá inserir o caption como nome da coluna por padrão, este parâmetro pode ser opcional.
+                    filterRow(container, options);
+                },
+                cellTemplate: function (container, options) {
+                    var dataField = options.column.dataField;
+                    var value = options.data[dataField]
+
+                    var tdContent = `<p class="text-center">${value}</p>`;
+                    container.html(tdContent);
+
+                }
+            },
+            {
+                dataField: "dat_start",
+                caption: "Abertura",
+                dataType: "string",
+                visible: true,
+                {#width: 150,#}
                 headerCellTemplate: function (container, options) {
                     // função filterRow(container, options, headerDefault);
                     // 1 parâmetro, container: elemento HTML referente a este header
@@ -118,90 +168,29 @@
                     container.html(tdContent);
                 }
             },
-            {
-                dataField: "total",
-                caption: "Valor",
-                dataType: "number",
-                visible: true,
-                {#width: 150,#}
-                headerCellTemplate: function (container, options) {
-                    // função filterRow(container, options, headerDefault);
-                    // 1 parâmetro, container: elemento HTML referente a este header
-                    // 2 parâmetro, options: todas as opções referente a esta instancia do datagrid
-                    // 3 parâmetro, headerDefault: recebe um booleano, caso você esteja inserindo um html diferente do que existe no ~caption: "NomeDaColuna"~ coloque o parâmetro false, indicando que o header não é default, caso contrário a função irá inserir o caption como nome da coluna por padrão, este parâmetro pode ser opcional.
-                    filterRow(container, options);
-                },
-                cellTemplate: function (container, options) {
-                    var dataField = options.column.dataField;
-                    var value = options.data[dataField]
-
-                    var valueFormatado = "--"
-
-                    if (parseFloat(value).toString() === "NaN" || parseFloat(value).toString() === "undefined") {
-                    } else {
-
-                        valueFormatado = parseFloat(value).toLocaleString('pt-BR', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                        })
-                        valueFormatado = "R$ " + valueFormatado
-                    }
-
-                    var tdContent = `<p class="text-center">${valueFormatado}</p>`;
-                    container.html(tdContent);
-
-                }
-            },
-            {
-                dataField: "descricao",
-                caption: "Descricao",
-                dataType: "number",
-                visible: true,
-                {#width: 150,#}
-                headerCellTemplate: function (container, options) {
-                    // função filterRow(container, options, headerDefault);
-                    // 1 parâmetro, container: elemento HTML referente a este header
-                    // 2 parâmetro, options: todas as opções referente a esta instancia do datagrid
-                    // 3 parâmetro, headerDefault: recebe um booleano, caso você esteja inserindo um html diferente do que existe no ~caption: "NomeDaColuna"~ coloque o parâmetro false, indicando que o header não é default, caso contrário a função irá inserir o caption como nome da coluna por padrão, este parâmetro pode ser opcional.
-                    filterRow(container, options);
-                },
-                cellTemplate: function (container, options) {
-                    var dataField = options.column.dataField;
-                    var value = options.data[dataField]
-
-                    if (parseFloat(value).toString() === "NaN" || parseFloat(value).toString() === "undefined") {
-                    } else {
-                        value = value + "%";
-                    }
-
-                    var tdContent = `<p class="text-center">${value}</p>`;
-                    container.html(tdContent);
-                }
-            },
-
-            // {
-            //     dataField: "categoria",
-            //     caption: "Categoria",
-            //     dataType: "string",
-            //     visible: true,
-            //     width: 150,
-            //     headerCellTemplate: function (container, options) {
-            //         // função filterRow(container, options, headerDefault);
-            //         // 1 parâmetro, container: elemento HTML referente a este header
-            //         // 2 parâmetro, options: todas as opções referente a esta instancia do datagrid
-            //         // 3 parâmetro, headerDefault: recebe um booleano, caso você esteja inserindo um html diferente do que existe no ~caption: "NomeDaColuna"~ coloque o parâmetro false, indicando que o header não é default, caso contrário a função irá inserir o caption como nome da coluna por padrão, este parâmetro pode ser opcional.
-            //         filterRow(container, options);
-            //     },
-            //     cellTemplate: function (container, options) {
-            //         container.css('text-align', 'center');
-            //         container.html(`
-            //             <span class="text-uppercase font-weight-semibold">${options.data[options.column.dataField]}</span>
-            //             <div class="d-flex justify-content-center">
-            //                 <span class="text-muted"><span class="font-weight-semibold">Grupo:</span> ${options.data.categoria_pai}</span>
-            //             </div>
-            //         `);
-            //     }
-            // },
+            {#{#}
+            {#    dataField: "categoria",#}
+            {#    caption: "Categoria",#}
+            {#    dataType: "string",#}
+            {#    visible: true,#}
+            {#    width: 150,#}
+            {#    headerCellTemplate: function (container, options) {#}
+            {#        // função filterRow(container, options, headerDefault);#}
+            {#        // 1 parâmetro, container: elemento HTML referente a este header#}
+            {#        // 2 parâmetro, options: todas as opções referente a esta instancia do datagrid#}
+            {#        // 3 parâmetro, headerDefault: recebe um booleano, caso você esteja inserindo um html diferente do que existe no ~caption: "NomeDaColuna"~ coloque o parâmetro false, indicando que o header não é default, caso contrário a função irá inserir o caption como nome da coluna por padrão, este parâmetro pode ser opcional.#}
+            {#        filterRow(container, options);#}
+            {#    },#}
+            {#    cellTemplate: function (container, options) {#}
+            {#        container.css('text-align', 'center');#}
+            {#        container.html(`#}
+            {#             <span class="text-uppercase font-weight-semibold">${options.data[options.column.dataField]}</span>#}
+            {#             <div class="d-flex justify-content-center">#}
+            {#                 <span class="text-muted"><span class="font-weight-semibold">Grupo:</span> ${options.data.categoria_pai}</span>#}
+            {#             </div>#}
+            {#         `);#}
+            {#    }#}
+            {# },#}
         ]
     }).dxDataGrid("instance");
 </script>

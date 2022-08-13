@@ -10,9 +10,9 @@ urlpatterns = [
     re_path('^configracoes$', views.Configuracoes.as_view(), name='configuracoes'),
 
     # Ajax functions
-    re_path(r'^contas$', views.BankAccount().as_view(), name='conta'),
-    re_path(r'^cartoes$', views.CreditCard().as_view(), name='credit_card'),
-    re_path(r'^categorias$', views.Category().as_view(), name='categoria'),
+    re_path(r'^account', views.BankAccount().as_view(), name='bank_account'),
+    re_path(r'^card$', views.CreditCard().as_view(), name='credit_card'),
+    re_path(r'^category$', views.Category().as_view(), name='category'),
     re_path(r'^fatura$', views.Bill().as_view(), name='fatura'),
 
     re_path(r'^extrato$', views.Statement().as_view(), name='statement'),

@@ -204,7 +204,7 @@
 
 <!-- Busca lista de autores autores -->
 <script>
-    function get_combo_authors() {
+    function get_authors_combo() {
         $.ajax({
             type: "GET",
             url: "{% url 'library:author' %}",
@@ -242,7 +242,7 @@
         });
     }
 
-    function get_table_authors() {
+    function get_authors_table() {
         $.ajax({
             type: "GET",
             url: "{% url 'library:author' %}",

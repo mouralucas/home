@@ -42,7 +42,7 @@
                     </div>
                 </div><!-- .card-header -->
                 <div class="card-body">
-                    <div id="tabela_contas_bancarias" class="w-100"></div>
+                    <div id="table_bank_account_finance" class="w-100"></div>
                 </div><!-- .card-body -->
             </div>
         </div>
@@ -79,7 +79,7 @@
 
 
         <!-- Inicialização da tabela de extrato de investimentos -->
-        let dados_tabela_contas_bancarias = new DevExpress.data.DataSource({
+        let data_table_bank_account_finance = new DevExpress.data.DataSource({
             store: {
                 type: 'array',
                 key: "id",
@@ -115,5 +115,7 @@
 
         get_investment_table();
         get_creditcard_table();
+        get_categories_table(table_category_finance);
+        get_bank_account_table(table_bank_account_finance);
     </script>
 {% endblock %}
