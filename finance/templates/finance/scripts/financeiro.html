@@ -271,6 +271,26 @@
     }
 </script>
 
+<!-- Get variable expenses chart -->
+<script>
+    function get_variable_expenses_chart() {
+        $.ajax({
+            type: 'GET',
+            url: '{% url 'finance:fixed_expenses' %}',
+            data: {
+                'reference': 202206,
+            },
+            traditional: true,
+            success: function (response) {
+                chart_pie_variable_expenses_finance.dxPieChart("option", "dataSource", response.expenses);
+            },
+            error: function (response) {
+
+            }
+        });
+    }
+</script>
+
 <!-- Get expenses evolution chart -->
 <script>
     function get_expenses_evolution_chart() {

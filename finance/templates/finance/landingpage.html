@@ -46,12 +46,12 @@
                 <div class="card-header d-flex flex-wrap justify-content-between">
                     <div class="col-6">
                         {#                        <img src="{% static 'img/icon_graph01.svg' %}" alt="Graph icon" width="25">#}
-                        Despesas Fixas
+                        Despesas Variáveis
                     </div>
                     <div class="col-2"></div>
                 </div><!-- .card-header -->
                 <div class="card-body">
-                    <div id="" class="container"></div>
+                    <div id="chart_variable_expenses_finance" class="container"></div>
                 </div><!-- .card-body -->
             </div>
         </div>
@@ -123,7 +123,6 @@
 
     <!-- Inicialização da tabela -->
     <script>
-    {#DevExpress.localization.locale(navigator.language);#}
         let dados_tabela_extrato_bancario = new DevExpress.data.DataSource({
             store: {
                 type: 'array',
@@ -131,7 +130,6 @@
                 data: [],
             }
         });
-
 
         <!-- Inicialização da tabela de extrato de investimentos -->
         let dados_tabela_extrato_investimento = new DevExpress.data.DataSource({
@@ -150,14 +148,19 @@
                 data: [],
             }
         });
-
-        let data_chart_pie_fixed_expenses_finance = new DevExpress.data.DataSource({});
-        let data_chart_line_expenses_evolution_finance = new DevExpress.data.DataSource({});
     </script>
     {% include 'finance/tables/extrato_bancario.html' %}
     {% include 'finance/tables/extrato_investimento.html' %}
     {% include 'finance/tables/fatura_credito.html' %}
+
+    <!-- Charts data source intances -->
+    <script>
+        let data_chart_pie_fixed_expenses_finance = new DevExpress.data.DataSource({});
+        let data_chart_pie_variable_expenses_finance = new DevExpress.data.DataSource({});
+        let data_chart_line_expenses_evolution_finance = new DevExpress.data.DataSource({});
+    </script>
     {% include 'finance/charts/fixed_expenses.html' %}
+    {% include 'finance/charts/variable_expenses.html' %}
     {% include 'finance/charts/evolution_expenses.html' %}
 
     <script>
@@ -183,11 +186,12 @@
         get_bank_account();
         get_creditcard();
         get_fixed_expenses_chart();
+        get_variable_expenses_chart();
         get_expenses_evolution_chart();
     </script>
 
     <script>
-    var lista = [{
+        var lista = [{
             country: 'USA',
             hydro: 59.8,
             oil: 937.6,
