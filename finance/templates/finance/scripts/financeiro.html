@@ -125,7 +125,7 @@
     function get_bank_account() {
         $.ajax({
             type: "GET",
-            url: "{% url 'finance:conta' %}",
+            url: "{% url 'finance:bank_account' %}",
             data: {},
             success: function (response) {
                 var combos_contas = $("#add_extrato_conta, #combo_conta_extrato");
