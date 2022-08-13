@@ -64,16 +64,70 @@ class Misc:
         return response
 
     def get_category(self, module, id_selected=''):
-        categorias = core.models.Category.objects.values('id', 'name', 'description', 'comments').ativos() \
+        categories = core.models.Category.objects.values('id', 'name', 'description', 'comments').ativos() \
             .annotate(is_selected=Case(When(id=id_selected, then=True),
                                        default=False,
                                        output_field=BooleanField()),
                       id_father=F('father_id'),
-                      nm_father=F('father__description')).filter(module=module)
+                      nm_father=F('father__name')).filter(module=module)
 
         response = {
             'status': True,
-            'categories': list(categorias)
+            'categories': list(categories)
+        }
+
+        return response
+
+    def set_category(self, id_category, name=None, module_id=None, description=None, comments=None, request=None):
+        """
+        :Name: set_category
+        :Description: Save the information about a category
+        :Created by: Lucas Penha de Moura - 13/08/2022
+        :Edited by:
+
+        Explicit params:
+        :param id_category: The id of the category
+        :param name: The name of the category
+        :param module_id: The id of the module of the category
+        :param description: The description of the category
+        :param comments: The comments about the category
+        :param request: The request
+
+        Implicit params (passed in the class instance or set by other functions):
+        None
+        """
+        if not id_category:
+            return {
+                'status': False,
+                'description': 'É necessário informar um id'
+            }
+
+        category = core.models.Category.objects.filter(pk=id_category).first()
+        if not category:
+            category = core.models.Category()
+            category.id = id_category
+
+        category.name = name
+        category.description = description
+        category.comments = comments
+        category.module_id = module_id
+        category.save(request_=request)
+
+        response = self.get_category(module=module_id)
+
+        return response
+
+    def get_module(self, id_selected):
+        modules = core.models.Module.objects.filter('id', 'name') \
+            .annotate(is_selected=Case(When(id=id_selected, then=True),
+                                       default=False,
+                                       output_field=BooleanField()),
+                      id_father=F('father_id'),
+                      nm_father=F('father__name'))
+
+        response = {
+            'status': True,
+            'modules': list(modules)
         }
 
         return response
