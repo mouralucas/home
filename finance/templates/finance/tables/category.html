@@ -51,7 +51,8 @@
                             //Ação do botão
                             let modal = $("#modal_category_finance");
 
-                            get_modules_combo('combo_module_category_core')
+                            get_modules_combo('combo_module_category_core');
+                            get_categories_combo('combo_father_category_category_core', 'father', 'finance', '');
 
                             modal.find('.seletorBtnSalvar').off('click').on('click', function (ev) {
                                 // load('on');

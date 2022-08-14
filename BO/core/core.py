@@ -1,4 +1,5 @@
 from django.db.models import Case, When, BooleanField, F
+from django.utils.translation import gettext_lazy as _
 
 import core.models
 import core.serializers
@@ -34,14 +35,14 @@ class Misc:
 
     def get_country(self, campos=None):
         if campos is None:
-            campos = ['codigo', 'nome']
+            campos = ['id', 'name']
 
-        contries = core.models.Pais.objects.order_by('codigo')
+        contries = core.models.Country.objects.order_by('id')
 
         if not contries:
             response = {
                 'status': False,
-                'descricao': 'Nenhum idioma encontrado'
+                'description': _('Nenhum país encontrado')
             }
             return response
 
@@ -63,13 +64,43 @@ class Misc:
 
         return response
 
-    def get_category(self, module, id_selected=''):
+    def get_category(self, show_mode, module_id, selected_id=''):
+        """
+        :Name: get_category
+        :Description: Save the information about a category
+        :Created by: Lucas Penha de Moura - 14/08/2022
+        :Edited by:
+
+        Explicit params:
+        :param show_mode: Indicate the requested return, father, children or all
+                            -- father - return only the father categories
+                            -- children - return only the children categories
+                            -- all - return all categories
+        :param module_id: The module of the categories
+        :param selected_id: The id of selected category, returned as True in the json
+
+        Implicit params (passed in the class instance or set by other functions):
+        None
+        """
+        if show_mode not in ['all', 'father', 'children']:
+            return {
+                'status': False,
+                'description': _('Show mode dever ser uma das três opções: all, father ou children')
+            }
+
+        filters = {
+            'module_id': module_id
+        }
+
+        if show_mode is not 'all':
+            filters['father_id__isnull'] = True if show_mode == 'father' else False
+
         categories = core.models.Category.objects.values('id', 'name', 'description', 'comments').ativos() \
-            .annotate(is_selected=Case(When(id=id_selected, then=True),
+            .annotate(is_selected=Case(When(id=selected_id, then=True),
                                        default=False,
                                        output_field=BooleanField()),
                       id_father=F('father_id'),
-                      nm_father=F('father__name')).filter(module=module)
+                      nm_father=F('father__name')).filter(**filters).order_by('order')
 
         response = {
             'status': True,
@@ -113,7 +144,7 @@ class Misc:
         category.module_id = module_id
         category.save(request_=request)
 
-        response = self.get_category(module=module_id)
+        response = self.get_category(module_id=module_id)
 
         return response
 

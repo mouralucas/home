@@ -347,6 +347,7 @@ class Category(Log):
     comments = models.TextField(null=True)
     father = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
     module = models.ForeignKey('core.Module', on_delete=models.DO_NOTHING, null=True)
+    order = models.DecimalField(max_digits=10, decimal_places=4, null=True)
 
     class Meta:
         db_table = 'public"."category'

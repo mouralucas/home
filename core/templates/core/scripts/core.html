@@ -14,6 +14,7 @@
             data: {
                 'show_mode': show_mode,
                 'module': module,
+                'selected_id': selected_id,
             },
             success: function (response) {
                 var combo = $("#" + origin);
@@ -39,12 +40,13 @@
 
 <!-- Get finance categories tables -->
 <script>
-    function get_categories_table(origin) {
+    function get_categories_table(origin, show_mode, module) {
         $.ajax({
             type: "GET",
             url: "{% url 'core:category' %}",
             data: {
-                'module': 'finance',
+                'show_mode': show_mode,
+                'module': module,
             },
             success: function (response) {
                 if (response.status) {

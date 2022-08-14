@@ -30,7 +30,7 @@ class Category(View):
         module = self.request.GET.get('module')
 
         # response = BO.finance.finance.Finance().get_category(selected_id=selected_id)
-        response = BO.core.core.Misc().get_category(module='finance')
+        response = BO.core.core.Misc().get_category(show_mode=show_mode, module_id=module, selected_id=selected_id)
 
         return JsonResponse(response, safe=False)
 
