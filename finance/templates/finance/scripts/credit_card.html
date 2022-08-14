@@ -182,18 +182,22 @@
 
 <!-- Clean credit card bill modal -->
 <script>
-    function resetFieldsCreditCardBill() {
+    function clean_creditcard_bill_modal() {
+        // Set amount to default
         $("#input_amount_bill_finance").maskMoney('mask', 0.00);
-        {#$("#input_dat_purchase_bill_finance").datepicker('today');#}
-        {#$("#input_dat_payment_bill_finance");#}
         $("#input_amount_original_bill_finance").maskMoney('mask', 0.00);
         $("#input_amount_tax_bill_finance").maskMoney('mask', 0.00);
         $("#input_exchange_rate_bill_finance").maskMoney('mask', 0.00);
 
-        // Combo boxes
+        // Set combos to default
         $("#combo_creditcard_bill_finance").val("0").change();
         $("#combo_currency_bill_finance").val("0").change();
         $("#combo_stallment_bill_finance").val("0").change();
+
+        // Disble inputs
+        $("#input_amount_original_bill_finance").prop('disabled', true);
+        $("#input_amount_tax_bill_finance").prop('disabled', true);
+        $("#input_exchange_rate_bill_finance").prop('disabled', true);
     }
 </script>
 
