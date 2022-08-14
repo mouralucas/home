@@ -1,6 +1,6 @@
-<!-- Get credit card tables -->
+<!-- Get credit card -->
 <script>
-    function get_creditcard_table() {
+    function get_credit_card_table() {
         $.ajax({
             type: "GET",
             url: "{% url 'finance:credit_card' %}",
@@ -20,32 +20,59 @@
             }
         });
     }
+
+    function get_credit_card_combo(origin) {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'finance:credit_card' %}",
+            data: {},
+            success: function (response) {
+                var combo_box = $("#" + origin);
+
+                combo_box.attr('disabled', false);
+                combo_box.find('option').remove().end().append('<option value=0>Selecione</option>');
+                $.each(response.credit_cards, function (key, value) {
+                    combo_box.append('<option value=' + value.id + '>' + value.name + '</option>');
+                });
+                load('off');
+            },
+            error: function (data) {
+                load('off');
+                toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
+            }
+        });
+    }
 </script>
 
 <!-- Update fields on credit card bill modal -->
 <script>
     function updateBillEntry() {
-        // Components
-        var combo_currency = $("#combo_currency_bill_entry_finance");
-        var input_vlr_original = $("#input_vlr_original_bill_entry_finance");
-        var input_iof = $("#input_vlr_tax_bill_entry_finance");
-        var input_vlr_currency = $("#input_vlr_currency_bill_entry_finance");
-        // Define all currency inputs
-        {#$("#input_vlr_bill_entry_finance").maskMoney('mask', 0)#}
-        {#$("#input_vlr_original_bill_entry_finance").maskMoney('mask', 0)#}
-        {#iof.maskMoney('mask', 0)#}
-        {#vlr_currency.maskMoney('mask', 0)#}
+        // Inputs
+        var input_amount = $("#input_amount_bill_finance");
+        var input_dat_purchase = $("#input_dat_purchase_bill_finance");
+        var input_dat_payment = $("#input_dat_payment_bill_finance");
+        var input_amount_original = $("#input_amount_original_bill_finance");
+        var input_tax = $("#input_amount_tax_bill_finance");
+        var input_exchange_rate = $("#input_exchange_rate_bill_finance");
+
+        // Combo boxes
+        var combo_credit_card = $("#combo_creditcard_bill_finance");
+        var combo_currency = $("#combo_currency_bill_finance");
+        var combo_stallment = $("#combo_stallment_bill_finance");
+
 
         if (combo_currency.val() !== 'BRL') {
-            input_iof.removeAttr('disabled');
-            input_vlr_currency.removeAttr('disabled');
+            input_tax.prop('disabled', false);
+            input_exchange_rate.prop('disabled', false);
+            input_amount_original.prop('disabled', false);
         } else {
-            input_iof.attr('disabled', 'disabled');
-            input_vlr_currency.attr('disabled', 'disabled');
-            input_iof.maskMoney('mask', 0);
-            input_vlr_currency.maskMoney('mask', 0);
+            input_tax.prop('disabled', true);
+            input_tax.maskMoney('mask', 0.00);
 
-            input_vlr_original.maskMoney('mask', $("#input_vlr_bill_entry_finance").val())
+            input_exchange_rate.prop('disabled', true);
+            input_exchange_rate.maskMoney('mask', 0.00);
+
+            input_amount_original.maskMoney('mask', parseFloat(input_amount.val().replace("R$ ", "")));
         }
 
     }
@@ -156,8 +183,17 @@
 <!-- Clean credit card bill modal -->
 <script>
     function resetFieldsCreditCardBill() {
-        $("#combo_stallment_bill_entry_finance").val(1).change();
-        $("#div_stallments").empty();
+        $("#input_amount_bill_finance").maskMoney('mask', 0.00);
+        {#$("#input_dat_purchase_bill_finance").datepicker('today');#}
+        {#$("#input_dat_payment_bill_finance");#}
+        $("#input_amount_original_bill_finance").maskMoney('mask', 0.00);
+        $("#input_amount_tax_bill_finance").maskMoney('mask', 0.00);
+        $("#input_exchange_rate_bill_finance").maskMoney('mask', 0.00);
+
+        // Combo boxes
+        $("#combo_creditcard_bill_finance").val("0").change();
+        $("#combo_currency_bill_finance").val("0").change();
+        $("#combo_stallment_bill_finance").val("0").change();
     }
 </script>
 

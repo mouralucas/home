@@ -16,55 +16,55 @@
                     <div class="row">
                         <p class="col-6">
                             <span class="font-weight-bold">Cartão:</span>
-                            <select type="da" id="combo_creditcard_bill_entry_finance" class="form-control">
+                            <select type="da" id="combo_creditcard_bill_finance" class="form-control">
                                 <option value=0 selected>Selecione</option>
                             </select>
                         </p>
                         <p class="col-6">
                             <span class="font-weight-bold">Valor:</span>
-                            <input type="text" id="input_vlr_bill_entry_finance" tabindex="0" class="form-control text-right currency" onfocusout="updateBillEntry()">
+                            <input type="text" id="input_amount_bill_finance" tabindex="0" class="form-control text-right currency" onfocusout="updateBillEntry()">
                         </p>
                     </div>
                     <div class="row">
                         <p class="col-6">
                             <span class="font-weight-bold">Data compra:</span>
-                                <input type="text" id="input_dat_purchase_bill_entry_finance" tabindex="0" class="form-control data">
+                                <input type="text" id="input_dat_purchase_bill_finance" tabindex="0" class="form-control data">
                         </p>
                         <p class="col-6">
                             <span class="font-weight-bold">Data pagamento:</span>
-                            <input type="da" id="input_dat_payment_bill_entry_finance" tabindex="0" class="form-control data">
+                            <input type="da" id="input_dat_payment_bill_finance" tabindex="0" class="form-control data">
                         </p>
                     </div>
                     <div class="row">
                         <p class="col-3">
                             <span class="font-weight-bold">Moeda:</span>
-                            <select type="da" id="combo_currency_bill_entry_finance" class="form-control" onchange="updateBillEntry();">
+                            <select type="da" id="combo_currency_bill_finance" class="form-control" onchange="updateBillEntry();">
                             </select>
                         </p>
                         <p class="col-3">
                             <span class="font-weight-bold">Vlr original:</span>
-                            <input type="text" id="input_vlr_original_bill_entry_finance" tabindex="0" class="form-control currency">
+                            <input type="text" id="input_amount_original_bill_finance" disabled tabindex="0" class="form-control currency">
                         </p>
                         <p class="col-3">
                             <span class="font-weight-bold">IOF:</span>
-                            <input type="text" id="input_vlr_tax_bill_entry_finance" disabled tabindex="0" class="form-control currency">
+                            <input type="text" id="input_amount_tax_bill_finance" disabled tabindex="0" class="form-control currency">
                         </p>
                         <p class="col-3">
                             <span class="font-weight-bold" title="Valor da moeda em relação ao dólar">Vlr moeda:</span>
-                            <input type="text" id="input_exchange_rate_bill_entry_finance" disabled tabindex="0" class="form-control currency">
+                            <input type="text" id="input_exchange_rate_bill_finance" disabled tabindex="0" class="form-control currency">
                         </p>
                     </div>
                     <div class="row">
                         <p class="col-8">
                             <span class="font-weight-bold">Categoria:</span>
-                            <select type="da" id="combo_category_bill_entry_finance" class="form-control">
+                            <select type="da" id="combo_category_bill_finance" class="form-control">
                                 <option value=0 selected>Categoria</option>
                             </select>
                         </p>
                         <p class="col-4">
                             <!-- TODO: Se maior que 1 chamar uma função para add novas divs com as demais parcelas -->
                             <span class="font-weight-bold">Parcelas:</span>
-                            <select type="da" id="combo_stallment_bill_entry_finance" class="form-control" onchange="add_stallment(this.value)">
+                            <select type="da" id="combo_stallment_bill_finance" class="form-control" onchange="add_stallment(this.value)">
                                 <option value=1 selected>01</option>
                                 <option value=2>02</option>
                                 <option value=3>03</option>

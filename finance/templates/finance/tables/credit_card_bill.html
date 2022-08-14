@@ -51,7 +51,9 @@
                         //Busca as categorias disponíveis
                         get_categories_combo('combo_category_bill_entry_finance');
                         get_currency('combo_currency_bill_entry_finance');
-                        updateBillEntry();
+                        get_credit_card_combo('combo_creditcard_bill_finance');
+
+                        {#updateBillEntry();#}
 
                         //Chama função pasa salvar as informações
                         // TODO: trocar esta função pela ação direto do botão no modal

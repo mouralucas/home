@@ -68,7 +68,7 @@
                     </div>
                     <div class="col-2"></div>
                     <div class="col-2">
-                        <select id="combo_cartoes_fatura" onchange="get_bills();">
+                        <select id="combo_creditcard_bill_table_finance" onchange="get_bills();">
                         </select>
                     </div>
                     <div class="col-2">
@@ -184,7 +184,7 @@
 
         getPeriods();
         get_bank_account();
-        get_creditcard();
+        get_credit_card_combo('combo_creditcard_bill_table_finance');
         get_fixed_expenses_chart();
         get_variable_expenses_chart();
         get_expenses_evolution_chart();

@@ -100,27 +100,7 @@
         });
     }
 
-    function get_creditcard() {
-        $.ajax({
-            type: "GET",
-            url: "{% url 'finance:credit_card' %}",
-            data: {},
-            success: function (response) {
-                var combos_cartoes = $("#combo_creditcard_bill_entry_finance, #combo_cartoes_fatura");
 
-                combos_cartoes.attr('disabled', false);
-                combos_cartoes.find('option').remove().end().append('<option value=0>Cartões</option>');
-                $.each(response.credit_cards, function (key, value) {
-                    combos_cartoes.append('<option value=' + value.id + '>' + value.name + '</option>');
-                });
-                load('off');
-            },
-            error: function (data) {
-                load('off');
-                toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
-            }
-        });
-    }
 
     function get_bank_account() {
         $.ajax({
@@ -182,7 +162,7 @@
             url: "{% url 'finance:currency' %}",
             data: {},
             success: function (response) {
-                var combo = $("#combo_currency_bill_entry_finance");
+                var combo = $("#combo_currency_bill_finance");
                 combo.attr('disabled', false);
                 $.each(response.currency, function (key, value) {
                     combo.append('<option value=' + value.value + '>' + value.text + '</option>');
