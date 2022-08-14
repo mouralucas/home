@@ -117,8 +117,8 @@ class Misc:
 
         return response
 
-    def get_module(self, id_selected):
-        modules = core.models.Module.objects.filter('id', 'name') \
+    def get_module(self, id_selected='', is_father=None):
+        modules = core.models.Module.objects.values('id', 'name') \
             .annotate(is_selected=Case(When(id=id_selected, then=True),
                                        default=False,
                                        output_field=BooleanField()),

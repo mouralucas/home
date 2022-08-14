@@ -162,3 +162,5 @@ class PaymentDate(View):
         response = BO.finance.finance.Finance().get_payment_date(dat_purchase=dat_purchase, credit_card_id=credit_card_id)
 
         return JsonResponse(response, safe=False)
+
+

@@ -51,6 +51,8 @@
                             //Ação do botão
                             let modal = $("#modal_category_finance");
 
+                            get_modules_combo('combo_module_category_core')
+
                             modal.find('.seletorBtnSalvar').off('click').on('click', function (ev) {
                                 // load('on');
                                 alert('Salvar nova categoria');

@@ -1,3 +1,27 @@
+<!-- Get credit card tables -->
+<script>
+    function get_creditcard_table() {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'finance:credit_card' %}",
+            data: {},
+            success: function (response) {
+                if (response.status) {
+                    table_credit_card_finance._options._optionManager._options.dataSource._store._array = response.credit_cards;
+                    table_credit_card_finance.refresh();
+                } else {
+                    toastr.error('Ocorreu um erro inesperado: ' + response.description, 'Erro ao enviar')
+                }
+                load('off');
+            },
+            error: function (data) {
+                load('off');
+                toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
+            }
+        });
+    }
+</script>
+
 <!-- Update fields on credit card bill modal -->
 <script>
     function updateBillEntry() {
@@ -24,26 +48,6 @@
             input_vlr_original.maskMoney('mask', $("#input_vlr_bill_entry_finance").val())
         }
 
-    }
-</script>
-
-<!-- get all currency -->
-<script>
-    function get_currency() {
-        $.ajax({
-            type: "GET",
-            url: "{% url 'finance:currency' %}",
-            data: {},
-            success: function (response) {
-                var combo = $("#combo_currency_bill_entry_finance");
-                combo.attr('disabled', false);
-                $.each(response.currency, function (key, value) {
-                    combo.append('<option value=' + value.value + '>' + value.text + '</option>');
-                });
-            },
-            error: function (response) {
-            }
-        });
     }
 </script>
 
@@ -98,7 +102,7 @@
     }
 </script>
 
-<!-- Set the payment date -->
+<!-- Set the payment date (beta) -->
 <script>
     function set_payment_date() {
         $.ajax({
@@ -156,3 +160,4 @@
         $("#div_stallments").empty();
     }
 </script>
+

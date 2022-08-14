@@ -174,7 +174,27 @@
     }
 </script>
 
-<!-- Get finance categories -->
+<!-- get all currency -->
+<script>
+    function get_currency(origin) {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'finance:currency' %}",
+            data: {},
+            success: function (response) {
+                var combo = $("#combo_currency_bill_entry_finance");
+                combo.attr('disabled', false);
+                $.each(response.currency, function (key, value) {
+                    combo.append('<option value=' + value.value + '>' + value.text + '</option>');
+                });
+            },
+            error: function (response) {
+            }
+        });
+    }
+</script>
+
+<!-- Get finance categories combo boxes -->
 <script>
     function get_categories_combo(origin) {
         $.ajax({
@@ -203,6 +223,63 @@
     }
 </script>
 
+<!-- Get finance categories tables -->
+<script>
+    function get_categories_table(origin) {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'finance:category' %}",
+            data: {
+                'module': 'finance',
+            },
+            success: function (response) {
+                if (response.status) {
+                    origin._options._optionManager._options.dataSource._store._array = response.categories;
+                    origin.refresh();
+                } else {
+                    toastr.error('Ocorreu um erro inesperado: ' + response.description, 'Erro ao enviar');
+                }
+                load('off');
+            },
+            error: function (data) {
+                load('off');
+                toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
+            }
+        });
+    }
+</script>
+
+<!-- Get modules for the category modal -->
+<script>
+    function get_modules_combo(origin, selected_id) {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'core:module' %}",
+            data: {
+                'selected_id': typeof selected_id == 'undefined' ? null : selected_id,
+            },
+            success: function (response) {
+                if (response.status) {
+                    $("#" + origin).attr('disabled', false);
+                    $("#" + origin).find('option').remove().end().append('<option value=0>Selecione</option>');
+
+                    $.each(response.modules, function (key, value) {
+                        if (value.is_selected) {
+                            $("#" + origin).append('<option value=' + value.id + ' selected>' + value.name + '</option>');
+                        } else {
+                            $("#" + origin).append('<option value=' + value.id + '>' + value.name + '</option>');
+                        }
+                    });
+                }
+            },
+            error: function (response) {
+
+            }
+        });
+    }
+</script>
+
+<!-- TODO: trocar scripts de gráficos de arquivo -->
 <!-- Get fixed expenses chart -->
 <script>
     function get_fixed_expenses_chart() {
@@ -262,3 +339,4 @@
         });
     }
 </script>
+

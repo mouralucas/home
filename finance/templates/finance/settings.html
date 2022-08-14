@@ -70,7 +70,10 @@
 {% endblock %}
 
 {% block js %}
-    {% include 'finance/scripts/adm_financeiro.html' %}
+    {% include 'finance/scripts/finance.html' %}
+    {% include 'finance/scripts/credit_card.html' %}
+    {% include 'finance/scripts/bank_statement.html' %}
+    {% include 'finance/scripts/investment.html' %}
 
     <!-- Inicialização da tabela -->
     <script>
