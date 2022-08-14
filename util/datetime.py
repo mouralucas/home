@@ -6,27 +6,30 @@ from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 
 
-def format_data(data, mask='____-__-__'):
+def format_data(date, mask='____-__-__'):
     """
-    Autor: Lucas Penha de Moura - 03 de abril de 2020
+    :Name: format_data
+    :Description: Format the date into the requestd format
+    :Created by: Lucas Penha de Moura - 03/04/2020
+    :Edited by:
 
-    Função para formatação de data de acordo com a necessidade
-    Formatos suportados:
-        -> Entrada: dd/mm/aaaa - Saída: aaaa-mm-dd (mask=____-__-__) - DEFAULT
-        -> Entrada: aaaa-mm-dd - Saída: dd/mm/aaaa (mask=__/__/____)
-
-    :param data: A data a ser convertida
+    Explicit params:
+    :param date: A data a ser convertida
     :param mask: Formato de saída da data
-    :return: Data formatada de acordo com a mascara
+
+    Implicit params (passed in the class instance or set by other functions):
+    None
+    
+    :return Data formatada de acordo com a mascara
     """
     warnings.warn('Função depreciada devido a criação de classe DateTime.', DeprecationWarning, stacklevel=2)
-    data_formatada = data
+    data_formatada = date
 
-    if data is None or data == '':
+    if date is None or date == '':
         return None
 
     if mask == '____-__-__':
-        cleaned_data = str(data).replace("/", "")
+        cleaned_data = str(date).replace("/", "")
 
         ano = cleaned_data[4:8]
         mes = cleaned_data[2:4]
@@ -34,7 +37,7 @@ def format_data(data, mask='____-__-__'):
 
         data_formatada = str(ano) + '-' + str(mes) + '-' + str(dia)
     elif mask == '__/__/____':
-        cleaned_data = str(data).replace("-", "")
+        cleaned_data = str(date).replace("-", "")
 
         ano = cleaned_data[:4]
         mes = cleaned_data[4:6]

@@ -82,7 +82,7 @@ class Misc:
         Implicit params (passed in the class instance or set by other functions):
         None
         """
-        if show_mode not in ['all', 'father', 'children']:
+        if show_mode not in ['all', 'father', 'child']:
             return {
                 'status': False,
                 'description': _('Show mode dever ser uma das três opções: all, father ou children')
