@@ -1,0 +1,21 @@
+<!-- Get investiments for tables -->
+<script>
+    function get_investment_table() {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'finance:investment' %}",
+            data: {},
+            success: function (response) {
+                if (response.status) {
+                    tabela_aplicacoes._options._optionManager._options.dataSource._store._array = response.investments;
+                    tabela_aplicacoes.refresh();
+                }
+                load('off');
+            },
+            error: function (data) {
+                load('off');
+                toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
+            }
+        });
+    }
+</script>
