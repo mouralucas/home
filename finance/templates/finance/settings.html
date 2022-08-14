@@ -15,7 +15,7 @@
                     </div>
                 </div><!-- .card-header -->
                 <div class="card-body">
-                    <div id="tabela_aplicacoes" class="w-100"></div>
+                    <div id="table_investment_finance" class="w-100"></div>
                 </div><!-- .card-body -->
             </div>
         </div>
@@ -70,6 +70,7 @@
 {% endblock %}
 
 {% block js %}
+    <!-- Import the scripts from this module only -->
     {% include 'finance/scripts/finance.html' %}
     {% include 'finance/scripts/credit_card.html' %}
     {% include 'finance/scripts/bank_statement.html' %}
@@ -95,7 +96,7 @@
             }
         });
 
-        let dados_tabela_aplicacoes = new DevExpress.data.DataSource({
+        let data_table_investment_finance = new DevExpress.data.DataSource({
             store: {
                 type: 'array',
                 key: "id",

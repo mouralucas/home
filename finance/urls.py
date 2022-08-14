@@ -13,7 +13,7 @@ urlpatterns = [
     # Ajax functions
     re_path(r'^account$', ajax.BankAccount().as_view(), name='bank_account'),
     re_path(r'^card$', ajax.CreditCard().as_view(), name='credit_card'),
-    re_path(r'^category$', ajax.Category().as_view(), name='category'),
+    # re_path(r'^category$', ajax.Category().as_view(), name='category'),
     re_path(r'^fatura$', ajax.Bill().as_view(), name='fatura'),
 
     re_path(r'^extrato$', ajax.Statement().as_view(), name='statement'),

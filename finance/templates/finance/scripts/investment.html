@@ -7,8 +7,8 @@
             data: {},
             success: function (response) {
                 if (response.status) {
-                    tabela_aplicacoes._options._optionManager._options.dataSource._store._array = response.investments;
-                    tabela_aplicacoes.refresh();
+                    table_investment_finance._options._optionManager._options.dataSource._store._array = response.investments;
+                    table_investment_finance.refresh();
                 }
                 load('off');
             },

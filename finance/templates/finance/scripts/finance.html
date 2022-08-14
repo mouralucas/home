@@ -194,62 +194,7 @@
     }
 </script>
 
-<!-- Get finance categories combo boxes -->
-<script>
-    function get_categories_combo(origin) {
-        $.ajax({
-            type: "GET",
-            url: "{% url 'finance:category' %}",
-            data: {},
-            success: function (response) {
-                var combo = $("#" + origin);
-
-                combo.attr('disabled', false);
-                combo.find('option').remove().end().append('<option value=0>Selecione</option>');
-                $.each(response.categories, function (key, value) {
-                    if (value.is_selected) {
-                        combo.append('<option value=' + value.id + ' selected>' + value.name + '</option>');
-                    } else {
-                        combo.append('<option value=' + value.id + '>' + value.name + '</option>');
-                    }
-                });
-                load('off');
-            },
-            error: function (data) {
-                load('off');
-                toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
-            }
-        });
-    }
-</script>
-
-<!-- Get finance categories tables -->
-<script>
-    function get_categories_table(origin) {
-        $.ajax({
-            type: "GET",
-            url: "{% url 'finance:category' %}",
-            data: {
-                'module': 'finance',
-            },
-            success: function (response) {
-                if (response.status) {
-                    origin._options._optionManager._options.dataSource._store._array = response.categories;
-                    origin.refresh();
-                } else {
-                    toastr.error('Ocorreu um erro inesperado: ' + response.description, 'Erro ao enviar');
-                }
-                load('off');
-            },
-            error: function (data) {
-                load('off');
-                toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
-            }
-        });
-    }
-</script>
-
-<!-- Get modules for the category modal -->
+<!-- Get modules modal -->
 <script>
     function get_modules_combo(origin, selected_id) {
         $.ajax({

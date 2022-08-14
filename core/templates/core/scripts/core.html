@@ -1,0 +1,64 @@
+<!-- Get finance categories combo boxes -->
+<script>
+    /**
+     * @author Lucas Penha de Moura - 14/08/2022
+     * @param origin: the id of the combo box requesting the data
+     * @param show_mode: Indicates what information show on the combo (only children, only father, all)
+     * @param module: Indicate the module of teh category
+     * @param selected_id: The id of the selected category
+     */
+    function get_categories_combo(origin, show_mode, module, selected_id) {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'core:category' %}",
+            data: {
+                'show_mode': show_mode,
+                'module': module,
+            },
+            success: function (response) {
+                var combo = $("#" + origin);
+
+                combo.attr('disabled', false);
+                combo.find('option').remove().end().append('<option value=0>Selecione</option>');
+                $.each(response.categories, function (key, value) {
+                    if (value.is_selected) {
+                        combo.append('<option value=' + value.id + ' selected>' + value.name + '</option>');
+                    } else {
+                        combo.append('<option value=' + value.id + '>' + value.name + '</option>');
+                    }
+                });
+                load('off');
+            },
+            error: function (data) {
+                load('off');
+                toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
+            }
+        });
+    }
+</script>
+
+<!-- Get finance categories tables -->
+<script>
+    function get_categories_table(origin) {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'core:category' %}",
+            data: {
+                'module': 'finance',
+            },
+            success: function (response) {
+                if (response.status) {
+                    origin._options._optionManager._options.dataSource._store._array = response.categories;
+                    origin.refresh();
+                } else {
+                    toastr.error('Ocorreu um erro inesperado: ' + response.description, 'Erro ao enviar');
+                }
+                load('off');
+            },
+            error: function (data) {
+                load('off');
+                toastr.error('Ocorreu um erro inesperado.', 'Erro ao enviar');
+            }
+        });
+    }
+</script>

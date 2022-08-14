@@ -664,15 +664,18 @@
     <script src="{% static 'js/jquery.moneymask.min.js' %}"></script>
     <script src="{% static 'js/jquery.mask.js' %}"></script>
 
+    <!-- Global scripts -->
+    {% include 'core/scripts/core.html' %}
+
 {% endblock %}
 
 
 {% block  breaking_news_marquee %}
     <script>
-        $('.breaking_news').marquee({
-            pauseOnHover: true,
-            duration: 10000,
-        })
+    {#    $('.breaking_news').marquee({#}
+    {#        pauseOnHover: true,#}
+    {#        duration: 10000,#}
+    {#    })#}
     </script>
 {% endblock breaking_news_marquee %}
 

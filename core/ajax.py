@@ -21,3 +21,18 @@ class Module(View):
 
     def post(self, *args, **kwargs):
         pass
+
+
+class Category(View):
+    def get(self, *args, **kwargs):
+        selected_id = self.request.GET.get('selected_id')
+        show_mode = self.request.GET.get('show_mode')
+        module = self.request.GET.get('module')
+
+        # response = BO.finance.finance.Finance().get_category(selected_id=selected_id)
+        response = BO.core.core.Misc().get_category(module='finance')
+
+        return JsonResponse(response, safe=False)
+
+    def post(self, *args, **kwargs):
+        pass
