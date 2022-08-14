@@ -17,17 +17,21 @@
                 'selected_id': selected_id,
             },
             success: function (response) {
-                var combo = $("#" + origin);
+                if (response.status) {
+                    var combo = $("#" + origin);
 
-                combo.attr('disabled', false);
-                combo.find('option').remove().end().append('<option value=0>Selecione</option>');
-                $.each(response.categories, function (key, value) {
-                    if (value.is_selected) {
-                        combo.append('<option value=' + value.id + ' selected>' + value.name + '</option>');
-                    } else {
-                        combo.append('<option value=' + value.id + '>' + value.name + '</option>');
-                    }
-                });
+                    combo.attr('disabled', false);
+                    combo.find('option').remove().end().append('<option value=0>Selecione</option>');
+                    $.each(response.categories, function (key, value) {
+                        if (value.is_selected) {
+                            combo.append('<option value=' + value.id + ' selected>' + value.name + '</option>');
+                        } else {
+                            combo.append('<option value=' + value.id + '>' + value.name + '</option>');
+                        }
+                    });
+                } else {
+                     toastr.error('Ocorreu um erro inesperado: ' + response.description, 'Erro ao enviar');
+                }
                 load('off');
             },
             error: function (data) {

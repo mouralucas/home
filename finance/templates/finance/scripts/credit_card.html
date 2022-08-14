@@ -51,7 +51,7 @@
         var input_amount = $("#input_amount_bill_finance");
         var input_dat_purchase = $("#input_dat_purchase_bill_finance");
         var input_dat_payment = $("#input_dat_payment_bill_finance");
-        var input_amount_original = $("#input_amount_original_bill_finance");
+        var input_amount_currency = $("#input_amount_currency_bill_finance");
         var input_tax = $("#input_amount_tax_bill_finance");
         var input_exchange_rate = $("#input_exchange_rate_bill_finance");
 
@@ -64,7 +64,7 @@
         if (combo_currency.val() !== 'BRL') {
             input_tax.prop('disabled', false);
             input_exchange_rate.prop('disabled', false);
-            input_amount_original.prop('disabled', false);
+            input_amount_currency.prop('disabled', false);
         } else {
             input_tax.prop('disabled', true);
             input_tax.maskMoney('mask', 0.00);
@@ -72,7 +72,8 @@
             input_exchange_rate.prop('disabled', true);
             input_exchange_rate.maskMoney('mask', 0.00);
 
-            input_amount_original.maskMoney('mask', parseFloat(input_amount.val().replace("R$ ", "")));
+            input_amount_currency.prop('disabled', true);
+            input_amount_currency.maskMoney('mask', parseFloat(input_amount.val().replace("R$ ", "")));
         }
 
     }
@@ -80,17 +81,19 @@
 
 <!-- Save the bill entry -->
 <script>
-    function set_bill() {
-        var price = $('#input_vlr_bill_entry_finance').val() == '' ? 0 : $('#input_vlr_bill_entry_finance').val().replace('R$ ', '');
-        var original_price = $("#input_vlr_original_bill_entry_finance") == '' ? 0 : $("#input_vlr_original_bill_entry_finance").val().replace('R$ ', '');
-        var dat_purchase = $('#input_dat_purchase_bill_entry_finance').val();
-        var dat_payment = $('#input_dat_payment_bill_entry_finance').val();
-        var currency = $("#combo_currency_bill_entry_finance").val();
-        var tax = $("#input_vlr_tax_bill_entry_finance") == '' ? 0 : $("#input_vlr_tax_bill_entry_finance").val().replace('R$', '');
-        var exchange_rate = $("#input_exchange_rate_bill_entry_finance") == '' ? 0 : $("#input_exchange_rate_bill_entry_finance").val().replace('R$', '')
-        var category = $('#combo_category_bill_entry_finance').val();
-        var card_id = $('#combo_creditcard_bill_entry_finance').val();
-        var description = $('#add_fatura_descricao').val();
+    function    set_bill() {
+        var amount = $('#input_amount_bill_finance').val() == '' ? 0 : $('#input_amount_bill_finance').val().replace('R$ ', '');
+        var amount_currency = $("#input_amount_currency_bill_finance") == '' ? 0 : $("#input_amount_currency_bill_finance").val().replace('R$ ', '');
+        var dat_purchase = $('#input_dat_purchase_bill_finance').val();
+        var dat_payment = $('#input_dat_payment_bill_finance').val();
+        var currency = $("#combo_currency_bill_finance").val();
+        var tax = $("#input_amount_tax_bill_finance") == '' ? 0 : $("#input_amount_tax_bill_finance").val().replace('R$ ', '');
+        var price_dollar = null;
+        var price_currency_dollar = $("#input_price_currency_dollar_rate_bill_finance") == '' ? 0 : $("#input_price_currency_dollar_rate_bill_finance").val().replace('R$ ', '')
+        var category_id = $('#combo_category_bill_finance').val();
+        var card_id = $('#combo_creditcard_bill_finance').val();
+        var description = $('#input_description_bill_finance').val();
+        var tot_stallment = $('#combo_stallment_bill_finance').val();
 
         alert(card_id);
         $.ajax({
@@ -98,17 +101,20 @@
             url: "{% url 'finance:fatura' %}",
             // url: "#",
             data: {
-                'valor': price,
-                'original_price': original_price,
-                'dat_compra': dat_purchase,
-                'dat_pagamento': dat_payment,
+                'amount': amount,
+                'amount_currency': amount_currency,
+                'price_dollar': price_dollar,
+                'dat_purchase': dat_purchase,
+                'dat_payment': dat_payment,
                 'currency': currency,
-                'tax': tax,
-                'exchange_rate': exchange_rate,
-                'descricao': description,
-                'categoria_id': category,
-                'cartao_id': card_id,
+                'amount_tax': tax,
+                'price_currency_dollar': price_currency_dollar,
+                'description': description,
+                'category_id': category_id,
+                'card_id': card_id,
+                'tot_stallment': tot_stallment,
                 'csrfmiddlewaretoken': '{{ csrf_token }}',
+
             },
             success: function (response) {
                 if (response.status === true) {
@@ -185,19 +191,21 @@
     function clean_creditcard_bill_modal() {
         // Set amount to default
         $("#input_amount_bill_finance").maskMoney('mask', 0.00);
-        $("#input_amount_original_bill_finance").maskMoney('mask', 0.00);
+        $("#input_amount_currency_bill_finance").maskMoney('mask', 0.00);
         $("#input_amount_tax_bill_finance").maskMoney('mask', 0.00);
         $("#input_exchange_rate_bill_finance").maskMoney('mask', 0.00);
 
         // Set combos to default
         $("#combo_creditcard_bill_finance").val("0").change();
-        $("#combo_currency_bill_finance").val("0").change();
-        $("#combo_stallment_bill_finance").val("0").change();
+        $("#combo_currency_bill_finance").val("BRL").change();
+        $("#combo_stallment_bill_finance").val(1).change();
 
         // Disble inputs
-        $("#input_amount_original_bill_finance").prop('disabled', true);
+        $("#input_amount_currency_bill_finance").prop('disabled', true);
         $("#input_amount_tax_bill_finance").prop('disabled', true);
         $("#input_exchange_rate_bill_finance").prop('disabled', true);
+
+        $("#div_stallments").empty();
     }
 </script>
 

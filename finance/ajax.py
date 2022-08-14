@@ -50,7 +50,7 @@ class Statement(APIView):
         conta_id = self.request.POST.get('conta_id')
 
         response = BO.finance.finance.Finance(statement_id=extrato_id, reference=referencia, amount=valor, dat_compra=dat_compra, description=descricao,
-                                              categoria_id=categoria_id, account_id=conta_id) \
+                                              category_id=categoria_id, account_id=conta_id) \
             .set_extrato(request=self.request)
 
         return JsonResponse(response, safe=False)
@@ -71,20 +71,24 @@ class Bill(APIView):
 
     def post(self, *args, **kwargs):
         bill_id = self.request.POST.get('fatura_id')
-        price = self.request.POST.get('valor')
-        vlr_dolar = self.request.POST.get('vlr_dolar')
-        dat_purchase = self.request.POST.get('dat_compra')
-        dat_payment = self.request.POST.get('dat_pagamento')
-        nr_parcela = self.request.POST.get('nr_parcela', 1)
-        tot_parcela = self.request.POST.get('tot_parcela', 1)
+        amount = self.request.POST.get('amount')
+        amount_currency = self.request.POST.get('amount_currency')
+        price_dollar = self.request.POST.get('price_dollar')
+        amount_tax = self.request.POST.get('amount_tax')
+        price_currency_dollar = self.request.POST.get('price_currency_dollar')
+        dat_purchase = self.request.POST.get('dat_purchase')
+        dat_payment = self.request.POST.get('dat_payment')
+        stallment = self.request.POST.get('stallment', 1)# TODO: vira como forma de lista
+        tot_stallment = self.request.POST.get('tot_stallment', 1)
         currency = self.request.POST.get('currency')
-        descricao = self.request.POST.get('descricao')
-        categoria_id = self.request.POST.get('categoria_id')
-        cartao_id = self.request.POST.get('cartao_id')
+        description = self.request.POST.get('description')
+        category_id = self.request.POST.get('category_id')
+        card_id = self.request.POST.get('card_id')
 
-        response = BO.finance.finance.Finance(bill_id=bill_id, amount=price, vlr_dolar=vlr_dolar, dat_compra=dat_purchase, dat_pagamento=dat_payment,
-                                              nr_parcela=nr_parcela, tot_parcela=tot_parcela, currency_id=currency, description=descricao,
-                                              categoria_id=categoria_id, credit_card_id=cartao_id) \
+        response = BO.finance.finance.Finance(bill_id=bill_id, amount=amount, amount_currency=amount_currency, price_currency_dollar=price_currency_dollar, price_dollar=price_dollar,
+                                              dat_compra=dat_purchase, dat_pagamento=dat_payment, amount_tax=amount_tax,
+                                              stallment=stallment, tot_stallment=tot_stallment, currency_id=currency, description=description,
+                                              category_id=category_id, credit_card_id=card_id) \
             .set_bill(request=self.request)
 
         return JsonResponse(response, safe=False)

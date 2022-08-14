@@ -17,8 +17,8 @@ import util.datetime
 class Finance:
 
     def __init__(self, mes=None, ano=None, statement_id=None, bill_id=None, reference=None, account_id=None, credit_card_id=None, amount=None,
-                 vlr_original=None, vlr_dolar=None, vlr_moeda=None, tax=None, nr_parcela=None, tot_parcela=None, dat_compra=None, dat_pagamento=None,
-                 description=None, categoria_id=None, currency_id=None):
+                 amount_currency=None, price_currency_dollar=None, vlr_moeda=None, amount_tax=None, stallment=None, tot_stallment=None, dat_compra=None, dat_pagamento=None,
+                 description=None, category_id=None, currency_id=None, price_dollar=None):
         self.mes = mes
         self.ano = ano
 
@@ -26,16 +26,16 @@ class Finance:
         self.bill_id = bill_id
         self.reference = reference
         self.amount = amount
-        self.vlr_original = vlr_original
-        self.vlr_dolar = vlr_dolar
+        self.amount_currency = amount_currency
+        self.price_currency_dollar = price_currency_dollar
         self.vlr_moeda = vlr_moeda
-        self.tax = tax
-        self.nr_parcela = nr_parcela
-        self.tot_parcela = tot_parcela
+        self.amount_tax = amount_tax
+        self.stallment = stallment
+        self.tot_stallment = tot_stallment
         self.dat_compra = dat_compra
         self.dat_pagamento = dat_pagamento
         self.description = description
-        self.categoria_id = categoria_id
+        self.categoria_id = category_id
         self.conta_id = account_id
         self.credit_card_id = credit_card_id
         self.currency = currency_id
@@ -130,9 +130,9 @@ class Finance:
             return self.response
 
         if self.bill_id:
-            fatura = finance.models.CreditCardBill.objects.filter(pk=self.bill_id).first()
+            bill = finance.models.CreditCardBill.objects.filter(pk=self.bill_id).first()
         else:
-            fatura = finance.models.CreditCardBill()
+            bill = finance.models.CreditCardBill()
 
         # Não modificado
         dat_pagamento_date = util.datetime.data_to_datetime(self.dat_pagamento, formato='%d/%m/%Y')
@@ -140,19 +140,34 @@ class Finance:
         referencia_mes = dat_pagamento_date.month
         self.reference = referencia_ano * 100 + referencia_mes
 
-        fatura.cartao_credito_id = self.credit_card_id
-        fatura.reference = self.reference
-        fatura.dat_pagamento = dat_pagamento_date
-        fatura.dat_compra = util.datetime.data_to_datetime(self.dat_compra, formato='%d/%m/%Y')
-        fatura.valor = float(self.amount) * -1
-        fatura.categoria_id = self.categoria_id
-        fatura.vlr_original = float(self.amount) * -1
-        fatura.currency = self.currency
-        fatura.nr_parcela = self.nr_parcela
-        fatura.tot_parcela = self.tot_parcela
-        fatura.descricao = self.description
-        print(fatura)
-        fatura.save(request_=request)
+        bill.credit_card_id = self.credit_card_id
+        # Dates
+        bill.reference = self.reference
+        bill.dat_payment = dat_pagamento_date
+        bill.dat_purchase = util.datetime.data_to_datetime(self.dat_compra, formato='%d/%m/%Y')
+
+        # Amounts
+        bill.amount = float(self.amount) * -1
+        bill.amount_total = self.amount  # TODO: modificar para adicionar o valor total de compras parceladas
+        bill.amount_currency = float(self.amount_currency) * -1
+        bill.price_currency_dollar = self.price_currency_dollar
+        bill.price_dollar = 1
+
+        bill.currency = self.currency
+        bill.category_id = self.categoria_id
+
+        # bill.stallment = self.nr_parcela
+        bill.stallment = 1
+        bill.tot_stallment = self.tot_stallment
+        bill.description = self.description
+
+        bill.is_validated = True
+
+        bill.save(request_=request)
+
+        response = self.get_bills()
+
+        return response
 
     def get_bills(self):
         filters = {
@@ -255,7 +270,7 @@ class Finance:
             item.reference = self.reference
             item.data = datetime.strptime(row['date'], '%Y-%m-%d').date()
             item.amount = row['amount']
-            item.vlr_original = row['amount']
+            item.amount_currency = row['amount']
             item.moeda_codigo = 'real'
             item.is_validado = False
             item.cat_referencia = row['category']
