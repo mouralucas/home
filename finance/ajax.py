@@ -65,7 +65,7 @@ class Bill(APIView):
         if card_id in ['', '0']:
             card_id = None
 
-        response = BO.finance.finance.Finance(reference=referencia, credit_card_id=card_id).get_bills()
+        response = BO.finance.finance.Finance(reference=referencia, credit_card_id=card_id).get_bill()
 
         return JsonResponse(response, safe=False)
 

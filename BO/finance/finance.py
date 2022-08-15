@@ -165,11 +165,11 @@ class Finance:
 
         bill.save(request_=request)
 
-        response = self.get_bills()
+        response = self.get_bill()
 
         return response
 
-    def get_bills(self):
+    def get_bill(self):
         filters = {
             'reference': self.reference
         }
@@ -189,6 +189,19 @@ class Finance:
         self.response['bill'] = list(faturas)
 
         return self.response
+
+    def get_bill_statistic(self):
+        bills = finance.models.CreditCardBill.objects.all()
+        qtd_total = bills.count()
+        qtd_reference = bills.filter(reference=self.reference).count()
+
+        response = {
+            'status': True,
+            'qtd_total': qtd_total,
+            'qtd_reference': qtd_reference,
+        }
+
+        return response
 
     def get_evolucao_faturas(self, months=13):
         evolucao = finance.models.CreditCardBill.objects.values('reference') \

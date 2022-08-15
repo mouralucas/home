@@ -13,6 +13,12 @@ class Home(APIView):
             'periodos': util.datetime.DateTime().list_period(),
         }
 
+        # from tabula import read_pdf, convert_into
+        # path = '/home/lucas/Jupyter/foo2.pdf'
+        # # reads table from pdf file
+        # df = read_pdf(path, pages="all")
+        # convert_into(path, "output.csv", output_format="csv", pages='all')
+
         return render(self.request, 'finance/landingpage.html', context=context)
 
 
