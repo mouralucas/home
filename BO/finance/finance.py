@@ -296,16 +296,21 @@ class Finance:
 
         return lista_itens_retorno
 
-    def get_fixed_expenses(self):
+    def get_fixed_expenses(self, expense_type):
         filters = {
             'reference': self.reference
         }
 
-        fixed_expenses = finance.models.CategoryGroup.objects.values_list('category', flat=True).filter(group='fixed_expenses')
-        filters['category__in'] = list(fixed_expenses)
+        excluders = {}
 
-        statement = finance.models.BankStatement.objects.values('category__description').annotate(total=Sum('amount')).filter(**filters)
-        bill = finance.models.CreditCardBill.objects.values('category__description').annotate(total=Sum('amount')).filter(**filters)
+        fixed_expenses = finance.models.CategoryGroup.objects.values_list('category', flat=True).filter(group='fixed_expenses')
+        if expense_type == 'fixed':
+            filters['category__in'] = list(fixed_expenses)
+        else:
+            excluders['category__in'] = list(fixed_expenses)
+
+        statement = finance.models.BankStatement.objects.values('category__description').annotate(total=Sum('amount')).filter(**filters).exclude(**excluders)
+        bill = finance.models.CreditCardBill.objects.values('category__description').annotate(total=Sum('amount')).filter(**filters).exclude(**excluders)
 
         expenses = statement.union(bill)
 
@@ -320,6 +325,16 @@ class Finance:
         }
 
         return response
+
+    def variable_expenses(self):
+        filters = {
+            'reference': self.reference
+        }
+        fixed_expenses = finance.models.CategoryGroup.objects.values_list('category', flat=True).filter(group='fixed_expenses')
+        filters['category__in'] = list(fixed_expenses)
+
+        statement = finance.models.BankStatement.objects.values('category__description').annotate(total=Sum('amount')).filter(**filters)
+        bill = finance.models.CreditCardBill.objects.values('category__description').annotate(total=Sum('amount')).filter(**filters)
 
     def import_csv_investimento(self, path=None, skiprows=0):
         itens = pd.DataFrame([])

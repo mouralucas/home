@@ -92,7 +92,7 @@ class Misc:
             'module_id': module_id
         }
 
-        if show_mode is not 'all':
+        if show_mode != 'all':
             filters['father_id__isnull'] = True if show_mode == 'father' else False
 
         categories = core.models.Category.objects.values('id', 'name', 'description', 'comments').ativos() \

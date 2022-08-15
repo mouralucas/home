@@ -230,12 +230,13 @@
     function get_variable_expenses_chart() {
         $.ajax({
             type: 'GET',
-            url: '{% url 'finance:fixed_expenses' %}',
+            url: '{% url 'finance:variable_variable' %}',
             data: {
                 'reference': 202206,
             },
             traditional: true,
             success: function (response) {
+                console.log(response.expenses);
                 chart_pie_variable_expenses_finance.dxPieChart("option", "dataSource", response.expenses);
             },
             error: function (response) {

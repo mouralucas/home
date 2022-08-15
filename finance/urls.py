@@ -13,7 +13,6 @@ urlpatterns = [
     # Ajax functions
     re_path(r'^account$', ajax.BankAccount().as_view(), name='bank_account'),
     re_path(r'^card$', ajax.CreditCard().as_view(), name='credit_card'),
-    # re_path(r'^category$', ajax.Category().as_view(), name='category'),
     re_path(r'^fatura$', ajax.Bill().as_view(), name='fatura'),
 
     re_path(r'^extrato$', ajax.Statement().as_view(), name='statement'),
@@ -23,5 +22,6 @@ urlpatterns = [
     re_path(r'^ajax/currency$', ajax.Currency.as_view(), name='currency'),
     re_path(r'^ajax/payment/date$', ajax.PaymentDate.as_view(), name='payment_date'),
     re_path(r'^ajax/expenses/fixed$', ajax.FixedExpenses.as_view(), name='fixed_expenses'),
+    re_path(r'^ajax/expenses/variable$', ajax.VariableExpenses.as_view(), name='variable_variable'),
     re_path(r'^ajax/expenses/evolution$', ajax.ExpensesEvolution.as_view(), name='evolution_expenses'),
 ]
