@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.views import View
+from rest_framework.views import APIView
 
 import BO.core.core
 
@@ -36,3 +37,10 @@ class Category(View):
 
     def post(self, *args, **kwargs):
         pass
+
+
+class State(APIView):
+    def get(self, *args, **kwargs):
+        response = BO.core.core.Misc().get_states()
+
+        return JsonResponse(response, safe=False)

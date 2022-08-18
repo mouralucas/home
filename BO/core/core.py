@@ -162,3 +162,14 @@ class Misc:
         }
 
         return response
+
+    def get_states(self, id_selected=''):
+        states = core.models.State.objects.values('id', 'name', 'code') \
+            .annotate(country=F('country__name'))
+
+        response = {
+            'status': True,
+            'modules': list(states)
+        }
+
+        return response

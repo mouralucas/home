@@ -10,8 +10,7 @@ sentry-sdk
 pytz~=2022.1
 python-decouple
 python-dateutil==2.8.1
-
+numpy~=1.23.1
 
 # Deprecated
 django-composite-foreignkey==1.1.0
-numpy~=1.23.1
