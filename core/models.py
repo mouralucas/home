@@ -186,78 +186,78 @@ class ContatoLog(models.Model):
         abstract = True
 
 
-class PessoaLog(ContatoLog):
-    nm_completo = models.CharField(max_length=200, null=True)
-    nm_primeiro = models.CharField(max_length=200, null=True)
-    nm_ultimo = models.CharField(max_length=200, null=True)
+# class PessoaLog(ContatoLog):
+#     nm_completo = models.CharField(max_length=200, null=True)
+#     nm_primeiro = models.CharField(max_length=200, null=True)
+#     nm_ultimo = models.CharField(max_length=200, null=True)
+#
+#     cpf = models.BigIntegerField(null=True)
+#     cpf_form = models.CharField(max_length=20, null=True)
+#
+#     rg = models.CharField(max_length=15, null=True)
+#     rg_form = models.CharField(max_length=15, null=True)
+#
+#     dat_nasc = models.DateField(null=True)
+#
+#     imagem = models.FileField(upload_to='fotos/usuarios', default='fotos/sem-foto.png', null=True)
+#
+#     nm_mae = models.CharField(max_length=200, null=True)
+#     nm_pai = models.CharField(max_length=200, null=True)
+#
+#     cr_codigo = models.CharField(max_length=50, null=True)
+#     cr_uf = models.ForeignKey('core.UF', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_cr_uf')
+#     cr_tipo_codigo = models.CharField(null=True, max_length=200)
+#     cr_tipo_tipo = models.CharField(null=True, max_length=200, default='PESSOA.CONSELHO')
+#     cr = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_cr', to_fields={
+#         "codigo": "cr_tipo_codigo",
+#         "tipo": "cr_tipo_tipo"
+#     })
+#
+#     sexo_codigo = models.CharField(null=True, max_length=200)
+#     sexo_tipo = models.CharField(null=True, max_length=200, default='PESSOA.SEXO')
+#     sexo = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_sexo', to_fields={
+#         "codigo": "sexo_codigo",
+#         "tipo": "sexo_tipo"
+#     })
+#
+#     educacao_codigo = models.CharField(null=True, max_length=200)
+#     educacao_tipo = models.CharField(null=True, max_length=200, default='PESSOA.EDUCACAO')
+#     educacao = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_educacao', to_fields={
+#         "codigo": "educacao_codigo",
+#         "tipo": "educacao_tipo"
+#     })
+#
+#     ocupacao_codigo = models.CharField(null=True, max_length=200)
+#     ocupacao_tipo = models.CharField(null=True, max_length=200, default='PESSOA.OCUPACAO')
+#     ocupacao = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_ocupacao', to_fields={
+#         "codigo": "ocupacao_codigo",
+#         "tipo": "ocupacao_tipo"
+#     })
+#
+#     estado_civil_codigo = models.CharField(null=True, max_length=200)
+#     estado_civil_tipo = models.CharField(null=True, max_length=200, default='PESSOA.ESTADO_CIVIL')
+#     estado_civil = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_estado_civil', to_fields={
+#         "codigo": "estado_civil_codigo",
+#         "tipo": "estado_civil_tipo"
+#     })
+#
+#     class Meta(Log.Meta):
+#         abstract = True
 
-    cpf = models.BigIntegerField(null=True)
-    cpf_form = models.CharField(max_length=20, null=True)
 
-    rg = models.CharField(max_length=15, null=True)
-    rg_form = models.CharField(max_length=15, null=True)
-
-    dat_nasc = models.DateField(null=True)
-
-    imagem = models.FileField(upload_to='fotos/usuarios', default='fotos/sem-foto.png', null=True)
-
-    nm_mae = models.CharField(max_length=200, null=True)
-    nm_pai = models.CharField(max_length=200, null=True)
-
-    cr_codigo = models.CharField(max_length=50, null=True)
-    cr_uf = models.ForeignKey('core.UF', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_cr_uf')
-    cr_tipo_codigo = models.CharField(null=True, max_length=200)
-    cr_tipo_tipo = models.CharField(null=True, max_length=200, default='PESSOA.CONSELHO')
-    cr = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_cr', to_fields={
-        "codigo": "cr_tipo_codigo",
-        "tipo": "cr_tipo_tipo"
-    })
-
-    sexo_codigo = models.CharField(null=True, max_length=200)
-    sexo_tipo = models.CharField(null=True, max_length=200, default='PESSOA.SEXO')
-    sexo = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_sexo', to_fields={
-        "codigo": "sexo_codigo",
-        "tipo": "sexo_tipo"
-    })
-
-    educacao_codigo = models.CharField(null=True, max_length=200)
-    educacao_tipo = models.CharField(null=True, max_length=200, default='PESSOA.EDUCACAO')
-    educacao = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_educacao', to_fields={
-        "codigo": "educacao_codigo",
-        "tipo": "educacao_tipo"
-    })
-
-    ocupacao_codigo = models.CharField(null=True, max_length=200)
-    ocupacao_tipo = models.CharField(null=True, max_length=200, default='PESSOA.OCUPACAO')
-    ocupacao = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_ocupacao', to_fields={
-        "codigo": "ocupacao_codigo",
-        "tipo": "ocupacao_tipo"
-    })
-
-    estado_civil_codigo = models.CharField(null=True, max_length=200)
-    estado_civil_tipo = models.CharField(null=True, max_length=200, default='PESSOA.ESTADO_CIVIL')
-    estado_civil = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_estado_civil', to_fields={
-        "codigo": "estado_civil_codigo",
-        "tipo": "estado_civil_tipo"
-    })
-
-    class Meta(Log.Meta):
-        abstract = True
-
-
-class EnderecoLog(models.Model):
-    cep = models.CharField(max_length=10, null=True)
-    cep_form = models.CharField(max_length=15, null=True)
-    municipio = models.ForeignKey('core.Municipio', on_delete=models.DO_NOTHING, null=True)
-    bairro_cep = models.CharField(max_length=100, null=True)
-    endereco_cep = models.CharField(max_length=100, null=True)
-    endereco_comp_cep = models.CharField(max_length=200, null=True)
-    latitude_cep = models.CharField(max_length=200, null=True)
-    longitude_cep = models.CharField(max_length=200, null=True)
-    tipo_cep = models.CharField(max_length=200, null=True)
-
-    class Meta(Log.Meta):
-        abstract = True
+# class EnderecoLog(models.Model):
+#     cep = models.CharField(max_length=10, null=True)
+#     cep_form = models.CharField(max_length=15, null=True)
+#     municipio = models.ForeignKey('core.Municipio', on_delete=models.DO_NOTHING, null=True)
+#     bairro_cep = models.CharField(max_length=100, null=True)
+#     endereco_cep = models.CharField(max_length=100, null=True)
+#     endereco_comp_cep = models.CharField(max_length=200, null=True)
+#     latitude_cep = models.CharField(max_length=200, null=True)
+#     longitude_cep = models.CharField(max_length=200, null=True)
+#     tipo_cep = models.CharField(max_length=200, null=True)
+#
+#     class Meta(Log.Meta):
+#         abstract = True
 
 
 class UF(Log):
@@ -271,25 +271,45 @@ class UF(Log):
         db_table = 'public"."uf'
 
 
-class Municipio(Log):
-    uf = models.ForeignKey('core.UF', on_delete=models.DO_NOTHING, null=True)
-    codigo = models.IntegerField(primary_key=True)
+class State(Log):
+    name = models.CharField(max_length=200, null=True)
+    code = models.CharField(max_length=2, null=True)
+    postal_code_ini = models.CharField(max_length=80, null=True)
+    postal_code_fim = models.CharField(max_length=80, null=True)
+    country = models.ForeignKey('core.Country', on_delete=models.DO_NOTHING, null=True)
+
+    class Meta:
+        db_table = 'public"."state'
+
+
+# class Municipio(Log):
+#     uf = models.ForeignKey('core.UF', on_delete=models.DO_NOTHING, null=True)
+#     codigo = models.IntegerField(primary_key=True)
+#     nome = models.CharField(max_length=200)
+#     cep_faixa_ini = models.CharField(max_length=80, null=True)
+#     cep_faixa_fim = models.CharField(max_length=80, null=True)
+#
+#     class Meta(Log.Meta):
+#         db_table = 'public"."municipio'
+#
+#     def __str__(self):
+#         return self.nome
+
+
+class City(Log):
+    id = models.CharField(max_length=100, primary_key=True)
+    state = models.ForeignKey('core.State', on_delete=models.DO_NOTHING, null=True)
     nome = models.CharField(max_length=200)
     cep_faixa_ini = models.CharField(max_length=80, null=True)
     cep_faixa_fim = models.CharField(max_length=80, null=True)
-
-    class Meta(Log.Meta):
-        db_table = 'public"."municipio'
-
-    def __str__(self):
-        return self.nome
+    country = models.ForeignKey('core.Country', on_delete=models.DO_NOTHING, null=True)
 
 
-class Cep(Log, EnderecoLog):
-    cep = models.CharField(max_length=10, primary_key=True)
-
-    class Meta(Log.Meta):
-        db_table = 'public"."cep'
+# class Cep(Log, EnderecoLog):
+#     cep = models.CharField(max_length=10, primary_key=True)
+#
+#     class Meta(Log.Meta):
+#         db_table = 'public"."cep'
 
 
 class Tipo(Log):

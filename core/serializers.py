@@ -42,22 +42,6 @@ class IdiomaSerializer(DynamicFieldsModelSerializer):
         fields = '__all__'
 
 
-class MunicipioSerializer(DynamicFieldsModelSerializer):
-    warnings.warn('All serializers deprecated!!', DeprecationWarning, stacklevel=2)
-
-    class Meta:
-        model = core.models.Municipio
-        fields = '__all__'
-
-
-class CepSerializer(DynamicFieldsModelSerializer):
-    warnings.warn('All serializers deprecated!!', DeprecationWarning, stacklevel=2)
-
-    class Meta:
-        model = core.models.Cep
-        fields = '__all__'
-
-
 class CategoriaSerializer(DynamicFieldsModelSerializer):
     warnings.warn('All serializers deprecated!!', DeprecationWarning, stacklevel=2)
 
