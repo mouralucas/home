@@ -23,70 +23,11 @@ class CustomManager(models.Manager):
     def queryset(self):
         return CustomQuerySet(self.model)
 
-    def get_queryset(self):
-        ini = time.time()
-        qs = self.queryset()
-        fim = time.time()
-        tempo = Inteliger().tempo_pesquisa
-        try:
-            if 0 < tempo < fim - ini:
-                query = apps.get_model('log', BANCO.capitalize() + 'Query')
-                query(
-                    time=fim - ini,
-                    query=str(qs.query)
-                ).save()
-        except Exception as e:
-            print(e)
-            pass
-
-        return qs
-
-    def ativos(self):
-        return self.get_queryset().ativos()
+    def active(self):
+        return self.get_queryset().active()
 
     def desabilitar(self, request_=None):
         return self.get_queryset().desabilitar(request_=request_)
-
-
-# class DatLog(models.Model):
-#     dat_insercao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-#     dat_edicao = models.DateTimeField(auto_now=True, null=True, blank=True)
-#     dat_delete = models.DateTimeField(null=True, blank=True)
-#
-#     class Meta:
-#         managed = False
-#         abstract = True
-
-
-# class UsrLog(models.Model):
-#     usr_insercao = models.IntegerField(null=True, blank=True)
-#     usr_edicao = models.IntegerField(null=True, blank=True)
-#     usr_delete = models.IntegerField(null=True, blank=True)
-#
-#     origem_insercao_codigo = models.CharField(null=True, max_length=200, blank=True)
-#     origem_insercao_tipo = models.CharField(null=True, max_length=200, default='USR.PROFILE', blank=True)
-#     origem_insercao = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_origem_insercao', to_fields={
-#         "codigo": "origem_insercao_codigo",
-#         "tipo": "origem_insercao_tipo"
-#     })
-#
-#     origem_edicao_codigo = models.CharField(null=True, max_length=200, blank=True)
-#     origem_edicao_tipo = models.CharField(null=True, max_length=200, default='USR.PROFILE', blank=True)
-#     origem_edicao = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_origem_edicao', to_fields={
-#         "codigo": "origem_edicao_codigo",
-#         "tipo": "origem_edicao_tipo"
-#     })
-#
-#     origem_delete_codigo = models.CharField(null=True, max_length=200, blank=True)
-#     origem_delete_tipo = models.CharField(null=True, max_length=200, default='USR.PROFILE', blank=True)
-#     origem_delete = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_origem_delete', to_fields={
-#         "codigo": "origem_delete_codigo",
-#         "tipo": "origem_delete_tipo"
-#     })
-#
-#     class Meta:
-#         managed = False
-#         abstract = True
 
 
 class Log(models.Model):
@@ -186,80 +127,6 @@ class ContatoLog(models.Model):
         abstract = True
 
 
-# class PessoaLog(ContatoLog):
-#     nm_completo = models.CharField(max_length=200, null=True)
-#     nm_primeiro = models.CharField(max_length=200, null=True)
-#     nm_ultimo = models.CharField(max_length=200, null=True)
-#
-#     cpf = models.BigIntegerField(null=True)
-#     cpf_form = models.CharField(max_length=20, null=True)
-#
-#     rg = models.CharField(max_length=15, null=True)
-#     rg_form = models.CharField(max_length=15, null=True)
-#
-#     dat_nasc = models.DateField(null=True)
-#
-#     imagem = models.FileField(upload_to='fotos/usuarios', default='fotos/sem-foto.png', null=True)
-#
-#     nm_mae = models.CharField(max_length=200, null=True)
-#     nm_pai = models.CharField(max_length=200, null=True)
-#
-#     cr_codigo = models.CharField(max_length=50, null=True)
-#     cr_uf = models.ForeignKey('core.UF', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_cr_uf')
-#     cr_tipo_codigo = models.CharField(null=True, max_length=200)
-#     cr_tipo_tipo = models.CharField(null=True, max_length=200, default='PESSOA.CONSELHO')
-#     cr = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_cr', to_fields={
-#         "codigo": "cr_tipo_codigo",
-#         "tipo": "cr_tipo_tipo"
-#     })
-#
-#     sexo_codigo = models.CharField(null=True, max_length=200)
-#     sexo_tipo = models.CharField(null=True, max_length=200, default='PESSOA.SEXO')
-#     sexo = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_sexo', to_fields={
-#         "codigo": "sexo_codigo",
-#         "tipo": "sexo_tipo"
-#     })
-#
-#     educacao_codigo = models.CharField(null=True, max_length=200)
-#     educacao_tipo = models.CharField(null=True, max_length=200, default='PESSOA.EDUCACAO')
-#     educacao = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_educacao', to_fields={
-#         "codigo": "educacao_codigo",
-#         "tipo": "educacao_tipo"
-#     })
-#
-#     ocupacao_codigo = models.CharField(null=True, max_length=200)
-#     ocupacao_tipo = models.CharField(null=True, max_length=200, default='PESSOA.OCUPACAO')
-#     ocupacao = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_ocupacao', to_fields={
-#         "codigo": "ocupacao_codigo",
-#         "tipo": "ocupacao_tipo"
-#     })
-#
-#     estado_civil_codigo = models.CharField(null=True, max_length=200)
-#     estado_civil_tipo = models.CharField(null=True, max_length=200, default='PESSOA.ESTADO_CIVIL')
-#     estado_civil = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_estado_civil', to_fields={
-#         "codigo": "estado_civil_codigo",
-#         "tipo": "estado_civil_tipo"
-#     })
-#
-#     class Meta(Log.Meta):
-#         abstract = True
-
-
-# class EnderecoLog(models.Model):
-#     cep = models.CharField(max_length=10, null=True)
-#     cep_form = models.CharField(max_length=15, null=True)
-#     municipio = models.ForeignKey('core.Municipio', on_delete=models.DO_NOTHING, null=True)
-#     bairro_cep = models.CharField(max_length=100, null=True)
-#     endereco_cep = models.CharField(max_length=100, null=True)
-#     endereco_comp_cep = models.CharField(max_length=200, null=True)
-#     latitude_cep = models.CharField(max_length=200, null=True)
-#     longitude_cep = models.CharField(max_length=200, null=True)
-#     tipo_cep = models.CharField(max_length=200, null=True)
-#
-#     class Meta(Log.Meta):
-#         abstract = True
-
-
 class UF(Log):
     codigo = models.IntegerField(primary_key=True)
     nome = models.CharField(max_length=200, null=True)
@@ -282,20 +149,6 @@ class State(Log):
         db_table = 'public"."state'
 
 
-# class Municipio(Log):
-#     uf = models.ForeignKey('core.UF', on_delete=models.DO_NOTHING, null=True)
-#     codigo = models.IntegerField(primary_key=True)
-#     nome = models.CharField(max_length=200)
-#     cep_faixa_ini = models.CharField(max_length=80, null=True)
-#     cep_faixa_fim = models.CharField(max_length=80, null=True)
-#
-#     class Meta(Log.Meta):
-#         db_table = 'public"."municipio'
-#
-#     def __str__(self):
-#         return self.nome
-
-
 class City(Log):
     id = models.CharField(max_length=100, primary_key=True)
     state = models.ForeignKey('core.State', on_delete=models.DO_NOTHING, null=True)
@@ -303,13 +156,6 @@ class City(Log):
     cep_faixa_ini = models.CharField(max_length=80, null=True)
     cep_faixa_fim = models.CharField(max_length=80, null=True)
     country = models.ForeignKey('core.Country', on_delete=models.DO_NOTHING, null=True)
-
-
-# class Cep(Log, EnderecoLog):
-#     cep = models.CharField(max_length=10, primary_key=True)
-#
-#     class Meta(Log.Meta):
-#         db_table = 'public"."cep'
 
 
 class Tipo(Log):

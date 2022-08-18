@@ -44,7 +44,7 @@ class Finance:
 
     def get_bank_accounts(self, selected_id=''):
         bank_accounts = finance.models.BankAccount.objects.values('id', 'nm_bank', 'branch_formatted', 'account_number_formatted', 'dat_start',
-                                                                  'dat_end').ativos() \
+                                                                  'dat_end').active() \
             .annotate(is_selected=Case(When(id=selected_id, then=True),
                                        default=False,
                                        output_field=BooleanField()))
@@ -56,7 +56,7 @@ class Finance:
 
     def get_credit_cards(self, selected_id=''):
         # TODO: mudar para receber parametro de status
-        credit_cards = finance.models.CreditCard.objects.values('id', 'name', 'description', 'dat_threshold', 'dat_payment').ativos() \
+        credit_cards = finance.models.CreditCard.objects.values('id', 'name', 'description', 'dat_threshold', 'dat_payment').active() \
             .annotate(nm_status=Case(When(status=True, then=Value('Ativo')),
                                      default=Value('Cancelado'),
                                      output_field=CharField()),
@@ -70,7 +70,7 @@ class Finance:
         return self.response
 
     def get_category(self, selected_id=''):
-        categorias = core.models.Category.objects.values('id', 'description', 'comments').ativos() \
+        categorias = core.models.Category.objects.values('id', 'description', 'comments').active() \
             .annotate(is_selected=Case(When(id=selected_id, then=True),
                                        default=False,
                                        output_field=BooleanField()),

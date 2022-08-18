@@ -95,7 +95,7 @@ class Misc:
         if show_mode != 'all':
             filters['father_id__isnull'] = True if show_mode == 'father' else False
 
-        categories = core.models.Category.objects.values('id', 'name', 'description', 'comments').ativos() \
+        categories = core.models.Category.objects.values('id', 'name', 'description', 'comments').active() \
             .annotate(is_selected=Case(When(id=selected_id, then=True),
                                        default=False,
                                        output_field=BooleanField()),
