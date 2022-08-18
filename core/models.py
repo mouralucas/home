@@ -6,11 +6,11 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from core.util.core import Inteliger
+# from core.util.core import Inteliger
 
 
 class CustomQuerySet(models.QuerySet):
-    def ativos(self):
+    def active(self):
         return self.filter(status=True)
 
     def desabilitar(self, request_=None):
@@ -22,6 +22,24 @@ class CustomQuerySet(models.QuerySet):
 class CustomManager(models.Manager):
     def queryset(self):
         return CustomQuerySet(self.model)
+
+    def get_queryset(self):
+        ini = time.time()
+        qs = self.queryset()
+        fim = time.time()
+        tempo = 1
+        try:
+            if 0 < tempo < fim - ini:
+                query = apps.get_model('log', BANCO.capitalize() + 'Query')
+                query(
+                    time=fim - ini,
+                    query=str(qs.query)
+                ).save()
+        except Exception as e:
+            print(e)
+            pass
+
+        return qs
 
     def active(self):
         return self.get_queryset().active()
