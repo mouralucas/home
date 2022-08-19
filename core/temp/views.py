@@ -96,11 +96,87 @@ class MigrateAutorToAuthor(View):
             author.dat_birth = autor['dat_nascimento']
             author.description = autor['descricao']
             author.is_translator = autor['is_tradutor']
-            author.language_id = autor['idioma_id'].upper() if autor['idioma_id'] else None
+            # author.language_id = autor['idioma_id'].upper().strip() if autor['idioma_id'] else None
             author.country_id = autor['pais_id']
             author_list.append(author)
 
         library.models.Author.objects.bulk_create(author_list)
+
+
+class MigrateColecaoToCollectiontem(View):
+    def get(self, *args, **kwargs):
+        sql_alchemy = BO.conexao_db.conexao.SqlAlchemy(database='home_beta')
+
+        sql = 'select * from biblioteca.colecao order by id'
+
+        sql_alchemy.buscar(query=sql)
+        colecoes = sql_alchemy.get_dict()
+
+        collection_list = []
+        for colecao in colecoes:
+            collection = library.models.Collection()
+            collection.id = colecao['id']
+            collection.dat_created = colecao['dat_insercao']
+            collection.created_by_id = 1
+            collection.status = colecao['status']
+            collection.name = colecao['nome']
+            collection.description = colecao['descricao']
+            collection_list.append(collection)
+
+        library.models.Collection.objects.bulk_create(collection_list)
+        print()
+
+
+class MigrateEdtoraToPublisher(View):
+    def get(self, *args, **kwargs):
+        sql_alchemy = BO.conexao_db.conexao.SqlAlchemy(database='home_beta')
+
+        sql = 'select * from biblioteca.editora order by id'
+
+        sql_alchemy.buscar(query=sql)
+        editoras = sql_alchemy.get_dict()
+
+        publisher_list = []
+        for editora in editoras:
+            publisher = library.models.Publisher()
+            publisher.id = editora['id']
+            publisher.dat_created = editora['dat_insercao']
+            publisher.dat_last_edited = editora['dat_edicao']
+            publisher.created_by_id = 1
+            publisher.status = editora['status']
+            publisher.name = editora['nome']
+            publisher.description = editora['descricao']
+            publisher.country_id = editora['pais_id']
+            publisher_list.append(publisher)
+
+        library.models.Publisher.objects.bulk_create(publisher_list)
+        print()
+
+class MigrateSerieToSerie(View):
+    def get(self, *args, **kwargs):
+        sql_alchemy = BO.conexao_db.conexao.SqlAlchemy(database='home_beta')
+
+        sql = 'select * from biblioteca.serie order by id'
+
+        sql_alchemy.buscar(query=sql)
+        series = sql_alchemy.get_dict()
+
+        serie_list = []
+        for serie in series:
+            serie_new = library.models.Serie()
+            serie_new.id = serie['id']
+            serie_new.dat_created = serie['dat_insercao']
+            serie_new.dat_last_edited = serie['dat_edicao']
+            serie_new.created_by_id = 1
+            serie_new.status = serie['status']
+            serie_new.name = serie['name']
+            serie_new.nm_original = serie['nm_original']
+            serie_new.description = serie['description']
+            serie_new.country_id = serie['country_id']
+            serie_list.append(serie_new)
+
+        library.models.Serie.objects.bulk_create(serie_list)
+        print()
 
 class MigrateLivroToItem(View):
     def get(self, *args, **kwargs):
