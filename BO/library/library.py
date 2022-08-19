@@ -220,7 +220,7 @@ class Library:
         campos = ['id', 'name']
 
         status = core.models.Status.objects.values(*campos) \
-            .filter(grupo_codigo='status_biblioteca', grupo_tipo='BIBLIOTECA.STATUS') \
+            .filter(type='LIBRARY_ITEM') \
             .annotate(is_selected=Case(When(id=selected_id, then=True),
                                        default=False,
                                        output_field=BooleanField())) \

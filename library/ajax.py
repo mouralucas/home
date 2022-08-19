@@ -7,43 +7,6 @@ import BO.library.library
 import util.datetime
 
 
-# class Book(View):
-#     """
-#     :Nome da classe/função: Book
-#     :descrição: View to handle only book related operations
-#     :Criação: Lucas Penha de Moura - 20/02/2022
-#     :Edições:
-#     :return
-#     """
-#
-#     def get(self, *args, **kwargs):
-#         item_id = self.request.GET.get('item_id')
-#         item_type = self.request.GET.get('item_type')
-#
-#         # response = BO.library.library.Library(tipo=tipo, item_id=item_id).get_book()
-#         response = BO.library.library.Library(item_type=item_type, item_id=item_id).get_item()
-#
-#         return JsonResponse(response, safe=False)
-#
-#
-# class Manga(View):
-#     """
-#     :Nome da classe/função: Book
-#     :descrição: View to handle only book related operations
-#     :Criação: Lucas Penha de Moura - 20/02/2022
-#     :Edições:
-#     :return
-#     """
-#
-#     def get(self, *args, **kwargs):
-#         item_id = self.request.GET.get('item_id')
-#         tipo = self.request.GET.get('tipo')
-#
-#         response = BO.library.library.Library(item_type=tipo, item_id=item_id).get_manga()
-#
-#         return JsonResponse(response, safe=False)
-
-
 class ItemAuthor(View):
     def get(self, *args, **kwargs):
         book_id = self.request.GET.get('item_id')
