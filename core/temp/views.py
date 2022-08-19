@@ -2,6 +2,7 @@ from django.views import View
 
 import BO.conexao_db.conexao
 import finance.models
+import library.models
 
 
 class MigrateFaturaToBill(View):
@@ -71,3 +72,45 @@ class MigrateExtratoToStatement(View):
 
         finance.models.BankStatement.objects.bulk_create(statement_list)
         print('')
+
+class MigrateAutorToAuthor(View):
+    def get(self, *args, **kwargs):
+        sql_alchemy = BO.conexao_db.conexao.SqlAlchemy(database='home_beta')
+
+        sql = 'select * from biblioteca.autor order by id'
+
+        sql_alchemy.buscar(query=sql)
+        autores = sql_alchemy.get_dict()
+
+        author_list = []
+        for autor in autores:
+            author = library.models.Author()
+            author.id = autor['id']
+            author.dat_created = autor['dat_insercao']
+            author.dat_last_edited = autor['dat_edicao']
+            author.created_by_id = 1
+            author.status = autor['status']
+            author.nm_full = autor['nm_completo']
+            author.nm_first = autor['nome']
+            author.nm_last = autor['sobrenome']
+            author.dat_birth = autor['dat_nascimento']
+            author.description = autor['descricao']
+            author.is_translator = autor['is_tradutor']
+            author.language_id = autor['idioma_id'].upper() if autor['idioma_id'] else None
+            author.country_id = autor['pais_id']
+            author_list.append(author)
+
+        library.models.Author.objects.bulk_create(author_list)
+
+class MigrateLivroToItem(View):
+    def get(self, *args, **kwargs):
+        sql_alchemy = BO.conexao_db.conexao.SqlAlchemy(database='home_beta')
+
+        sql = 'select * from biblioteca.livro order by id'
+
+        sql_alchemy.buscar(query=sql)
+        livros = sql_alchemy.get_dict()
+
+        item_list = []
+        for livro in livros:
+            item = library.models.Item()
