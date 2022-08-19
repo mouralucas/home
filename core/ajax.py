@@ -44,3 +44,16 @@ class State(APIView):
         response = BO.core.core.Misc().get_states()
 
         return JsonResponse(response, safe=False)
+
+    def post(self, *args, **kwargs):
+        """
+        Teste de ação post do ReactJS
+        """
+        name = self.request.POST.get('txtNome')
+
+        response = {
+            'status': True,
+            'mensagem': 'O post deu boa, truta!, o nome é {}'.format(name)
+        }
+
+        return JsonResponse(response, safe=False)

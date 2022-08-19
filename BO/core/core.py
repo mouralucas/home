@@ -169,7 +169,7 @@ class Misc:
 
         response = {
             'status': True,
-            'modules': list(states)
+            'states': list(states)
         }
 
         return response
