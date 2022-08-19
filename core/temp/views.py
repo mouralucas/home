@@ -73,6 +73,7 @@ class MigrateExtratoToStatement(View):
         finance.models.BankStatement.objects.bulk_create(statement_list)
         print('')
 
+
 class MigrateAutorToAuthor(View):
     def get(self, *args, **kwargs):
         sql_alchemy = BO.conexao_db.conexao.SqlAlchemy(database='home_beta')
@@ -152,6 +153,7 @@ class MigrateEdtoraToPublisher(View):
         library.models.Publisher.objects.bulk_create(publisher_list)
         print()
 
+
 class MigrateSerieToSerie(View):
     def get(self, *args, **kwargs):
         sql_alchemy = BO.conexao_db.conexao.SqlAlchemy(database='home_beta')
@@ -178,6 +180,7 @@ class MigrateSerieToSerie(View):
         library.models.Serie.objects.bulk_create(serie_list)
         print()
 
+
 class MigrateLivroToItem(View):
     def get(self, *args, **kwargs):
         sql_alchemy = BO.conexao_db.conexao.SqlAlchemy(database='home_beta')
@@ -189,4 +192,120 @@ class MigrateLivroToItem(View):
 
         item_list = []
         for livro in livros:
+            if livro['formato_codigo'] == 'capa_comum':
+                item_format = 'paperback'
+            elif livro['formato_codigo'].lower() == 'pocket':
+                item_format = 'pocket'
+            elif livro['formato_codigo'] == 'hardback':
+                item_format = 'hardback'
+            elif livro['formato_codigo'] == 'ebook':
+                item_format = 'ebook'
+            elif livro['formato_codigo'] == 'hardcover':
+                item_format = 'hardcover'
+            else:
+                item_format = None
+
+            if livro['tipo_codigo'] == 'manga':
+                item_type = 'manga'
+            elif livro['tipo_codigo'] == 'livro':
+                item_type = 'book'
+            else:
+                item_type = None
+
             item = library.models.Item()
+            item.id = livro['id']
+            item.dat_created = livro['dat_insercao']
+            item.dat_last_edited = livro['dat_edicao']
+            item.created_by_id = 1
+            item.status = livro['status']
+
+            item.isbn = livro['isbn']
+            item.isbn_formatted = livro['isbn_form']
+            item.isbn10 = livro['isbn10']
+            item.isbn10_formatted = livro['isbn10_form']
+            item.title = livro['titulo']
+            item.title_original = livro['titulo_original']
+            item.subtitle = livro['subtitulo']
+            item.subtitle_original = livro['subtitulo_original']
+            item.pages = livro['paginas']
+            item.dat_published = livro['dat_lancamento']
+            item.dat_published_original = livro['dat_lancamento_original']
+            item.edition = livro['edicao']
+            item.cover = livro['capa']
+            item.volume = livro['volume']
+            item.format = item_format
+            item.type = item_type
+            item.cover_price = livro['valor_capa']
+            item.payed_price = livro['valor_pago']
+            item.resumo = livro['resumo']
+            item.publisher_id = livro['editora_id']
+            item.language_id = livro['idioma_id'].upper() if livro['idioma_id'].upper() else None
+            item.last_status_id = livro['ultimo_status_id']
+            item.height = livro['altura']
+            item.width = livro['largura']
+            item.thickness = livro['profundidade']
+            item.dimensions = livro['dimensoes']
+            item.observation = livro['observacoes']
+            item.origem = livro['origem_cadastro']
+            item.serie_id = livro['serie_id']
+            item.main_author_id = livro['autor_principal_id']
+            item.collection_id = livro['colecao_id']
+            item.dat_last_status = livro['dat_ultimo_status']
+
+            item_list.append(item)
+
+        library.models.Item.objects.bulk_create(item_list)
+
+
+class MigrateLivroAutorToItemAuthor(View):
+    def get(self, *args, **kwargs):
+        sql_alchemy = BO.conexao_db.conexao.SqlAlchemy(database='home_beta')
+
+        sql = 'select * from biblioteca.livro_autor order by id'
+
+        sql_alchemy.buscar(query=sql)
+        livros_autores = sql_alchemy.get_dict()
+
+        list = []
+        for i in livros_autores:
+            new_object = library.models.ItemAuthor()
+            new_object.id = i['id']
+            new_object.dat_created = i['dat_insercao']
+            new_object.dat_last_edited = i['dat_edicao']
+            new_object.created_by_id = 1
+            new_object.status = i['status']
+
+            new_object.is_main = i['is_principal']
+            new_object.author_id = i['autor_id']
+            new_object.item_id = i['livro_id']
+            new_object.is_translator = i['is_tradutor']
+            list.append(new_object)
+
+        library.models.ItemAuthor.objects.bulk_create(list)
+        print()
+
+class MigrateLivroLogStatusrToItemLogStatus(View):
+    def get(self, *args, **kwargs):
+        sql_alchemy = BO.conexao_db.conexao.SqlAlchemy(database='home_beta')
+
+        sql = 'select * from biblioteca.livro_logstatus order by id'
+
+        sql_alchemy.buscar(query=sql)
+        livros_logstatus = sql_alchemy.get_dict()
+
+        list = []
+        for i in livros_logstatus:
+            new_object = library.models.ItemStatus()
+            new_object.id = i['id']
+            new_object.dat_created = i['dat_insercao']
+            new_object.dat_last_edited = i['dat_edicao']
+            new_object.created_by_id = 1
+            new_object.status = i['status']
+
+            new_object.item_id = i['livro_id']
+            new_object.log_status_id = i['log_status_id']
+            new_object.date = i['data']
+            list.append(new_object)
+
+        library.models.ItemStatus.objects.bulk_create(list)
+        print()
