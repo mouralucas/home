@@ -2,14 +2,25 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import View
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 import BO.user.login
 import BO.user.account
 
 
-class Login(View):
-    def get(self, *args, **kwargs):
+class Login(TokenObtainPairView):
+    """
+    :Nome da classe/função: Login
+    :Descrição: View de login de usuário Venda+
+    :Criação: Lucas Penha de Moura - 01/02/2021
+    :Edições:
+    """
+    print('')
+    serializer_class = BO.user.login.Login
 
+
+class LoginDjango(View):
+    def get(self, *args, **kwargs):
         return render(self.request, 'user/login.html')
 
     def post(self, *args, **kwargs):
@@ -23,7 +34,7 @@ class Login(View):
         username = self.request.POST.get('username')
         raw_password = self.request.POST.get('raw_password')
 
-        response = BO.user.login.Login(username=username, raw_password=raw_password, request=self.request).authenticate()
+        response = BO.user.login.LoginDjango(username=username, raw_password=raw_password, request=self.request).authenticate()
 
         # return render(self.request, response['redirect'], context=response)
         return HttpResponseRedirect(reverse('finance:home'))
@@ -31,7 +42,6 @@ class Login(View):
 
 class Account(View):
     def get(self, *args, **kwargs):
-
         return render(self.request, '')
 
     def post(self, *args, **kwargs):

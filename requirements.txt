@@ -1,5 +1,10 @@
 djangorestframework~=3.13.1
-django==3.2.14
+django==3.2.15
+
+# Django Rest Framework Simple JWT
+pyjwt==2.3.0
+djangorestframework-simplejwt==5.0.0
+
 psycopg2-binary
 requests~=2.23.0
 django-crontab
