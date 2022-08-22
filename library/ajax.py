@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.views import View
+from rest_framework.views import APIView
 
 import BO.author.author
 import BO.core.core
@@ -72,6 +73,17 @@ class Item(View):
                                                                         item_format=item_format, language_id=language_id, cover_price=cover_price, payed_price=payed_price,
                                                                         dimensions=dimensions, heigth=height, width=width, thickness=thickness,
                                                                         status=status, dat_status=dat_status, resumo=resumo)
+
+        return JsonResponse(response, safe=False)
+
+
+class ItemTeste(APIView):
+    def get(self, *args, **kwargs):
+        item_id = self.request.GET.get('item_id')
+        item_type = self.request.GET.get('item_type', 'book')
+        is_unique = True if self.request.GET.get('is_unique') else False
+
+        response = BO.library.library.Library(item_id=item_id, item_type=item_type).get_item(is_unique=is_unique)
 
         return JsonResponse(response, safe=False)
 

@@ -9,6 +9,7 @@ urlpatterns = [
     
     
     re_path('^ajax/item$', ajax.Item.as_view(), name='item'),
+    re_path('^ajax/item/teste$', ajax.ItemTeste.as_view(), name='item'),
     re_path('^ajax/item/author$', ajax.ItemAuthor.as_view(), name='item_author'),
     # re_path('^ajax/book$', ajax.Book.as_view(), name='book'),
     # re_path('^ajax/manga$', ajax.Manga.as_view(), name='manga'),
