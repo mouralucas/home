@@ -12,7 +12,7 @@ class Author(BO.person.person.Person):
 
     def set_author(self, nm_full=None, dat_birth=None, language_id=None, country_id=None, is_translator=False, description=None, request=None):
         if not self.author_id:
-            author = library.models.Autor()
+            author = library.models.Author()
         else:
             author = library.models.Author.objects.filter(pk=self.author_id).first()
 
@@ -23,7 +23,7 @@ class Author(BO.person.person.Person):
         author.nm_first = self.nm_first
         author.nm_last = self.nm_last
         author.language_id = language_id
-        author.country_id = country_id
+        author.country_id = None
         author.description = description
         author.dat_birth = dat_birth
         author.is_translator = is_translator

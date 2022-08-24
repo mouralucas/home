@@ -139,3 +139,22 @@ class CategoryGroup(core.models.Log):
 
     class Meta:
         db_table = 'finance"."category_group'
+
+
+class Currency(core.models.Log):
+    id = models.CharField(max_length=5, primary_key=True)
+    name = models.CharField(max_length=50)
+    symbol = models.CharField(max_length=5)
+
+    class Meta:
+        db_table = 'finance"."currency'
+
+
+class CurrencyRate(core.models.Log):
+    date = models.DateField()
+    base = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING, related_name='%(app_label)s_%(class)s_base')
+    currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING, related_name='%(app_label)s_%(class)s_currency')
+    price = models.DecimalField(max_digits=30, decimal_places=15)
+
+    class Meta:
+        db_table = 'finance"."currency_rate'
