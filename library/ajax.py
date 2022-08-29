@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.views import View
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
 import BO.author.author
@@ -78,6 +79,8 @@ class Item(View):
 
 
 class ItemTeste(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args, **kwargs):
         item_id = self.request.GET.get('item_id')
         item_type = self.request.GET.get('item_type', 'book')
