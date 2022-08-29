@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     'finance',
 
     'library',
+
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
