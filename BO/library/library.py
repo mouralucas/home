@@ -135,7 +135,7 @@ class Library:
             filters['id'] = self.item_id
 
         item = library.models.Item.objects.values('id', 'title', 'subtitle', 'pages', 'volume', 'cover_price', 'payed_price', 'isbn_formatted', 'isbn10_formatted',
-                                                     'title_original', 'subtitle_original', 'edition', 'dimensions', 'height', 'width', 'thickness', 'resumo').filter(**filters) \
+                                                  'title_original', 'subtitle_original', 'edition', 'dimensions', 'height', 'width', 'thickness', 'resumo').filter(**filters) \
             .annotate(nm_main_author=F('main_author__nm_full'),
                       id_main_autor=F('main_author_id'),
                       nm_serie=F('serie__name'),
