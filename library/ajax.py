@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.views import View
-from rest_framework.permissions import IsAuthenticated
+from BO.security.security import IsAuthenticated
 from rest_framework.views import APIView
 
 import BO.author.author
