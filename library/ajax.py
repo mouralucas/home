@@ -18,7 +18,9 @@ class ItemAuthor(View):
         return JsonResponse(response, safe=False)
 
 
-class Item(View):
+class Item(APIView):
+    permission_classes = [IsAuthenticated]
+
     """
     :Nome da classe/função: Item
     :descrição: View to handle any kind of itens in library (books, mangas, etc)
@@ -26,7 +28,6 @@ class Item(View):
     :Edições:
     :return
     """
-
     def get(self, *args, **kwargs):
         item_id = self.request.GET.get('item_id')
         item_type = self.request.GET.get('item_type')
@@ -78,20 +79,8 @@ class Item(View):
         return JsonResponse(response, safe=False)
 
 
-class ItemTeste(APIView):
+class Author(APIView):
     permission_classes = [IsAuthenticated]
-
-    def get(self, *args, **kwargs):
-        item_id = self.request.GET.get('item_id')
-        item_type = self.request.GET.get('item_type', 'book')
-        is_unique = True if self.request.GET.get('is_unique') else False
-
-        response = BO.library.library.Library(item_id=item_id, item_type=item_type).get_item(is_unique=is_unique)
-
-        return JsonResponse(response, safe=False)
-
-
-class Author(View):
     """
     :Nome da classe/função: Author
     :descrição: View to handle informatiom about authors
