@@ -8,9 +8,9 @@ urlpatterns = [
     re_path('^settings$', views.Settings.as_view(), name='settings'),
     
     
-    re_path('^ajax/item$', ajax.Item.as_view(), name='item'),
+    re_path('^item$', ajax.Item.as_view(), name='item'),
     re_path('^ajax/item/author$', ajax.ItemAuthor.as_view(), name='item_author'),
-    re_path('^ajax/author$', ajax.Author.as_view(), name='author'),
+    re_path('^author$', ajax.Author.as_view(), name='author'),
     re_path('^ajax/status$', ajax.Status.as_view(), name='status'),
     re_path('^ajax/tipo$', ajax.Type.as_view(), name='tipo'),
     re_path('^ajax/format$', ajax.Formato.as_view(), name='format'),
