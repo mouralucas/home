@@ -12,6 +12,6 @@ urlpatterns = [
     re_path('^format$', views.Formato.as_view(), name='format'),
     re_path('^serie$', views.Serie.as_view(), name='serie'),
     re_path('^collection$', views.Colecao.as_view(), name='colecao'),
-    re_path('^editora$', views.Publisher.as_view(), name='publisher'),
+    re_path('^publisher$', views.Publisher.as_view(), name='publisher'),
     re_path('^language$', views.Language.as_view(), name='language'),
 ]
