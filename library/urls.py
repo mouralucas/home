@@ -1,25 +1,17 @@
 from django.urls import re_path
 
-from library import ajax
+# from library import ajax
 from library import views
 
 urlpatterns = [
-    re_path('^$', views.LandingPage.as_view(), name='home'),
-    re_path('^settings$', views.Settings.as_view(), name='settings'),
-    
-    
-    re_path('^item$', ajax.Item.as_view(), name='item'),
-    re_path('^ajax/item/author$', ajax.ItemAuthor.as_view(), name='item_author'),
-    re_path('^author$', ajax.Author.as_view(), name='author'),
-    re_path('^ajax/status$', ajax.Status.as_view(), name='status'),
-    re_path('^ajax/tipo$', ajax.Type.as_view(), name='tipo'),
-    re_path('^ajax/format$', ajax.Formato.as_view(), name='format'),
-    re_path('^ajax/serie$', ajax.Serie.as_view(), name='serie'),
-    re_path('^ajax/collection$', ajax.Colecao.as_view(), name='colecao'),
-    re_path('^ajax/editora$', ajax.Publisher.as_view(), name='publisher'),
-    re_path('^ajax/language$', ajax.Language.as_view(), name='language'),
-    # re_path('^ajax/country$', ajax.Country.as_view(), name='country'),
-    # re_path('^ajax/categorias$', ajax.Categoria().as_view(), name='categorias'),
-    # re_path('^ajax/fatura$', ajax.Fatura().as_view(), name='faturas'),
-    # re_path('^ajax/extrato$', ajax.Extrato().as_view(), name='extrato'),
+    re_path('^item$', views.Item.as_view(), name='item'),
+    re_path('^item/author$', views.ItemAuthor.as_view(), name='item_author'),
+    re_path('^author$', views.Author.as_view(), name='author'),
+    re_path('^status$', views.Status.as_view(), name='status'),
+    re_path('^tipo$', views.Type.as_view(), name='tipo'),
+    re_path('^format$', views.Formato.as_view(), name='format'),
+    re_path('^serie$', views.Serie.as_view(), name='serie'),
+    re_path('^collection$', views.Colecao.as_view(), name='colecao'),
+    re_path('^editora$', views.Publisher.as_view(), name='publisher'),
+    re_path('^language$', views.Language.as_view(), name='language'),
 ]
