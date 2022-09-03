@@ -108,7 +108,7 @@ class FixedExpenses(View):
     def get(self, *args, **kwargs):
         reference = self.request.GET.get('reference')
 
-        response = BO.finance.finance.Finance(reference=reference).get_fixed_expenses(expense_type='fixed')
+        response = BO.finance.finance.Finance(reference=reference).get_expenses(expense_type='fixed')
 
         return JsonResponse(response, safe=False)
 
@@ -117,7 +117,7 @@ class VariableExpenses(View):
     def get(self, *args, **kwargs):
         reference = self.request.GET.get('reference')
 
-        response = BO.finance.finance.Finance(reference=reference).get_fixed_expenses(expense_type='variable')
+        response = BO.finance.finance.Finance(reference=reference).get_expenses(expense_type='variable')
 
         return JsonResponse(response, safe=False)
 

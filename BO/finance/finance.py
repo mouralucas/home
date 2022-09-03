@@ -296,7 +296,7 @@ class Finance:
 
         return lista_itens_retorno
 
-    def get_fixed_expenses(self, expense_type):
+    def get_expenses(self, expense_type):
         filters = {
             'reference': self.reference
         }
@@ -308,6 +308,8 @@ class Finance:
             filters['category__in'] = list(fixed_expenses)
         else:
             excluders['category__in'] = list(fixed_expenses)
+            excluders['total__gt'] = 0.0
+            filters['total__lt'] = 0
 
         statement = finance.models.BankStatement.objects.values('category__description').annotate(total=Sum('amount')).filter(**filters).exclude(**excluders)
         bill = finance.models.CreditCardBill.objects.values('category__description').annotate(total=Sum('amount')).filter(**filters).exclude(**excluders)
@@ -325,16 +327,6 @@ class Finance:
         }
 
         return response
-
-    def variable_expenses(self):
-        filters = {
-            'reference': self.reference
-        }
-        fixed_expenses = finance.models.CategoryGroup.objects.values_list('category', flat=True).filter(group='fixed_expenses')
-        filters['category__in'] = list(fixed_expenses)
-
-        statement = finance.models.BankStatement.objects.values('category__description').annotate(total=Sum('amount')).filter(**filters)
-        bill = finance.models.CreditCardBill.objects.values('category__description').annotate(total=Sum('amount')).filter(**filters)
 
     def import_csv_investimento(self, path=None, skiprows=0):
         itens = pd.DataFrame([])
