@@ -60,8 +60,30 @@ class Investment(core.models.Log):
 
     type = models.ForeignKey('finance.InvestimentType', on_delete=models.DO_NOTHING, null=True)
 
+    maturity = models.DateField(null=True)
+
     class Meta:
         db_table = 'finance"."investment'
+
+
+class InvestmentStatement(core.models.Log):
+    investment = models.ForeignKey('Investment', on_delete=models.DO_NOTHING, null=True)
+
+    reference = models.IntegerField(null=True)
+    bank = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING, null=True)
+    gross_profit_annual = models.CharField(max_length=200, null=True, help_text='Taxa equivalente a 1 ano')
+    gross_profit = models.CharField(max_length=200, null=True, help_text='Da aplicação até hoje')
+    gross_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    investment_time = models.IntegerField(null=True, help_text='Dias corridos, contados a partir da data de liquidação do investimento')
+    ir_tax_rate = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    ir_tax = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    iof_tax = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    b3_tax = models.DecimalField(max_digits=10, decimal_places=2, null=True, help_text='Taxa de custódia da B3')
+    bank_tax = models.DecimalField(max_digits=10, decimal_places=2, null=True, help_text='Taxa de custódia da instituição finenceira')
+    net_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, help_text='Valor para resgate antecipado, ou seja, antes do vencimento do título')
+
+    class Meta:
+        db_table = u'"finance\".\"investment_statement"'
 
 
 class BankStatement(core.models.Log):
@@ -85,13 +107,13 @@ class CreditCardBill(core.models.Log):
     amount_total = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Total da compra, quando existe parcelas'))
     category = models.ForeignKey('core.Category', on_delete=models.DO_NOTHING, null=True)
 
-    currency = models.CharField(max_length=30, choices=core.models.CyrruncyTypes.choices, default=core.models.CyrruncyTypes.REAL)
+    currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING)
     amount_currency = models.DecimalField(max_digits=14, decimal_places=2, null=True, help_text=_('Sempre real da compra, na moeda original'))
     price_dollar = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Usado em compra em outra moeda, em relação ao real'))
     price_currency_dollar = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Valor da moeda em relação ao dolar, usado na conversão'))
     tax = models.DecimalField(max_digits=7, decimal_places=2, default=0, help_text=_('Iof total da compra, quando aplicável'))
-    stallment = models.SmallIntegerField(default=1)
-    tot_stallment = models.SmallIntegerField(default=1)
+    installment = models.SmallIntegerField(default=1)
+    tot_installment = models.SmallIntegerField(default=1)
     is_stallment = models.BooleanField(default=False)
     father = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
     description = models.TextField(null=True)
@@ -103,31 +125,6 @@ class CreditCardBill(core.models.Log):
     class Meta:
         db_table = 'finance"."creditcard_bill'
 
-
-# class ExtratoAplicacao(core.models.Log):
-#     aplicacao = models.ForeignKey('Aplicacao', on_delete=models.DO_NOTHING, null=True)
-#     referencia = models.IntegerField(null=True)
-#     agente_custodia = models.ForeignKey('finance.ContaBancaria', on_delete=models.DO_NOTHING, null=True)
-#     tipo_aplicacao = models.CharField(max_length=200, default='Tesouro direto')
-#     dat_aplicacao = models.DateField(null=True)
-#     qtd_titulos = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-#     preco_aplicacao = models.DecimalField(max_digits=10, decimal_places=2, null=True, help_text='Preço do título no momento da compra')
-#     vlr_investido = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-#     rent_contratada = models.CharField(max_length=200, null=True, help_text='Rentabilidade a ser recebida se o título for mantido até o vencimento')
-#     rent_bruta_acum_anual = models.CharField(max_length=200, null=True, help_text='Taxa equivalente a 1 ano')
-#     rent_bruta_acum = models.CharField(max_length=200, null=True, help_text='Da aplicação até hoje')
-#     vlr_bruto = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-#     tempo_aplicacao = models.IntegerField(null=True, help_text='Dias corridos, contados a partir da data de liquidação do investimento')
-#     aliquota_ir = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-#     imposto_previsto_ir = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-#     imposto_previsto_iof = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-#     taxa_b3 = models.DecimalField(max_digits=10, decimal_places=2, null=True, help_text='Taxa de custódia da B3')
-#     taxa_inst_financeira = models.DecimalField(max_digits=10, decimal_places=2, null=True, help_text='Taxa de custódia da instituição finenceira')
-#     vlr_liquido = models.DecimalField(max_digits=10, decimal_places=2, null=True, help_text='Valor para resgate antecipado, ou seja, antes do vencimento do título')
-#     vencimento = models.DateField(null=True)
-#
-#     class Meta:
-#         db_table = u'"finance\".\"extrato_investimento"'
 
 class CategoryGroup(core.models.Log):
     class GroupType(models.TextChoices):
@@ -158,3 +155,17 @@ class CurrencyRate(core.models.Log):
 
     class Meta:
         db_table = 'finance"."currency_rate'
+
+
+class CategoryType(core.models.Log):
+    class Type(models.TextChoices):
+        INCOMING = ('incoming', _('Entrada'))
+        OUTCOMING = 'outcoming', _('Saída')
+        INVESTMENT = 'investment', _('Investimentos')
+
+    type = models.CharField(max_length=15, choices=Type.choices)
+    category = models.ForeignKey('core.Category', on_delete=models.DO_NOTHING)
+
+    class Meta:
+        db_table = 'finance"."category_type'
+

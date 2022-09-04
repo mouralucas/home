@@ -30,7 +30,7 @@ class CreditCard(APIView):
 class Statement(APIView):
     @method_decorator(login_required)
     def get(self, *args, **kwargs):
-        reference = self.request.GET.get('referencia')
+        reference = self.request.GET.get('reference')
         conta_id = self.request.GET.get('conta_id')
 
         if conta_id in ['', '0']:
@@ -59,7 +59,7 @@ class Statement(APIView):
 class Bill(APIView):
     @method_decorator(login_required)
     def get(self, *args, **kwargs):
-        referencia = self.request.GET.get('anomes', util.datetime.DateTime().current_period())
+        referencia = self.request.GET.get('reference', util.datetime.DateTime().current_period())
         card_id = self.request.GET.get('card')
 
         if card_id in ['', '0']:

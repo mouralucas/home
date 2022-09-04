@@ -157,8 +157,8 @@ class Finance:
         bill.category_id = self.categoria_id
 
         # bill.stallment = self.nr_parcela
-        bill.stallment = 1
-        bill.tot_stallment = self.tot_stallment
+        bill.installment = 1
+        bill.tot_installment = self.tot_stallment
         bill.description = self.description
 
         bill.is_validated = True
@@ -179,7 +179,7 @@ class Finance:
 
         faturas = finance.models.CreditCardBill.objects \
             .values('id', 'reference', 'dat_purchase', 'dat_payment',
-                    'stallment', 'tot_stallment', 'description') \
+                    'installment', 'tot_installment', 'description') \
             .filter(**filters) \
             .annotate(total=Sum('amount'),
                       card=F('credit_card__name'),
