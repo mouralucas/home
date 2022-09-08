@@ -85,7 +85,7 @@ class Misc:
         if show_mode not in ['all', 'father', 'child']:
             return {
                 'status': False,
-                'description': _('Show mode dever ser uma das três opções: all, father ou children')
+                'description': _('Show mode dever ser uma das três opções: all, father ou child')
             }
 
         filters = {

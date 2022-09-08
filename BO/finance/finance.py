@@ -219,17 +219,17 @@ class Finance:
     def get_evolucao_categoria(self, months=13):
         fixed_expenses = finance.models.CategoryGroup.objects.values_list('category', flat=True).filter(group='fixed_expenses')
         filters = {
-            'reference__range': (202001, 202112),
+            'reference__range': (202001, 202012),
             'category__in': list(fixed_expenses)
         }
 
-        evolucao_credito = finance.models.CreditCardBill.objects.values('reference', 'category__description') \
+        bills = finance.models.CreditCardBill.objects.values('reference', 'category__description') \
             .filter(**filters).annotate(total=Sum('amount')).order_by('reference')
 
-        evolucao_contas = finance.models.BankStatement.objects.values('reference', 'category__description') \
+        statements = finance.models.BankStatement.objects.values('reference', 'category__description') \
             .filter(**filters).annotate(total=Sum('amount')).order_by('reference')
 
-        evolucao = evolucao_contas.union(evolucao_credito)
+        evolucao = statements.union(bills)
 
         default = defaultdict(float)
 

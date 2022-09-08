@@ -78,7 +78,7 @@ class Bill(APIView):
         price_currency_dollar = self.request.POST.get('price_currency_dollar')
         dat_purchase = self.request.POST.get('dat_purchase')
         dat_payment = self.request.POST.get('dat_payment')
-        stallment = self.request.POST.get('stallment', 1)# TODO: vira como forma de lista
+        stallment = self.request.POST.get('stallment', 1)  # TODO: vira como forma de lista
         tot_stallment = self.request.POST.get('tot_stallment', 1)
         currency = self.request.POST.get('currency')
         description = self.request.POST.get('description')
@@ -121,6 +121,7 @@ class VariableExpenses(View):
 
         return JsonResponse(response, safe=False)
 
+
 class Investment(View):
     @method_decorator(login_required)
     def get(self, *args, **kwargs):
@@ -162,5 +163,3 @@ class PaymentDate(View):
         response = BO.finance.finance.Finance().get_payment_date(dat_purchase=dat_purchase, credit_card_id=credit_card_id)
 
         return JsonResponse(response, safe=False)
-
-
