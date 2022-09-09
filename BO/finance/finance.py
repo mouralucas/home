@@ -81,11 +81,13 @@ class Finance:
         self.response['categories'] = list(categorias)
         return self.response
 
-    def set_extrato(self, request=None):
+    def set_statement(self, request=None):
         if not self.dat_compra or not self.amount or not self.categoria_id or not self.conta_id:
-            self.response['status'] = False
-            self.response['descricao'] = 'Todos os parâmetros são obrigatórios'
-            return self.response
+            response = {
+                'status': False,
+                'description': _('Todos os parâmetros são obrigatórios')
+            }
+            return response
 
         if self.statement_id:
             extrato = finance.models.BankStatement.objects.filter(pk=self.statement_id).first()
@@ -93,18 +95,19 @@ class Finance:
             extrato = finance.models.BankStatement()
 
         # Não modificado nomes
-        dat_compra_date = util.datetime.data_to_datetime(self.dat_compra, formato='%d/%m/%Y')
-        referencia_ano = dat_compra_date.year
-        referencia_mes = dat_compra_date.month
-        self.reference = referencia_ano * 100 + referencia_mes
+        self.__set_reference()
 
         extrato.reference = self.reference
-        extrato.valor = float(self.amount) * -1
-        extrato.dat_compra = dat_compra_date
-        extrato.descricao = self.description
-        extrato.categoria_id = self.categoria_id
-        extrato.conta_id = self.conta_id
+        extrato.amount = float(self.amount) * -1
+        extrato.dat_purchase = self.dat_compra
+        extrato.description = self.description
+        extrato.category_id = self.categoria_id
+        extrato.account_id = self.conta_id
         extrato.save(request_=request)
+
+        response = self.get_statement()
+
+        return response
 
     def get_statement(self):
         filters = {
@@ -116,18 +119,23 @@ class Finance:
 
         statement = finance.models.BankStatement.objects.values('id', 'reference', 'dat_purchase', 'description') \
             .filter(**filters).annotate(total=Sum('amount'),
-                                        account=F('account__nm_bank')) \
+                                        account=F('account__nm_bank'),
+                                        nm_category=F('category__description')) \
             .order_by('account_id', 'dat_purchase')
 
-        self.response['status'] = True
-        self.response['statement'] = list(statement)
-        return self.response
+        response = {
+            'status': True,
+            'statement': list(statement)
+        }
+        return response
 
     def set_bill(self, request=None):
         if not self.dat_compra or not self.amount or not self.categoria_id or not self.credit_card_id:
-            self.response['status'] = False
-            self.response['descricao'] = 'Todos os parâmetros são obrigatórios'
-            return self.response
+            response = {
+                'status': False,
+                'description': _('Todos os parâmetros são obrigatórios')
+            }
+            return response
 
         if self.bill_id:
             bill = finance.models.CreditCardBill.objects.filter(pk=self.bill_id).first()
@@ -135,7 +143,7 @@ class Finance:
             bill = finance.models.CreditCardBill()
 
         # Não modificado
-        dat_pagamento_date = util.datetime.data_to_datetime(self.dat_pagamento, formato='%d/%m/%Y')
+        dat_pagamento_date = util.datetime.data_to_datetime(self.dat_pagamento, formato='%Y-%m-%d')
         referencia_ano = dat_pagamento_date.year
         referencia_mes = dat_pagamento_date.month
         self.reference = referencia_ano * 100 + referencia_mes
@@ -144,16 +152,17 @@ class Finance:
         # Dates
         bill.reference = self.reference
         bill.dat_payment = dat_pagamento_date
-        bill.dat_purchase = util.datetime.data_to_datetime(self.dat_compra, formato='%d/%m/%Y')
+        bill.dat_purchase = util.datetime.data_to_datetime(self.dat_compra, formato='%Y-%m-%d')
 
         # Amounts
         bill.amount = float(self.amount) * -1
         bill.amount_total = self.amount  # TODO: modificar para adicionar o valor total de compras parceladas
-        bill.amount_currency = float(self.amount_currency) * -1
+        bill.amount_currency = float(self.amount) * -1
         bill.price_currency_dollar = self.price_currency_dollar
         bill.price_dollar = 1
 
-        bill.currency = self.currency
+        # bill.currency = self.currency
+        bill.currency_id = "BRL"
         bill.category_id = self.categoria_id
 
         # bill.stallment = self.nr_parcela
@@ -177,7 +186,7 @@ class Finance:
         if self.credit_card_id:
             filters['credit_card_id'] = self.credit_card_id
 
-        faturas = finance.models.CreditCardBill.objects \
+        bills = finance.models.CreditCardBill.objects \
             .values('id', 'reference', 'dat_purchase', 'dat_payment',
                     'installment', 'tot_installment', 'description') \
             .filter(**filters) \
@@ -185,10 +194,12 @@ class Finance:
                       card=F('credit_card__name'),
                       nm_category=F('category__description')).order_by('dat_purchase')
 
-        self.response['status'] = True
-        self.response['bill'] = list(faturas)
+        response = {
+            'status': True,
+            'bill': list(bills)
+        }
 
-        return self.response
+        return response
 
     def get_bill_statistic(self):
         bills = finance.models.CreditCardBill.objects.all()
@@ -211,10 +222,11 @@ class Finance:
         evolucao = pd.DataFrame(evolucao)
         saida = evolucao.pivot(index='reference', columns='cartao', values='total').fillna(0)
 
-        self.response['status'] = True
-        self.response['faturas'] = saida.values.tolist()
-
-        return self.response
+        response = {
+            'status': True,
+            'bills': saida.values.tolist(),
+        }
+        return response
 
     def get_evolucao_categoria(self, months=13):
         fixed_expenses = finance.models.CategoryGroup.objects.values_list('category', flat=True).filter(group='fixed_expenses')
@@ -368,7 +380,7 @@ class Finance:
         print(dat_payment.date())
         return response
 
-    def _set_referencia(self):
+    def __set_reference(self):
         dat_compra_date = util.datetime.data_to_datetime(self.dat_compra, formato='%d/%m/%Y')
         referencia_ano = dat_compra_date.year
         referencia_mes = dat_compra_date.month

@@ -41,17 +41,16 @@ class Statement(APIView):
         return JsonResponse(response, safe=False)
 
     def post(self, *args, **kwargs):
-        extrato_id = self.request.POST.get('extrato_id')
-        referencia = self.request.POST.get('referencia')  # não é enviado
-        valor = self.request.POST.get('valor')
-        dat_compra = self.request.POST.get('dat_compra')
-        descricao = self.request.POST.get('descricao')
-        categoria_id = self.request.POST.get('categoria_id')
-        conta_id = self.request.POST.get('conta_id')
+        statement_id = self.request.POST.get('statement_id')
+        amount = self.request.POST.get('amount')
+        dat_purchase = self.request.POST.get('dat_purchase')
+        description = self.request.POST.get('description')
+        category_id = self.request.POST.get('category_id')
+        account_id = self.request.POST.get('account_id')
 
-        response = BO.finance.finance.Finance(statement_id=extrato_id, reference=referencia, amount=valor, dat_compra=dat_compra, description=descricao,
-                                              category_id=categoria_id, account_id=conta_id) \
-            .set_extrato(request=self.request)
+        response = BO.finance.finance.Finance(statement_id=statement_id, amount=amount, dat_compra=dat_purchase, description=description,
+                                              category_id=category_id, account_id=account_id) \
+            .set_statement(request=self.request)
 
         return JsonResponse(response, safe=False)
 
