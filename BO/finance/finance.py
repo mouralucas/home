@@ -381,7 +381,7 @@ class Finance:
         return response
 
     def __set_reference(self):
-        dat_compra_date = util.datetime.data_to_datetime(self.dat_compra, formato='%d/%m/%Y')
+        dat_compra_date = util.datetime.data_to_datetime(self.dat_compra, formato='%Y-%m-%d')
         referencia_ano = dat_compra_date.year
         referencia_mes = dat_compra_date.month
         self.reference = referencia_ano * 100 + referencia_mes

@@ -59,7 +59,7 @@ class Log(models.Model):
     deleted_by = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_deleted')
 
     dat_created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    dat_last_edited = models.DateTimeField(auto_now=True, null=True, blank=True)
+    dat_last_edited = models.DateTimeField(null=True, blank=True)
     dat_deleted = models.DateTimeField(null=True, blank=True)
 
     class Meta:
