@@ -93,12 +93,22 @@ class Bill(APIView):
         return JsonResponse(response, safe=False)
 
 
-class ExpensesEvolution(View):
+class ExpensesHistory(View):
     @method_decorator(login_required)
     def get(self, *args, **kwargs):
         referencia = self.request.GET.get('referencia')
 
         response = BO.finance.finance.Finance(reference=referencia).get_evolucao_categoria()
+
+        return JsonResponse(response, safe=False)
+
+
+class Expense(APIView):
+    def get(self, *args, **kwargs):
+        reference = self.request.GET.get('reference')
+        expense_type = self.request.GET.get('expense_type')
+
+        response = BO.finance.finance.Finance(reference=reference).get_expenses(expense_type=expense_type)
 
         return JsonResponse(response, safe=False)
 
