@@ -1,3 +1,5 @@
+import json
+
 from django.http import JsonResponse
 from django.views import View
 from BO.security.security import IsAuthenticated
@@ -43,7 +45,7 @@ class Item(APIView):
         status = self.request.POST.get('status')
         dat_status = self.request.POST.get('dat_status')
         main_author_id = self.request.POST.get('main_author_id') if self.request.POST.get('main_author') != '0' else None
-        authors_id = self.request.POST.getlist('authors_id')
+        authors_id = json.loads(self.request.POST.get('authors_id'))
         title = self.request.POST.get('title')
         subtitle = self.request.POST.get('subtitle')
         title_original = self.request.POST.get('title_original')
