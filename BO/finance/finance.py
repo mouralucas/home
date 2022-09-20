@@ -178,7 +178,7 @@ class Finance:
 
         return response
 
-    def get_bill(self):
+    def get_bill(self, credit_card_bill_id=None):
         filters = {
             'reference': self.reference
         }
@@ -194,9 +194,18 @@ class Finance:
                       card=F('credit_card__name'),
                       nm_category=F('category__description')).order_by('dat_purchase')
 
+        if credit_card_bill_id != 0:
+            bills = bills.filter(id=credit_card_bill_id).first()
+
+            if not bills:
+                return {
+                    'status': False,
+                    'description': _('Fatura não encontrada.')
+                }
+
         response = {
             'status': True,
-            'bill': list(bills)
+            'bill': list(bills) if credit_card_bill_id == 0 else bills
         }
 
         return response
