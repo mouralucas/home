@@ -43,26 +43,19 @@ class Finance:
         self.response = {}
 
     def get_bank_accounts(self, selected_id=''):
-        bank_accounts = finance.models.BankAccount.objects.values('id', 'nm_bank', 'branch_formatted', 'account_number_formatted', 'dat_start',
-                                                                  'dat_end').active() \
-            .annotate(is_selected=Case(When(id=selected_id, then=True),
-                                       default=False,
-                                       output_field=BooleanField()))
+        bank_accounts = finance.models.BankAccount.objects.values('id', 'nm_bank', 'branch_formatted', 'account_number_formatted', 'dat_start', 'dat_end').active()
 
         self.response['status'] = True
         self.response['bank_accounts'] = list(bank_accounts)
 
         return self.response
 
-    def get_credit_cards(self, selected_id=''):
+    def get_credit_cards(self):
         # TODO: mudar para receber parametro de status
         credit_cards = finance.models.CreditCard.objects.values('id', 'name', 'description', 'dat_threshold', 'dat_payment').active() \
             .annotate(nm_status=Case(When(status=True, then=Value('Ativo')),
                                      default=Value('Cancelado'),
-                                     output_field=CharField()),
-                      is_selected=Case(When(id=selected_id, then=True),
-                                       default=False,
-                                       output_field=BooleanField())).order_by('-status', 'id')
+                                     output_field=CharField())).order_by('-status', 'id')
 
         self.response['status'] = True
         self.response['credit_cards'] = list(credit_cards)

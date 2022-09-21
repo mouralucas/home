@@ -22,7 +22,7 @@ class CreditCard(APIView):
     def get(self, *args, **kwargs):
         selected_id = self.request.GET.get('selected_id')
 
-        response = BO.finance.finance.Finance().get_credit_cards(selected_id=selected_id)
+        response = BO.finance.finance.Finance().get_credit_cards()
 
         return JsonResponse(response, safe=False)
 
