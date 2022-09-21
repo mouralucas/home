@@ -54,6 +54,8 @@ INSTALLED_APPS = [
 
     'finance',
 
+    'file_manager',
+
     'library',
 
     'rest_framework',

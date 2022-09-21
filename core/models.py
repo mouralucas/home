@@ -6,16 +6,14 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-# from core.util.core import Inteliger
-
 
 class CustomQuerySet(models.QuerySet):
     def active(self):
         return self.filter(status=True)
 
-    def desabilitar(self, request_=None):
-        usuario = request_.user.pk if request_ is not None else None
-        qs = self.update(status=False, usr_delete=usuario, dat_delete=timezone.now())
+    def disable(self, request_=None):
+        user = request_.user.pk if request_ is not None else None
+        qs = self.update(status=False, deleted_by=user, dat_deleted=timezone.now())
         return qs
 
 
@@ -44,8 +42,8 @@ class CustomManager(models.Manager):
     def active(self):
         return self.get_queryset().active()
 
-    def desabilitar(self, request_=None):
-        return self.get_queryset().desabilitar(request_=request_)
+    def disable(self, request_=None):
+        return self.get_queryset().disable(request_=request_)
 
 
 class Log(models.Model):
@@ -128,6 +126,7 @@ class Log(models.Model):
     #     return log
 
 
+# TODO: editar para ser genérico e conter n elemento por usuário
 class ContatoLog(models.Model):
     celular_numero = models.CharField(max_length=50, null=True)
     celular_ddd = models.CharField(max_length=3, null=True)
@@ -174,6 +173,9 @@ class City(Log):
     cep_faixa_ini = models.CharField(max_length=80, null=True)
     cep_faixa_fim = models.CharField(max_length=80, null=True)
     country = models.ForeignKey('core.Country', on_delete=models.DO_NOTHING, null=True)
+
+    class Meta:
+        db_table = 'public"."city'
 
 
 class Tipo(Log):

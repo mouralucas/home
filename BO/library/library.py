@@ -240,29 +240,29 @@ class Library:
 
         return response
 
-    @staticmethod
-    def get_tipos(campos=None, selected_id=None):
-        if campos is None:
-            campos = ['codigo', 'descricao']
-
-        tipos = core.models.Tipo.objects.values(*campos).filter(tipo='TIPO.LIVRO') \
-            .annotate(is_selected=Case(When(codigo=selected_id, then=True),
-                                       default=False,
-                                       output_field=BooleanField())).order_by('ordem')
-
-        if not tipos:
-            response = {
-                'status': False,
-                'descricao': 'Nenhuma status encontrado'
-            }
-            return response
-
-        response = {
-            'status': True,
-            'tipos': list(tipos)
-        }
-
-        return response
+    # @staticmethod
+    # def get_tipos(campos=None, selected_id=None):
+    #     if campos is None:
+    #         campos = ['codigo', 'descricao']
+    #
+    #     tipos = core.models.Tipo.objects.values(*campos).filter(tipo='TIPO.LIVRO') \
+    #         .annotate(is_selected=Case(When(codigo=selected_id, then=True),
+    #                                    default=False,
+    #                                    output_field=BooleanField())).order_by('ordem')
+    #
+    #     if not tipos:
+    #         response = {
+    #             'status': False,
+    #             'descricao': 'Nenhuma status encontrado'
+    #         }
+    #         return response
+    #
+    #     response = {
+    #         'status': True,
+    #         'tipos': list(tipos)
+    #     }
+    #
+    #     return response
 
     def get_types(self, selected_id=None):
         item_types = [{'value': i[0], 'text': i[1], 'is_selected': True if i[0] == selected_id else False} for i in library.models.Item.ItemType.choices]

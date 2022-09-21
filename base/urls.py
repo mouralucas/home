@@ -25,6 +25,7 @@ urlpatterns = [
     path('user/', include(('core.user.urls', 'core.user'), namespace='user')),
     path('finance/', include(('finance.urls', 'finance'), namespace='finance')),
     path('library/', include(('library.urls', 'library'), namespace='library')),
+    path('file/', include(('file_manager.urls', 'file_manager'), namespace='file')),
     path('aviacao/', include(('aviacao.urls', 'aviacao'), namespace='aviacao')),
 
 ]
