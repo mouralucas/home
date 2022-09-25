@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from rest_framework.views import APIView
 
+import BO.file.file
 import file_manager.models
 
 
@@ -24,3 +25,10 @@ class Upload(APIView):
 
         return JsonResponse(response, safe=False)
 
+
+class Extract(APIView):
+    def get(self, *args, **kwargs):
+
+        response = BO.file.file.File().extract_table_pdf('')
+
+        return JsonResponse(response, safe=False)
