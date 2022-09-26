@@ -28,7 +28,8 @@ class Upload(APIView):
 
 class Extract(APIView):
     def get(self, *args, **kwargs):
+        path = self.request.GET.get('path')
 
-        response = BO.file.file.File().extract_table_pdf('')
+        response = BO.file.file.File().extract_table_pdf(path=path)
 
         return JsonResponse(response, safe=False)

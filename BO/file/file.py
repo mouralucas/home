@@ -1,6 +1,9 @@
 from tabula import read_pdf, convert_into
 import pandas as pd
 
+import finance.models
+import util.datetime
+
 
 class File:
     def __init__(self):
@@ -11,25 +14,54 @@ class File:
 
     def extract_table_pdf(self, path):
         # reads table from pdf file
-        # df = read_pdf('picpay.pdf', pages="all")
-        # dfs = pd.concat(df, axis=1)
+        df = read_pdf(path, pages="all")
 
-        columns = ['Data/Hora', 'Descrição das Movimentações', 'Valor', 'Saldo', 'Saldo Sacável ']
+        pdf_origin = 'picpay_statement'
+        if pdf_origin == 'picpay_statement':
+            self.__picpay_statement(df)
 
-        df = pd.read_csv('D:/System/Documents/mega/Financeiro/2022/PicPay2022.01.csv', encoding='latin1', delimiter=';')
-        df = df[df.columns[df.columns.isin(columns)]]
+    def __picpay_statement(self, dataframe):
+        """
+        :Name: __picpay_statement
+        :Description: Handles information aboute PicPay statement format
+        :Created by: Lucas Penha de Moura - 25/09/2022
+        :Edited by:
 
-        df['Valor'] = df['Valor'].apply(lambda x: x.replace('R$ ', '').replace('.', '').replace(',', '.').replace(' ', ''))
-        df['Saldo'] = df['Saldo'].apply(lambda x: x.replace('R$ ', '').replace('.', '').replace(',', '.').replace(' ', ''))
-        df['Saldo Sacável '] = df['Saldo Sacável '].apply(lambda x: x.replace('R$ ', '').replace('.', '').replace(',', '.').replace(' ', ''))
+        Explicit params:
+        :param dataframe: the dataframe with the data read from input pdf
 
-        df['Valor'] = df['Valor'].apply(lambda x: float(x))
-        df['Saldo'] = df['Saldo'].apply(lambda x: float(x))
-        df['Saldo Sacável '] = df['Saldo Sacável '].apply(lambda x: float(x.replace('-', '0')))
+        Implicit params (passed in the class instance or set by other functions):
+        None
+        """
+        output_path = 'media/finance/statement/'
+        output_name = 'a.csv'
 
-        df.to_csv('output_2.csv', encoding='latin1')
+        new_columns = {
+            'Data/Hora': 'date',
+            'Unnamed: 0': 'description',
+            'Descrição das Movimentações': 'amount',
+        }
 
-        print('')
+        dataframe = pd.concat(dataframe)
+        dataframe = dataframe.rename(columns=new_columns)
+        dataframe = dataframe[dataframe.columns[dataframe.columns.isin(list(new_columns.values()))]]
 
-        convert_into('picpay.pdf', "output.csv", output_format="csv", pages='all')
+        dataframe['date'] = dataframe['date'].apply(lambda x: x.replace('\r', ' '))
+        dataframe['amount'] = dataframe['amount'].apply(lambda x: x.replace('R$ ', '').replace('.', '').replace(',', '.').replace(' ', ''))
 
+        dataframe['amount'] = dataframe['amount'].apply(lambda x: float(x))
+
+        dataframe['reference'] = dataframe['date'].apply(lambda x: self.__set_reference(x.split(' ')[0]))
+        dataframe.reset_index(inplace=True)
+
+        agg = dataframe.groupby(['reference'])
+        for group in agg:
+            group[1].to_csv(output_path + 'picpay_statement_' + str(group[0]) + '.csv')
+
+        return dataframe
+
+    def __set_reference(self, date):
+        dat_compra_date = util.datetime.data_to_datetime(date, formato='%d/%m/%Y')
+        referencia_ano = dat_compra_date.year
+        referencia_mes = dat_compra_date.month
+        return referencia_ano * 100 + referencia_mes

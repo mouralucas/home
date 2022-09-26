@@ -94,6 +94,10 @@ class BankStatement(core.models.Log):
     category = models.ForeignKey('core.Category', on_delete=models.DO_NOTHING, null=True)
     description = models.TextField(null=True)
 
+    # Campos de controle
+    origin = models.CharField(max_length=50, default='SYSTEM')
+    is_validated = models.BooleanField(default=False)
+
     class Meta:
         db_table = 'finance"."bank_statement'
 
