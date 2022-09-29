@@ -299,7 +299,7 @@ class Library:
         return response
 
     @staticmethod
-    def get_series(selected_id=-1):
+    def get_series():
         """
         :Name: get_series
         :Description: Get all the item series
@@ -314,9 +314,7 @@ class Library:
         """
         campos = ['id', 'name', 'nm_original']
 
-        series = library.models.Serie.objects.values(*campos).annotate(is_selected=Case(When(id=selected_id, then=True),
-                                                                                        default=False,
-                                                                                        output_field=BooleanField())).order_by('id')
+        series = library.models.Serie.objects.values(*campos).order_by('id')
 
         if not series:
             response = {
@@ -333,7 +331,7 @@ class Library:
         return response
 
     @staticmethod
-    def get_colecoes(selected_id=-1):
+    def get_colecoes():
         """
         :Name: get_colecoes
         :Description: Get all the item collections
@@ -341,16 +339,14 @@ class Library:
         :Edited by:
 
         Explicit params:
-        :param selected_id: The id of selected status when editing a item
+        None
 
         Implicit params (passed in the class instance or set by other functions):
         None
         """
         campos = ['id', 'name', 'description']
 
-        collections = library.models.Collection.objects.values(*campos).annotate(is_selected=Case(When(id=selected_id, then=True),
-                                                                                                  default=False,
-                                                                                                  output_field=BooleanField())).order_by('id')
+        collections = library.models.Collection.objects.values(*campos).order_by('id')
 
         if not collections:
             response = {

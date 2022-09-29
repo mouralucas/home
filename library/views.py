@@ -71,13 +71,13 @@ class Item(APIView):
         thickness = self.request.POST.get('thickness')
         resumo = self.request.POST.get('resumo')
 
-        # response = BO.library.library.Library(item_id=item_id).set_item(main_author_id=main_author_id, authors_id=authors_id, title=title, subtitle=subtitle, title_original=title_original,
-        #                                                                 subtitle_original=subtitle_original, isbn=isbn, isbn_10=isbn_10, tipo=tipo,
-        #                                                                 pages=pages, volume=volume, edition=edition, dat_published=dat_published,
-        #                                                                 dat_published_original=dat_published_original, serie_id=serie_id, collection_id=collection_id, publisher=publisher_id,
-        #                                                                 item_format=item_format, language_id=language_id, cover_price=cover_price, payed_price=payed_price,
-        #                                                                 dimensions=dimensions, heigth=height, width=width, thickness=thickness,
-        #                                                                 status=status, dat_status=dat_status, resumo=resumo)
+        response = BO.library.library.Library(item_id=item_id).set_item(main_author_id=main_author_id, authors_id=authors_id, title=title, subtitle=subtitle, title_original=title_original,
+                                                                        subtitle_original=subtitle_original, isbn=isbn, isbn_10=isbn_10, tipo=tipo,
+                                                                        pages=pages, volume=volume, edition=edition, dat_published=dat_published,
+                                                                        dat_published_original=dat_published_original, serie_id=serie_id, collection_id=collection_id, publisher=publisher_id,
+                                                                        item_format=item_format, language_id=language_id, cover_price=cover_price, payed_price=payed_price,
+                                                                        dimensions=dimensions, heigth=height, width=width, thickness=thickness,
+                                                                        status=status, dat_status=dat_status, resumo=resumo)
 
         return JsonResponse(response, safe=False)
 
@@ -169,7 +169,7 @@ class Serie(View):
     def get(self, *args, **kwargs):
         selected_id = self.request.GET.get('selected_id') if self.request.GET.get('selected_id') != '' else None
 
-        response = BO.library.library.Library().get_series(selected_id=selected_id)
+        response = BO.library.library.Library().get_series()
 
         return JsonResponse(response, safe=False)
 
@@ -189,7 +189,7 @@ class Colecao(View):
     def get(self, *args, **kwargs):
         selected_id = self.request.GET.get('selected_id') if self.request.GET.get('selected_id') != '' else None
 
-        response = BO.library.library.Library().get_colecoes(selected_id=selected_id)
+        response = BO.library.library.Library().get_colecoes()
 
         return JsonResponse(response, safe=False)
 

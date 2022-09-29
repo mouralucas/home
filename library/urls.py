@@ -8,7 +8,7 @@ urlpatterns = [
     re_path('^item/author$', views.ItemAuthor.as_view(), name='item_author'),
     re_path('^author$', views.Author.as_view(), name='author'),
     re_path('^status$', views.Status.as_view(), name='status'),
-    re_path('^tipo$', views.Type.as_view(), name='tipo'),
+    re_path('^type$', views.Type.as_view()),
     re_path('^format$', views.Formato.as_view(), name='format'),
     re_path('^serie$', views.Serie.as_view(), name='serie'),
     re_path('^collection$', views.Colecao.as_view(), name='colecao'),
