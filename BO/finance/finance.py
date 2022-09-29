@@ -83,20 +83,21 @@ class Finance:
             return response
 
         if self.statement_id:
-            extrato = finance.models.BankStatement.objects.filter(pk=self.statement_id).first()
+            statement = finance.models.BankStatement.objects.filter(pk=self.statement_id).first()
         else:
-            extrato = finance.models.BankStatement()
+            statement = finance.models.BankStatement()
 
         # Não modificado nomes
         self.__set_reference()
 
-        extrato.reference = self.reference
-        extrato.amount = float(self.amount) * -1
-        extrato.dat_purchase = self.dat_compra
-        extrato.description = self.description
-        extrato.category_id = self.categoria_id
-        extrato.account_id = self.conta_id
-        extrato.save(request_=request)
+        statement.reference = self.reference
+        statement.amount = float(self.amount) * -1
+        statement.dat_purchase = self.dat_compra
+        statement.description = self.description
+        statement.category_id = self.categoria_id
+        statement.account_id = self.conta_id
+        statement.is_validated = True
+        statement.save(request_=request)
 
         response = self.get_statement()
 
