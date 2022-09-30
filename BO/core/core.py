@@ -14,10 +14,7 @@ class Misc:
         if campos is None:
             campos = ['id', 'name']
 
-        languages = core.models.Language.objects.values(*campos) \
-            .annotate(is_selected=Case(When(id=selected_id, then=True),
-                                       default=False,
-                                       output_field=BooleanField())).order_by('name')
+        languages = core.models.Language.objects.values(*campos).order_by('name')
 
         if not languages:
             response = {

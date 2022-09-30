@@ -275,7 +275,7 @@ class Library:
 
         return response
 
-    def get_formats(self, selected_id=''):
+    def get_formats(self):
         """
         :Name: get_formats
         :Description: Get all the possible formats
@@ -288,7 +288,7 @@ class Library:
         Implicit params (passed in the class instance or set by other functions):
         None
         """
-        formats = [{'value': i[0], 'text': i[1], 'is_selected': True if i[0] == selected_id else False} for i in library.models.Item.FormatType.choices]
+        formats = [{'value': i[0], 'text': i[1]} for i in library.models.Item.FormatType.choices]
 
         response = {
             'status': True,

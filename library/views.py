@@ -156,11 +156,9 @@ class Type(View):
         return JsonResponse(response, safe=False)
 
 
-class Formato(View):
+class Format(View):
     def get(self, *args, **kwargs):
-        selected_id = self.request.GET.get('selected_id')
-
-        response = BO.library.library.Library().get_formats(selected_id=selected_id)
+        response = BO.library.library.Library().get_formats()
 
         return JsonResponse(response, safe=False)
 
