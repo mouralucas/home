@@ -42,7 +42,7 @@ class Author(BO.person.person.Person):
             .values('id').annotate(nm_full=F('nm_full'),
                                    dat_birth=F('dat_birth'),
                                    nm_language=F('language__name'),
-                                   nm_country=F('country__name'))
+                                   nm_country=F('country__name')).order_by('nm_full')
 
         if not authors:
             response = {
