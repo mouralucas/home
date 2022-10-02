@@ -173,29 +173,29 @@ class Finance:
         return response
 
     def get_bill(self, credit_card_bill_id=None):
-        filters = {
-            'reference': self.reference
-        }
+        filters = {}
+        if credit_card_bill_id:
+            # bills = bills.filter(id=credit_card_bill_id).first()
+            filters['id'] = credit_card_bill_id
 
-        if self.credit_card_id:
-            filters['credit_card_id'] = self.credit_card_id
+        else:
+            filters = {
+                'reference': self.reference
+            }
+
+            if self.credit_card_id:
+                filters['credit_card_id'] = self.credit_card_id
 
         bills = finance.models.CreditCardBill.objects \
             .values('id', 'reference', 'dat_purchase', 'dat_payment',
                     'installment', 'tot_installment', 'description') \
             .filter(**filters) \
-            .annotate(total=Sum('amount'),
-                      card=F('credit_card__name'),
-                      nm_category=F('category__description')).order_by('dat_purchase')
-
-        if credit_card_bill_id != 0:
-            bills = bills.filter(id=credit_card_bill_id).first()
-
-            if not bills:
-                return {
-                    'status': False,
-                    'description': _('Fatura não encontrada.')
-                }
+            .annotate(amount=F('amount'),
+                      id_card=F('credit_card_id'),
+                      nm_card=F('credit_card__name'),
+                      id_category=F('category_id'),
+                      nm_category=F('category__description')
+                      ).order_by('dat_purchase')
 
         response = {
             'status': True,
