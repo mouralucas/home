@@ -40,7 +40,7 @@ class Finance:
         self.credit_card_id = credit_card_id
         self.currency = currency_id
 
-        self.response = {}
+        self.response = {} # Deprecated
 
     def get_bank_accounts(self):
         """
@@ -59,22 +59,44 @@ class Finance:
         """
         bank_accounts = finance.models.BankAccount.objects.values('id', 'nm_bank', 'branch_formatted', 'account_number_formatted', 'dat_start', 'dat_end').active()
 
-        self.response['status'] = True
-        self.response['bank_accounts'] = list(bank_accounts)
+        response = {
+            'status': True,
+            'description': None,
+            'quantity': len(bank_accounts),
+            'bank_accounts': list(bank_accounts),
+        }
 
-        return self.response
+        return response
 
     def get_credit_cards(self):
-        # TODO: mudar para receber parametro de status
+        """
+        :Name: get_credit_cards
+        :Description: get the list of credit cards
+        :Created by: Lucas Penha de Moura - 02/10/2022
+        :Edited by:
+
+        Explicit params:
+        None
+
+        Implicit params (passed in the class instance or set by other functions):
+        None
+
+        Return: the list of saved credit cards
+        """
+        # TODO: mudar para receber parâmetro de status
         credit_cards = finance.models.CreditCard.objects.values('id', 'name', 'description', 'dat_threshold', 'dat_payment').active() \
             .annotate(nm_status=Case(When(status=True, then=Value('Ativo')),
                                      default=Value('Cancelado'),
                                      output_field=CharField())).order_by('-status', 'id')
 
-        self.response['status'] = True
-        self.response['credit_cards'] = list(credit_cards)
+        response = {
+            'status': True,
+            'description': None,
+            'quantity': len(credit_cards),
+            'credit_cards': list(credit_cards),
+        }
 
-        return self.response
+        return response
 
     def get_category(self, selected_id=''):
         categorias = core.models.Category.objects.values('id', 'description', 'comments').active() \
