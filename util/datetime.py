@@ -61,6 +61,7 @@ def format_data_us(data, mask='____-__-__'):
     :param mask: Formato de saída da data
     :return: Data formatada de acordo com a mascara
     """
+    warnings.warn('Função depreciada devido a criação de classe DateTime.', DeprecationWarning, stacklevel=2)
     if data is None or data == '':
         return None
 
@@ -85,6 +86,7 @@ def format_data_us(data, mask='____-__-__'):
 
 
 def format_time(str_time):
+    warnings.warn('Função depreciada devido a criação de classe DateTime.', DeprecationWarning, stacklevel=2)
     try:
         str_time = str_time.zfill(4)
         str_time = str_time[:2] + ':' + str_time[2:]
@@ -123,6 +125,7 @@ def format_time(str_time):
 
 
 def monthname(month):
+    warnings.warn('Função depreciada devido a criação de classe DateTime.', DeprecationWarning, stacklevel=2)
     monthname_pt = ("Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto",
                     "Setembro", "Outubro", "Novembro", "Dezembro")
 
@@ -130,6 +133,7 @@ def monthname(month):
 
 
 def split_anomes(anomes=None):
+    warnings.warn('Função depreciada devido a criação de classe DateTime.', DeprecationWarning, stacklevel=2)
     try:
         mes = anomes[4:]
         ano = anomes[:4]
@@ -204,6 +208,23 @@ class DateTime:
         return year * 100 + month
 
     def list_period(self, s_year=2018, s_month=1, e_year=None, e_month=None):
+        """
+        :Name: list_period
+        :Description: Save the information about a category
+        :Created by: Lucas Penha de Moura - 02/10/2022
+        :Edited by:
+
+        Explicit params:
+        :param s_year: Start year (default 2018)
+        :param s_month: Start month (default 1)
+        :param e_year: End month
+        :param e_month: End month
+
+        Implicit params (passed in the class instance or set by other functions):
+        None
+
+        Return: The list of periods between start year/month to end year/mont
+        """
         if not e_year and not e_month:
             aux = self.localtime + relativedelta(months=6)
             e_year = aux.year

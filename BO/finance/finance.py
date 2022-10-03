@@ -42,7 +42,21 @@ class Finance:
 
         self.response = {}
 
-    def get_bank_accounts(self, selected_id=''):
+    def get_bank_accounts(self):
+        """
+        :Name: get_bank_accounts
+        :Description: get the list of accounts
+        :Created by: Lucas Penha de Moura - 02/10/2022
+        :Edited by:
+
+        Explicit params:
+        None
+
+        Implicit params (passed in the class instance or set by other functions):
+        None
+
+        Return: the list of saved accounts
+        """
         bank_accounts = finance.models.BankAccount.objects.values('id', 'nm_bank', 'branch_formatted', 'account_number_formatted', 'dat_start', 'dat_end').active()
 
         self.response['status'] = True
@@ -112,9 +126,13 @@ class Finance:
             filters['account_id'] = self.conta_id
 
         statement = finance.models.BankStatement.objects.values('id', 'reference', 'dat_purchase', 'description') \
-            .filter(**filters).annotate(total=Sum('amount'),
-                                        account=F('account__nm_bank'),
-                                        nm_category=F('category__description')) \
+            .filter(**filters).annotate(statement_id=F('id'),
+                                        amount=F('amount'),
+                                        nm_account=F('account__nm_bank'),
+                                        account_id=F('account_id'),
+                                        nm_category=F('category__description'),
+                                        category_id=F('category_id')
+                                        ) \
             .order_by('account_id', 'dat_purchase')
 
         response = {
@@ -384,7 +402,7 @@ class Finance:
         return response
 
     def __set_reference(self):
-        dat_compra_date = util.datetime.data_to_datetime(self.dat_compra, formato='%Y-%m-%d')
-        referencia_ano = dat_compra_date.year
-        referencia_mes = dat_compra_date.month
-        self.reference = referencia_ano * 100 + referencia_mes
+        dat_purchase = util.datetime.data_to_datetime(self.dat_compra, formato='%Y-%m-%d')
+        year = dat_purchase.year
+        month = dat_purchase.month
+        self.reference = year * 100 + month
