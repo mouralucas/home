@@ -12,9 +12,8 @@ import util.datetime
 
 class BankAccount(APIView):
     def get(self, *args, **kwargs):
-        selected_id = self.request.GET.get('selected_id')
 
-        response = BO.finance.finance.Finance().get_bank_accounts(selected_id=selected_id)
+        response = BO.finance.finance.Finance().get_bank_accounts()
 
         return JsonResponse(response, safe=False)
 
@@ -31,13 +30,13 @@ class CreditCard(APIView):
 class Statement(APIView):
     @method_decorator(login_required)
     def get(self, *args, **kwargs):
-        reference = self.request.GET.get('reference')
-        conta_id = self.request.GET.get('conta_id')
+        period = self.request.GET.get('reference')
+        account_id = self.request.GET.get('account_id')
 
-        if conta_id in ['', '0']:
-            conta_id = None
+        if account_id in ['', '0']:
+            account_id = None
 
-        response = BO.finance.finance.Finance(reference=reference, account_id=conta_id).get_statement()
+        response = BO.finance.finance.Finance(period=period, account_id=account_id).get_statement()
 
         return JsonResponse(response, safe=False)
 
@@ -66,7 +65,7 @@ class Bill(APIView):
         if card_id in ['', '0']:
             card_id = None
 
-        response = BO.finance.finance.Finance(reference=referencia, credit_card_id=card_id).get_bill(credit_card_bill_id=bill_id)
+        response = BO.finance.finance.Finance(period=referencia, credit_card_id=card_id).get_bill(credit_card_bill_id=bill_id)
 
         return JsonResponse(response, safe=False)
 
@@ -88,7 +87,7 @@ class Bill(APIView):
 
         response = BO.finance.finance.Finance(bill_id=bill_id, amount=amount, amount_currency=amount_currency, price_currency_dollar=price_currency_dollar, price_dollar=price_dollar,
                                               dat_compra=dat_purchase, dat_pagamento=dat_payment, amount_tax=amount_tax,
-                                              stallment=stallment, tot_stallment=tot_stallment, currency_id=currency, description=description,
+                                              installment=stallment, tot_installment=tot_stallment, currency_id=currency, description=description,
                                               category_id=category_id, credit_card_id=card_id) \
             .set_bill(request=self.request)
 
@@ -100,7 +99,7 @@ class ExpensesHistory(View):
     def get(self, *args, **kwargs):
         referencia = self.request.GET.get('referencia')
 
-        response = BO.finance.finance.Finance(reference=referencia).get_evolucao_categoria()
+        response = BO.finance.finance.Finance(period=referencia).get_evolucao_categoria()
 
         return JsonResponse(response, safe=False)
 
@@ -110,7 +109,7 @@ class Expense(APIView):
         reference = self.request.GET.get('reference')
         expense_type = self.request.GET.get('expense_type')
 
-        response = BO.finance.finance.Finance(reference=reference).get_expenses(expense_type=expense_type)
+        response = BO.finance.finance.Finance(period=reference).get_expenses(expense_type=expense_type)
 
         return JsonResponse(response, safe=False)
 
@@ -119,7 +118,7 @@ class FixedExpenses(View):
     def get(self, *args, **kwargs):
         reference = self.request.GET.get('reference')
 
-        response = BO.finance.finance.Finance(reference=reference).get_expenses(expense_type='fixed')
+        response = BO.finance.finance.Finance(period=reference).get_expenses(expense_type='fixed')
 
         return JsonResponse(response, safe=False)
 
@@ -128,7 +127,7 @@ class VariableExpenses(View):
     def get(self, *args, **kwargs):
         reference = self.request.GET.get('reference')
 
-        response = BO.finance.finance.Finance(reference=reference).get_expenses(expense_type='variable')
+        response = BO.finance.finance.Finance(period=reference).get_expenses(expense_type='variable')
 
         return JsonResponse(response, safe=False)
 

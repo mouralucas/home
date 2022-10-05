@@ -7,7 +7,7 @@ import core.models
 class BankAccount(core.models.Log):
     id = models.CharField(_('Identificador da conta'), max_length=100, primary_key=True)
     nm_bank = models.CharField(_('Nome da conta'), max_length=150, null=True)
-    description = models.TextField(_('Desrição da conta'), null=True)
+    description = models.TextField(_('Descrição da conta'), null=True)
     branch = models.IntegerField(null=True)
     branch_formatted = models.CharField(max_length=30, null=True)
     account_number = models.IntegerField(null=True)
@@ -31,8 +31,8 @@ class CreditCard(core.models.Log):
     description = models.CharField(max_length=500, null=True)
     dat_start = models.DateField(null=True, help_text='Data de início do contrato')
     dat_end = models.DateField(null=True, help_text='Data de fim do contrato')
-    dat_payment = models.IntegerField(null=True)
-    dat_threshold = models.IntegerField(null=True, help_text=_('Data de fechamento da fatura'))
+    dat_due = models.IntegerField(null=True)
+    dat_closing = models.IntegerField(null=True, help_text=_('Data de fechamento da fatura'))
 
     class Meta:
         db_table = 'finance"."credit_card'
