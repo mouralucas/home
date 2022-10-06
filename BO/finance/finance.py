@@ -229,9 +229,9 @@ class Finance:
                     'installment', 'tot_installment', 'description') \
             .filter(**filters) \
             .annotate(amount=F('amount'),
-                      id_card=F('credit_card_id'),
+                      card_id=F('credit_card_id'),
                       nm_card=F('credit_card__name'),
-                      id_category=F('category_id'),
+                      category_id=F('category_id'),
                       nm_category=F('category__description')
                       ).order_by('dat_purchase')
 
@@ -409,7 +409,7 @@ class Finance:
         month_purchase = dat_purchase.month
         year_purchase = dat_purchase.year
 
-        # TODO: there is a problem when threshold day is in previous month, then the simple rule of >= does not apply
+        # TODO: there is a problem when closing day is in previous month, then the simple rule of >= does not apply
         dat_payment = datetime(day=day_payment, month=month_purchase, year=year_purchase)
         if day_purchase >= day_close:
             dat_payment = dat_payment + relativedelta(months=1)

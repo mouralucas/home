@@ -12,13 +12,14 @@ class File:
     def upload(self):
         pass
 
-    def extract_table_pdf(self, path):
+    def extract_table_pdf(self, path, pdf_origin='picpay_statement'):
         # reads table from pdf file
         df = read_pdf(path, pages="all")
 
-        pdf_origin = 'picpay_statement'
         if pdf_origin == 'picpay_statement':
             self.__picpay_statement(df)
+        elif pdf_origin == 'nubank_bill':
+            pass
 
     def __picpay_statement(self, dataframe):
         """
@@ -59,6 +60,9 @@ class File:
             group[1].to_csv(output_path + 'picpay_statement_' + str(group[0]) + '.csv')
 
         return dataframe
+
+    def __nubank_bill(self, dataframe):
+        pass
 
     def __set_reference(self, date):
         dat_compra_date = util.datetime.data_to_datetime(date, formato='%d/%m/%Y')
