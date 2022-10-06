@@ -5,6 +5,9 @@ django==3.2.15
 pyjwt==2.3.0
 djangorestframework-simplejwt==5.0.0
 
+# PDF table reader
+tabula-py
+
 psycopg2-binary
 requests~=2.23.0
 django-crontab
