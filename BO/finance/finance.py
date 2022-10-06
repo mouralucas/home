@@ -16,31 +16,31 @@ import util.datetime
 
 class Finance:
 
-    def __init__(self, mes=None, ano=None, statement_id=None, bill_id=None, reference=None, account_id=None, credit_card_id=None, amount=None,
-                 amount_currency=None, price_currency_dollar=None, vlr_moeda=None, amount_tax=None, stallment=None, tot_stallment=None, dat_compra=None, dat_pagamento=None,
+    def __init__(self, mes=None, ano=None, statement_id=None, bill_id=None, period=None, account_id=None, credit_card_id=None, amount=None,
+                 amount_currency=None, price_currency_dollar=None, vlr_moeda=None, amount_tax=None, installment=None, tot_installment=None, dat_compra=None, dat_pagamento=None,
                  description=None, category_id=None, currency_id=None, price_dollar=None):
         self.mes = mes
         self.ano = ano
 
         self.statement_id = statement_id
         self.bill_id = bill_id
-        self.reference = reference
+        self.reference = period
         self.amount = amount
         self.amount_currency = amount_currency
         self.price_currency_dollar = price_currency_dollar
         self.vlr_moeda = vlr_moeda
         self.amount_tax = amount_tax
-        self.stallment = stallment
-        self.tot_stallment = tot_stallment
+        self.instalment = installment
+        self.tot_installment = tot_installment
         self.dat_compra = dat_compra
         self.dat_pagamento = dat_pagamento
         self.description = description
         self.categoria_id = category_id
-        self.conta_id = account_id
+        self.account_id = account_id
         self.credit_card_id = credit_card_id
         self.currency = currency_id
 
-        self.response = {} # Deprecated
+        self.response = {}  # Deprecated
 
     def get_bank_accounts(self):
         """
@@ -84,7 +84,7 @@ class Finance:
         Return: the list of saved credit cards
         """
         # TODO: mudar para receber parâmetro de status
-        credit_cards = finance.models.CreditCard.objects.values('id', 'name', 'description', 'dat_threshold', 'dat_payment').active() \
+        credit_cards = finance.models.CreditCard.objects.values('id', 'name', 'description', 'dat_closing', 'dat_due').active() \
             .annotate(nm_status=Case(When(status=True, then=Value('Ativo')),
                                      default=Value('Cancelado'),
                                      output_field=CharField())).order_by('-status', 'id')
@@ -111,7 +111,7 @@ class Finance:
         return self.response
 
     def set_statement(self, request=None):
-        if not self.dat_compra or not self.amount or not self.categoria_id or not self.conta_id:
+        if not self.dat_compra or not self.amount or not self.categoria_id or not self.account_id:
             response = {
                 'status': False,
                 'description': _('Todos os parâmetros são obrigatórios')
@@ -131,7 +131,7 @@ class Finance:
         statement.dat_purchase = self.dat_compra
         statement.description = self.description
         statement.category_id = self.categoria_id
-        statement.account_id = self.conta_id
+        statement.account_id = self.account_id
         statement.is_validated = True
         statement.save(request_=request)
 
@@ -144,8 +144,8 @@ class Finance:
             'reference': self.reference
         }
 
-        if self.conta_id:
-            filters['account_id'] = self.conta_id
+        if self.account_id:
+            filters['account_id'] = self.account_id
 
         statement = finance.models.BankStatement.objects.values('id', 'reference', 'dat_purchase', 'description') \
             .filter(**filters).annotate(statement_id=F('id'),
@@ -195,13 +195,11 @@ class Finance:
         bill.price_currency_dollar = self.price_currency_dollar
         bill.price_dollar = 1
 
-        # bill.currency = self.currency
         bill.currency_id = "BRL"
         bill.category_id = self.categoria_id
 
-        # bill.stallment = self.nr_parcela
         bill.installment = 1
-        bill.tot_installment = self.tot_stallment
+        bill.tot_installment = self.tot_installment
         bill.description = self.description
 
         bill.is_validated = True
@@ -299,7 +297,7 @@ class Finance:
         return self.response
 
     def get_investments(self):
-        investments = finance.models.Investment.objects.values('pk', 'name', 'dat_investment', 'amount_invested', 'price_investiment',
+        investments = finance.models.Investment.objects.values('pk', 'name', 'dat_investment', 'amount_invested', 'price_investment',
                                                                'qtd_titles', 'profit_contracted', 'description') \
             .annotate(id=F('pk'),
                       type=F('type__name'))
@@ -403,8 +401,8 @@ class Finance:
             }
             return response
 
-        day_close = card.dat_threshold
-        day_payment = card.dat_payment
+        day_close = card.dat_closing
+        day_payment = card.dat_due
 
         dat_purchase = util.datetime.data_to_datetime(dat_purchase, formato='%d/%m/%Y')
         day_purchase = dat_purchase.day
