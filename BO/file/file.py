@@ -1,7 +1,6 @@
-from tabula import read_pdf, convert_into
+import camelot
 import pandas as pd
 
-import finance.models
 import util.datetime
 
 
@@ -14,14 +13,12 @@ class File:
 
     def extract_table_pdf(self, path, pdf_origin='picpay_statement'):
         # reads table from pdf file
-        df = read_pdf(path, pages="all")
-
         if pdf_origin == 'picpay_statement':
-            self.__picpay_statement(df)
+            self.__picpay_statement(path=path)
         elif pdf_origin == 'nubank_bill':
             pass
 
-    def __picpay_statement(self, dataframe):
+    def __picpay_statement_beta(self, dataframe):
         """
         :Name: __picpay_statement
         :Description: Handles information aboute PicPay statement format
@@ -69,3 +66,17 @@ class File:
         referencia_ano = dat_compra_date.year
         referencia_mes = dat_compra_date.month
         return referencia_ano * 100 + referencia_mes
+
+    def __picpay_statement(self, path):
+        # Melhor implementaçã com Camelot
+
+        new_columns = {
+            'Data/Hora': 'date',
+            'Unnamed: 0': 'description',
+            'Descrição das Movimentações': 'amount',
+        }
+
+        tables = camelot.read_pdf(path, pages='1-end')
+        df = pd.concat([table.df.rename(columns=table.df.iloc[0]).drop(table.df.index[0]) for table in tables])
+        df.to_csv('teste.csv')
+
