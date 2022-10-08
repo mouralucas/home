@@ -17,5 +17,8 @@ python-decouple
 python-dateutil==2.8.1
 numpy~=1.23.1
 
+# PDF table readers
+camelot-py[base]
+
 # Deprecated
 django-composite-foreignkey==1.1.0

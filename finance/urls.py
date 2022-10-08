@@ -15,6 +15,8 @@ urlpatterns = [
     re_path(r'^periodos$', views.Periodos.as_view(), name='periods'),
     re_path(r'^currency$', views.Currency.as_view(), name='currency'),
 
+    re_path('^upload/pdf', views.PdfImport.as_view()),
+
     re_path(r'^expenses', views.Expense.as_view()),
     re_path(r'^expenses/fixed$', views.FixedExpenses.as_view(), name='fixed_expenses'),
     re_path(r'^expenses/variable$', views.VariableExpenses.as_view(), name='variable_variable'),

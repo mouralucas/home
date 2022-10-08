@@ -195,12 +195,13 @@ class DateTime:
         self.monthname_pt = ("Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
                              "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro")
 
+    @staticmethod
     def current_period(self):
         """
-       :Nome da classe/função: current_period
-       :descrição: Return te current monthyear period (mmyyyy)
-       :Criação: Lucas Penha de Moura - 18/04/2022
-       :Edições:
+       :Name: current_period
+       :Description: Return te current "monthyear" period (mmyyyy)
+       :Created by: Lucas Penha de Moura - 18/04/2022
+       :Edited by:
        """
         month = timezone.localtime().month
         year = timezone.localtime().year
@@ -260,3 +261,35 @@ class DateTime:
        """
 
         return self.monthname_pt[month - starting]
+
+    @staticmethod
+    def get_period(date, is_date_str=False, input_format='%Y-%m-%d'):
+        """
+        :Name: get_period
+        :Description: Get the period from a specific date (yyyymm)
+        :Created by: Lucas Penha de Moura - 02/10/2022
+        :Edited by:
+
+        Explicit params:
+        :param date: The date to extract the period
+        :param is_date_str: indicates if date already in datetime or is string
+        :param input_format: the format of date if is_date_str is True
+
+        Implicit params (passed in the class instance or set by other functions):
+        None
+
+        Return: The list of periods between start year/month to end year/mont
+        """
+        if is_date_str:
+            date = DateTime.str_to_datetime(date, input_format=input_format)
+        referencia_ano = date.year
+        referencia_mes = date.month
+        return referencia_ano * 100 + referencia_mes
+
+    @staticmethod
+    def str_to_datetime(str_date, input_format='%Y-%m-%d'):
+        try:
+            return datetime.strptime(str_date, input_format)
+        except Exception as e:
+            print(e)
+            return None

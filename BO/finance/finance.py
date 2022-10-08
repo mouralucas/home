@@ -12,6 +12,7 @@ import core.serializers
 import finance.models
 import finance.serializers
 import util.datetime
+import camelot
 
 
 class Finance:
@@ -420,6 +421,51 @@ class Finance:
         }
         print(dat_payment.date())
         return response
+
+    def import_picpay_statement(self, path):
+        new_columns = {
+            'Data/Hora': 'date',
+            'Descrição das Movimentações': 'description',
+            'Valor': 'amount',
+        }
+
+        tables = camelot.read_pdf(path, pages='1-end')
+        df = pd.concat([table.df.rename(columns=table.df.iloc[0]).drop(table.df.index[0]) for table in tables])
+        df = df.rename(columns=new_columns)
+
+        # Remove unnecessary columns
+        df = df[df.columns[df.columns.isin(list(new_columns.values()))]]
+
+        # Clean data
+        df['date'] = df['date'].apply(lambda x: x.replace('\r', ' ').replace('\n', ' '))
+        df['datetime'] = df['date'].apply(lambda x: util.datetime.DateTime.str_to_datetime(x.split(' ')[0], '%d/%m/%Y'))
+        df['amount'] = df['amount'].apply(lambda x: x.replace('R$ ', '').replace('.', '').replace(',', '.').replace(' ', ''))
+        df['amount'] = df['amount'].apply(lambda x: float(x))
+        df['period'] = df['date'].apply(lambda x: util.datetime.DateTime.get_period(x.split(' ')[0], is_date_str=True, input_format='%d/%m/%Y'))
+
+        list_period = df.groupby("period")
+        for i in list_period:
+            aux = i[1]
+            aux['cumulated'] = aux['amount'].cumsum()
+            print(aux)
+
+        list_statement = []
+        for idx, i in df.iterrows():
+            statement = finance.models.BankStatement()
+            statement.reference = i['period']
+            statement.amount = i['amount']
+            statement.dat_purchase = i['datetime']
+            statement.description = i['description']
+            statement.is_validated = False
+            statement.origin = 'PDF_IMPORT'
+            statement.account_id = 'picpay'
+            list_statement.append(statement)
+
+        finance.models.BankStatement.objects.bulk_create(list_statement)
+        # df['acumulado'] = df.groupby(['date']).cumsum()
+
+        # df.to_excel('teste.xlsx', index=False)
+        print('')
 
     def __set_reference(self):
         dat_purchase = util.datetime.data_to_datetime(self.dat_compra, formato='%Y-%m-%d')

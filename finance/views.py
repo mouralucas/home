@@ -8,11 +8,11 @@ import BO.core.core
 import BO.finance.finance
 
 import util.datetime
+from django.utils.translation import gettext_lazy as _
 
 
 class BankAccount(APIView):
     def get(self, *args, **kwargs):
-
         response = BO.finance.finance.Finance().get_bank_accounts()
 
         return JsonResponse(response, safe=False)
@@ -51,6 +51,22 @@ class Statement(APIView):
         response = BO.finance.finance.Finance(statement_id=statement_id, amount=amount, dat_compra=dat_purchase, description=description,
                                               category_id=category_id, account_id=account_id) \
             .set_statement(request=self.request)
+
+        return JsonResponse(response, safe=False)
+
+
+class PdfImport(APIView):
+    def post(self, *args, **kwargs):
+        path = self.request.POST.get('path')
+        pdf_type = self.request.POST.get('pdf_origin')
+
+        if pdf_type == 'picpay_statement':
+            response = BO.finance.finance.Finance().import_picpay_statement(path=path)
+        else:
+            response = {
+                'status': False,
+                'descriptions': _('Não implementado')
+            }
 
         return JsonResponse(response, safe=False)
 
