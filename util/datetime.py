@@ -129,8 +129,6 @@ def monthname(month):
     monthname_pt = ("Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto",
                     "Setembro", "Outubro", "Novembro", "Dezembro")
 
-    return monthname_pt[month - 1]
-
 
 def split_anomes(anomes=None):
     warnings.warn('Função depreciada devido a criação de classe DateTime.', DeprecationWarning, stacklevel=2)
@@ -192,10 +190,11 @@ def current_yearmonth():
 class DateTime:
     def __init__(self):
         self.localtime = timezone.localtime()
-        self.monthname_pt = ("Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-                             "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro")
+        self.monthname_pt = (('jan', 'Janeiro', '01'), ('fev', 'Fevereiro', '02'), ('mar', 'Março', '03'),
+                             ('abr', 'Abril', '04'), ('mai', 'Maio', '05'), ('jun', 'Junho', '06'),
+                             ('jul', 'Julho', '07'), ('ago', 'Agosto', '08'), ('set', 'Setembro', '09'),
+                             ('out', 'Outubro', '10'), ('nov', 'Novembro', '11'), ('dez', 'Dezembro', '12'))
 
-    @staticmethod
     def current_period(self):
         """
        :Name: current_period
@@ -250,17 +249,24 @@ class DateTime:
 
         return meses
 
-    def get_monthname(self, month, starting=1):
+    def get_monthname(self, month, starting=1, abbreviated=False):
         """
-       :Nome da classe/função: get_monthname
-       :descrição: Return the name of the month
-       :Criação: Lucas Penha de Moura - 18/04/2022
-       :param month: the number of the month
-       :param starting: The index of Junuary (default 1 means January = 1, February = 2, ...)
-       :Edições:
-       """
+        :Name: get_monthname
+        :Description: Return the name of the month
+        :Created by: Lucas Penha de Moura - 18/04/2022
 
-        return self.monthname_pt[month - starting]
+        Explicit params:
+        :param month: the number of the month
+        :param starting: the index of January (default 1 means January = 1, February = 2, ...)
+        :param abbreviated: indicate if the return is full month name or abbreviated
+
+        Implicit params (passed in the class instance or set by other functions):
+        None
+
+        Return:
+        """
+
+        return self.monthname_pt[month - starting][1] if not abbreviated else self.monthname_pt[month - starting][0]
 
     @staticmethod
     def get_period(date, is_date_str=False, input_format='%Y-%m-%d'):

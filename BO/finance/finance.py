@@ -2,6 +2,7 @@ import os
 from collections import defaultdict
 from datetime import datetime
 
+import numpy as np
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 from django.db.models import Sum, F, Case, When, BooleanField, CharField, Value
@@ -13,7 +14,7 @@ import finance.models
 import finance.serializers
 import util.datetime
 import camelot
-
+from tabula import read_pdf, convert_into
 
 class Finance:
 
@@ -465,6 +466,16 @@ class Finance:
         # df['acumulado'] = df.groupby(['date']).cumsum()
 
         # df.to_excel('teste.xlsx', index=False)
+        print('')
+
+    def import_picpay_bill(self, path):
+        df = read_pdf(path, pages="all", stream=False, pandas_options={'header': None})
+        df[0].columns = ["date", "description", "amount_dollar", "amount"]
+        df = df[0]
+        df['date'] = df['date'].fillna("")
+        df['day'] = df['date'].apply(lambda x: x.split(' ')[0] if x != np.nan else None)
+        df['month'] = df['date'].apply(lambda x: x.split(' ')[1] if x != np.nan and len(x.split(' ')) > 1 else None)
+        print(df.dtypes)
         print('')
 
     def __set_reference(self):
