@@ -133,20 +133,10 @@ class Expense(APIView):
         return JsonResponse(response, safe=False)
 
 
-class FixedExpenses(View):
+class BillHistory(APIView):
     def get(self, *args, **kwargs):
-        reference = self.request.GET.get('reference')
 
-        response = BO.finance.finance.Finance(period=reference).get_expenses(expense_type='fixed')
-
-        return JsonResponse(response, safe=False)
-
-
-class VariableExpenses(View):
-    def get(self, *args, **kwargs):
-        reference = self.request.GET.get('reference')
-
-        response = BO.finance.finance.Finance(period=reference).get_expenses(expense_type='variable')
+        response = BO.finance.finance.Finance().get_bill_history()
 
         return JsonResponse(response, safe=False)
 

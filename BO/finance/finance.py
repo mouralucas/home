@@ -16,6 +16,7 @@ import util.datetime
 import camelot
 from tabula import read_pdf, convert_into
 
+
 class Finance:
 
     def __init__(self, mes=None, ano=None, statement_id=None, bill_id=None, period=None, account_id=None, credit_card_id=None, amount=None,
@@ -257,13 +258,14 @@ class Finance:
 
         return response
 
-    def get_evolucao_faturas(self, months=13):
-        evolucao = finance.models.CreditCardBill.objects.values('reference') \
-            .filter(refence__range=(202001, 202112)).annotate(total=Sum('valor'),
-                                                              cartao=F('cartao_credito__nm_descritivo')).order_by('reference', 'credit_card_id')
+    def get_bill_history(self, months=13):
+        history = finance.models.CreditCardBill.objects.values('reference') \
+            .filter(reference__range=(202001, 202112)).annotate(total=Sum('amount'),
+                                                                card=F('credit_card__name')).order_by('reference', 'credit_card_id')
 
-        evolucao = pd.DataFrame(evolucao)
-        saida = evolucao.pivot(index='reference', columns='cartao', values='total').fillna(0)
+        history = pd.DataFrame(history)
+        saida = history.pivot(index='reference', columns='card', values='total').fillna(0)
+        saida.to_csv('pivot.csv')
 
         response = {
             'status': True,
@@ -306,7 +308,7 @@ class Finance:
 
         response = {
             'status': True,
-            'descricao': None,
+            'description': None,
             'investments': list(investments)
         }
 
