@@ -15,7 +15,7 @@ class Library:
         self.item = item
         self.item_type = item_type
 
-    def set_item(self, main_author_id=None, authors_id=None, title=None, subtitle=None, title_original=None, subtitle_original=None, isbn=None, isbn_10=None, tipo=None,
+    def set_item(self, main_author_id=None, authors_id=None, title=None, subtitle=None, title_original=None, subtitle_original=None, isbn=None, isbn_10=None, type=None,
                  pages=None, volume=None, edition=None, dat_published=None, dat_published_original=None, serie_id=None, collection_id=None, publisher=None,
                  item_format=None, language_id=None, cover_price=None, payed_price=None, dimensions=None, heigth=None, width=None, thickness=None,
                  resumo=None, status=None, dat_status=None, request=None):
@@ -79,12 +79,12 @@ class Library:
         item.isbn_formatted = isbn
         item.isbn10 = util.Format.clean_numeric(isbn_10)
         item.isbn10_formatted = isbn_10
-        item.type = tipo
+        item.type = type
         item.pages = pages if pages else None
         item.volume = volume if volume else 0
         item.edition = edition if edition else 1
-        item.dat_published = dat_lancamento_form
-        item.dat_published_original = dat_lancamento_original_form
+        item.dat_published = dat_published
+        item.dat_published_original = dat_published_original
         item.serie_id = serie_id
         item.collection_id = collection_id
         item.publisher_id = publisher if publisher and int(publisher) else None
@@ -97,10 +97,10 @@ class Library:
         item.width = width if width else None
         item.thickness = thickness if thickness else None
         item.resumo = resumo if resumo else None
-        item.dat_last_status = dat_status_form
+        item.dat_last_status = dat_status
         item.save(request_=request)
 
-        self.update_status(item=item, status=status, date=dat_status_form, request=request)
+        self.update_status(item=item, status=status, date=dat_status, request=request)
 
         self._set_author(item=item, author_list=main_author_id, is_main=True)
         self._set_author(item=item, author_list=authors_id)
