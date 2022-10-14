@@ -61,7 +61,7 @@ class Misc:
 
         return response
 
-    def get_category(self, show_mode, module_id, selected_id=''):
+    def get_category(self, show_mode, module_id):
         """
         :Name: get_category
         :Description: Save the information about a category
@@ -93,10 +93,7 @@ class Misc:
             filters['father_id__isnull'] = True if show_mode == 'father' else False
 
         categories = core.models.Category.objects.values('id', 'name', 'description', 'comments').active() \
-            .annotate(is_selected=Case(When(id=selected_id, then=True),
-                                       default=False,
-                                       output_field=BooleanField()),
-                      id_father=F('father_id'),
+            .annotate(id_father=F('father_id'),
                       nm_father=F('father__name')).filter(**filters).order_by('order')
 
         response = {
@@ -141,7 +138,7 @@ class Misc:
         category.module_id = module_id
         category.save(request_=request)
 
-        response = self.get_category(module_id=module_id)
+        response = self.get_category(module_id=module_id, show_mode='all')
 
         return response
 

@@ -25,11 +25,10 @@ class Module(APIView):
 
 class Category(APIView):
     def get(self, *args, **kwargs):
-        selected_id = self.request.GET.get('selected_id')
         show_mode = self.request.GET.get('show_mode')
         module = self.request.GET.get('module')
 
-        response = BO.core.core.Misc().get_category(show_mode=show_mode, module_id=module, selected_id=selected_id)
+        response = BO.core.core.Misc().get_category(show_mode=show_mode, module_id=module)
 
         return JsonResponse(response, safe=False)
 

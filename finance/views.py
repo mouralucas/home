@@ -58,12 +58,13 @@ class Statement(APIView):
 class PdfImport(APIView):
     def post(self, *args, **kwargs):
         path = self.request.POST.get('path')
+        period = self.request.POST.get('period')
         pdf_type = self.request.POST.get('pdf_origin')
 
         if pdf_type == 'picpay_statement':
             response = BO.finance.finance.Finance().import_picpay_statement(path=path)
         elif pdf_type == 'picpay_bill':
-            response = BO.finance.finance.Finance().import_picpay_bill(path=path)
+            response = BO.finance.finance.Finance().import_picpay_bill(path=path, period=period)
 
         else:
             response = {

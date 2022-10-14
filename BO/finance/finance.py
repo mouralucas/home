@@ -100,17 +100,17 @@ class Finance:
 
         return response
 
-    def get_category(self, selected_id=''):
-        categorias = core.models.Category.objects.values('id', 'description', 'comments').active() \
-            .annotate(is_selected=Case(When(id=selected_id, then=True),
-                                       default=False,
-                                       output_field=BooleanField()),
-                      id_father=F('father_id'),
-                      nm_father=F('father__description'))
-
-        self.response['status'] = True
-        self.response['categories'] = list(categorias)
-        return self.response
+    # def get_category(self, selected_id=''):
+    #     categorias = core.models.Category.objects.values('id', 'description', 'comments').active() \
+    #         .annotate(is_selected=Case(When(id=selected_id, then=True),
+    #                                    default=False,
+    #                                    output_field=BooleanField()),
+    #                   id_father=F('father_id'),
+    #                   nm_father=F('father__description'))
+    #
+    #     self.response['status'] = True
+    #     self.response['categories'] = list(categorias)
+    #     return self.response
 
     def set_statement(self, request=None):
         if not self.dat_compra or not self.amount or not self.categoria_id or not self.account_id:
@@ -468,13 +468,15 @@ class Finance:
         # df.to_excel('teste.xlsx', index=False)
         print('')
 
-    def import_picpay_bill(self, path):
+    def import_picpay_bill(self, path, period):
         df = read_pdf(path, pages="all", stream=False, pandas_options={'header': None})
         df[0].columns = ["date", "description", "amount_dollar", "amount"]
         df = df[0]
         df['date'] = df['date'].fillna("")
         df['day'] = df['date'].apply(lambda x: x.split(' ')[0] if x != np.nan else None)
-        df['month'] = df['date'].apply(lambda x: x.split(' ')[1] if x != np.nan and len(x.split(' ')) > 1 else None)
+        df['month'] = period[4:]
+        df['year'] = period[:4]
+        df['date_form'] = df['day']
         print(df.dtypes)
         print('')
 
