@@ -167,3 +167,33 @@ class Misc:
         }
 
         return response
+
+    def get_status(self, status_type):
+        """
+        :Name: get_status
+        :Description: Get all the possible item status
+        :Created by: Lucas Penha de Moura - 23/07/2022
+        :Edited by:
+
+        Explicit params:
+        :param status_type: the type of status one of: []
+
+        Implicit params (passed in the class instance or set by other functions):
+        None
+        """
+        status = core.models.Status.objects.values('id', 'name', 'description', 'order', 'image', 'type') \
+            .filter(type=status_type).order_by('order')
+
+        if not status:
+            response = {
+                'status': False,
+                'descricao': _('Nenhum status encontrado')
+            }
+            return response
+
+        response = {
+            'success': True,
+            'status': list(status)
+        }
+
+        return response

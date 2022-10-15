@@ -36,6 +36,15 @@ class Category(APIView):
         pass
 
 
+class Status(APIView):
+    def get(self, *args, **kwargs):
+        status_type = self.request.GET.get('status_type')
+
+        response = BO.core.core.Misc().get_status(status_type=status_type)
+
+        return JsonResponse(response, safe=False)
+
+
 class State(APIView):
     def get(self, *args, **kwargs):
         response = BO.core.core.Misc().get_states()
