@@ -2,6 +2,7 @@ import os
 from collections import defaultdict
 from datetime import datetime
 
+import numpy as np
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 from django.db.models import Sum, F, Case, When, BooleanField, CharField, Value
@@ -12,6 +13,8 @@ import core.serializers
 import finance.models
 import finance.serializers
 import util.datetime
+import camelot
+from tabula import read_pdf, convert_into
 
 
 class Finance:
@@ -98,17 +101,17 @@ class Finance:
 
         return response
 
-    def get_category(self, selected_id=''):
-        categorias = core.models.Category.objects.values('id', 'description', 'comments').active() \
-            .annotate(is_selected=Case(When(id=selected_id, then=True),
-                                       default=False,
-                                       output_field=BooleanField()),
-                      id_father=F('father_id'),
-                      nm_father=F('father__description'))
-
-        self.response['status'] = True
-        self.response['categories'] = list(categorias)
-        return self.response
+    # def get_category(self, selected_id=''):
+    #     categorias = core.models.Category.objects.values('id', 'description', 'comments').active() \
+    #         .annotate(is_selected=Case(When(id=selected_id, then=True),
+    #                                    default=False,
+    #                                    output_field=BooleanField()),
+    #                   id_father=F('father_id'),
+    #                   nm_father=F('father__description'))
+    #
+    #     self.response['status'] = True
+    #     self.response['categories'] = list(categorias)
+    #     return self.response
 
     def set_statement(self, request=None):
         if not self.dat_compra or not self.amount or not self.categoria_id or not self.account_id:
@@ -255,13 +258,14 @@ class Finance:
 
         return response
 
-    def get_evolucao_faturas(self, months=13):
-        evolucao = finance.models.CreditCardBill.objects.values('reference') \
-            .filter(refence__range=(202001, 202112)).annotate(total=Sum('valor'),
-                                                              cartao=F('cartao_credito__nm_descritivo')).order_by('reference', 'credit_card_id')
+    def get_bill_history(self, months=13):
+        history = finance.models.CreditCardBill.objects.values('reference') \
+            .filter(reference__range=(202001, 202112)).annotate(total=Sum('amount'),
+                                                                card=F('credit_card__name')).order_by('reference', 'credit_card_id')
 
-        evolucao = pd.DataFrame(evolucao)
-        saida = evolucao.pivot(index='reference', columns='cartao', values='total').fillna(0)
+        history = pd.DataFrame(history)
+        saida = history.pivot(index='reference', columns='card', values='total').fillna(0)
+        saida.to_csv('pivot.csv')
 
         response = {
             'status': True,
@@ -304,7 +308,7 @@ class Finance:
 
         response = {
             'status': True,
-            'descricao': None,
+            'description': None,
             'investments': list(investments)
         }
 
@@ -420,6 +424,63 @@ class Finance:
         }
         print(dat_payment.date())
         return response
+
+    def import_picpay_statement(self, path):
+        new_columns = {
+            'Data/Hora': 'date',
+            'Descrição das Movimentações': 'description',
+            'Valor': 'amount',
+        }
+
+        tables = camelot.read_pdf(path, pages='1-end')
+        df = pd.concat([table.df.rename(columns=table.df.iloc[0]).drop(table.df.index[0]) for table in tables])
+        df = df.rename(columns=new_columns)
+
+        # Remove unnecessary columns
+        df = df[df.columns[df.columns.isin(list(new_columns.values()))]]
+
+        # Clean data
+        df['date'] = df['date'].apply(lambda x: x.replace('\r', ' ').replace('\n', ' '))
+        df['datetime'] = df['date'].apply(lambda x: util.datetime.DateTime.str_to_datetime(x.split(' ')[0], '%d/%m/%Y'))
+        df['amount'] = df['amount'].apply(lambda x: x.replace('R$ ', '').replace('.', '').replace(',', '.').replace(' ', ''))
+        df['amount'] = df['amount'].apply(lambda x: float(x))
+        df['period'] = df['date'].apply(lambda x: util.datetime.DateTime.get_period(x.split(' ')[0], is_date_str=True, input_format='%d/%m/%Y'))
+
+        list_period = df.groupby("period")
+        for i in list_period:
+            aux = i[1]
+            aux['cumulated'] = aux['amount'].cumsum()
+            print(aux)
+
+        list_statement = []
+        for idx, i in df.iterrows():
+            statement = finance.models.BankStatement()
+            statement.reference = i['period']
+            statement.amount = i['amount']
+            statement.dat_purchase = i['datetime']
+            statement.description = i['description']
+            statement.is_validated = False
+            statement.origin = 'PDF_IMPORT'
+            statement.account_id = 'picpay'
+            list_statement.append(statement)
+
+        finance.models.BankStatement.objects.bulk_create(list_statement)
+        # df['acumulado'] = df.groupby(['date']).cumsum()
+
+        # df.to_excel('teste.xlsx', index=False)
+        print('')
+
+    def import_picpay_bill(self, path, period):
+        df = read_pdf(path, pages="all", stream=False, pandas_options={'header': None})
+        df[0].columns = ["date", "description", "amount_dollar", "amount"]
+        df = df[0]
+        df['date'] = df['date'].fillna("")
+        df['day'] = df['date'].apply(lambda x: x.split(' ')[0] if x != np.nan else None)
+        df['month'] = period[4:]
+        df['year'] = period[:4]
+        df['date_form'] = df['day']
+        print(df.dtypes)
+        print('')
 
     def __set_reference(self):
         dat_purchase = util.datetime.data_to_datetime(self.dat_compra, formato='%Y-%m-%d')

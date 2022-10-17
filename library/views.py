@@ -41,18 +41,18 @@ class Item(APIView):
         return JsonResponse(response, safe=False)
 
     def post(self, *args, **kwargs):
-        item_id = self.request.POST.get('item_id') if self.request.POST.get('item_id') != '' else None
+        item_id = self.request.POST.get('item_id') if self.request.POST.get('item_id') != 'null' else None
         status = self.request.POST.get('status')
         dat_status = self.request.POST.get('dat_status')
         main_author_id = self.request.POST.get('main_author_id') if self.request.POST.get('main_author') != '0' else None
-        authors_id = json.loads(self.request.POST.get('authors_id'))
+        authors_id = json.loads(self.request.POST.get('authors_id')) if self.request.POST.get('authors_id') else None
         title = self.request.POST.get('title')
         subtitle = self.request.POST.get('subtitle')
         title_original = self.request.POST.get('title_original')
         subtitle_original = self.request.POST.get('subtitle_original')
         isbn = self.request.POST.get('isbn')
         isbn_10 = self.request.POST.get('isbn_10')
-        tipo = self.request.POST.get('tipo')
+        type = self.request.POST.get('itemType')
         pages = self.request.POST.get('pages')
         volume = self.request.POST.get('volume')
         edition = self.request.POST.get('edition')
@@ -61,7 +61,7 @@ class Item(APIView):
         serie_id = self.request.POST.get('serie_id')
         collection_id = self.request.POST.get('collection_id')
         publisher_id = self.request.POST.get('publisher_id')
-        item_format = self.request.POST.get('format')
+        item_format = self.request.POST.get('format_id')
         language_id = self.request.POST.get('language_id')
         cover_price = self.request.POST.get('cover_price')
         payed_price = self.request.POST.get('payed_price')
@@ -72,7 +72,7 @@ class Item(APIView):
         resumo = self.request.POST.get('resumo')
 
         response = BO.library.library.Library(item_id=item_id).set_item(main_author_id=main_author_id, authors_id=authors_id, title=title, subtitle=subtitle, title_original=title_original,
-                                                                        subtitle_original=subtitle_original, isbn=isbn, isbn_10=isbn_10, tipo=tipo,
+                                                                        subtitle_original=subtitle_original, isbn=isbn, isbn_10=isbn_10, type=type,
                                                                         pages=pages, volume=volume, edition=edition, dat_published=dat_published,
                                                                         dat_published_original=dat_published_original, serie_id=serie_id, collection_id=collection_id, publisher=publisher_id,
                                                                         item_format=item_format, language_id=language_id, cover_price=cover_price, payed_price=payed_price,

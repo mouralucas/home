@@ -65,66 +65,14 @@ class Log(models.Model):
         abstract = True
 
     def save(self, request_=None, *args, **kwargs):
-        if self.dat_created is None:
-            # self.usr_insercao = request_.user.pk if request_ is not None else None
+        if not self.id:
+            self.created_by = request_.user if request_ else None
             self.dat_created = timezone.now()
-            # self.origem_insercao_codigo = request_.user.tipo_codigo if request_ is not None and request_.user.pk is not None else None
-            self.status = True
         else:
-            # self.usr_edicao = request_.user.pk if request_ is not None else None
+            self.last_edited_by = request_.user if request_ else None
             self.dat_last_edited = timezone.now()
-            # self.origem_edicao_codigo = request_.user.tipo_codigo if request_ is not None and request_.user.pk is not None else None
 
         super(Log, self).save(*args, **kwargs)
-
-    # def desabilitar(self, request_=None, *args, **kwargs):
-    #     self.status = False
-    #     self.user = request_.user.pk if request_ is not None else None
-    #     self.dat_delete = timezone.now()
-    #     self.origem_delete_codigo = request_.user.tipo_codigo if request_ is not None and request_.user.pk is not None else None
-    #     super(Log, self).save(*args, **kwargs)
-
-    # def get_log(self):
-    #     log = {
-    #         'usr_insercao': None,
-    #         'dat_insercao': self.dat_created,
-    #         'usr_edicao': None,
-    #         'dat_edicao': self.dat_last_edited,
-    #         'usr_delete': None,
-    #         'dat_delete': None,
-    #     }
-    #     if self.usr_insercao is not None:
-    #         if self.origem_insercao_codigo == 'cliente':
-    #             log['usr_insercao'] = apps.get_model('cliente', 'ClienteLogin').objects.all().filter(id=self.usr_insercao).first()
-    #         elif self.origem_insercao_codigo == 'funcionario':
-    #             log['usr_insercao'] = apps.get_model('funcionario', 'FuncionarioLogin').objects.all().filter(id=self.usr_insercao).first()
-    #         elif self.origem_insercao_codigo == 'fornecedor':
-    #             log['usr_insercao'] = apps.get_model('fornecedor', 'FornecedorLogin').objects.all().filter(id=self.usr_insercao).first()
-    #         elif self.origem_insercao_codigo == 'api':
-    #             log['usr_insercao'] = apps.get_model('api', 'ApiLogin').objects.all().filter(id=self.usr_insercao).first()
-    #
-    #     if self.usr_edicao is not None:
-    #         if self.origem_edicao_codigo == 'cliente':
-    #             log['usr_edicao'] = apps.get_model('cliente', 'ClienteLogin').objects.all().filter(id=self.usr_edicao).first()
-    #         elif self.origem_edicao_codigo == 'funcionario':
-    #             log['usr_edicao'] = apps.get_model('funcionario', 'FuncionarioLogin').objects.all().filter(id=self.usr_edicao).first()
-    #         elif self.origem_edicao_codigo == 'fornecedor':
-    #             log['usr_edicao'] = apps.get_model('fornecedor', 'FornecedorLogin').objects.all().filter(id=self.usr_edicao).first()
-    #         elif self.origem_edicao_codigo == 'api':
-    #             log['usr_edicao'] = apps.get_model('api', 'ApiLogin').objects.all().filter(id=self.usr_edicao).first()
-    #
-    #     if self.usr_delete is not None:
-    #         if self.origem_delete_codigo == 'cliente':
-    #             log['usr_delete'] = apps.get_model('cliente', 'ClienteLogin').objects.all().filter(id=self.usr_delete).first()
-    #         elif self.origem_delete_codigo == 'funcionario':
-    #             log['usr_delete'] = apps.get_model('funcionario', 'FuncionarioLogin').objects.all().filter(id=self.usr_delete).first()
-    #         elif self.origem_delete_codigo == 'fornecedor':
-    #             log['usr_delete'] = apps.get_model('fornecedor', 'FornecedorLogin').objects.all().filter(id=self.usr_delete).first()
-    #         elif self.origem_delete_codigo == 'api':
-    #             log['usr_delete'] = apps.get_model('api', 'ApiLogin').objects.all().filter(id=self.usr_delete).first()
-    #
-    #     return log
-
 
 # TODO: editar para ser genérico e conter n elemento por usuário
 class ContatoLog(models.Model):

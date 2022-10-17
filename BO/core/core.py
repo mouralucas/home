@@ -61,7 +61,7 @@ class Misc:
 
         return response
 
-    def get_category(self, show_mode, module_id, selected_id=''):
+    def get_category(self, show_mode, module_id):
         """
         :Name: get_category
         :Description: Save the information about a category
@@ -93,10 +93,7 @@ class Misc:
             filters['father_id__isnull'] = True if show_mode == 'father' else False
 
         categories = core.models.Category.objects.values('id', 'name', 'description', 'comments').active() \
-            .annotate(is_selected=Case(When(id=selected_id, then=True),
-                                       default=False,
-                                       output_field=BooleanField()),
-                      id_father=F('father_id'),
+            .annotate(id_father=F('father_id'),
                       nm_father=F('father__name')).filter(**filters).order_by('order')
 
         response = {
@@ -141,7 +138,7 @@ class Misc:
         category.module_id = module_id
         category.save(request_=request)
 
-        response = self.get_category(module_id=module_id)
+        response = self.get_category(module_id=module_id, show_mode='all')
 
         return response
 
@@ -167,6 +164,36 @@ class Misc:
         response = {
             'status': True,
             'states': list(states)
+        }
+
+        return response
+
+    def get_status(self, status_type):
+        """
+        :Name: get_status
+        :Description: Get all the possible item status
+        :Created by: Lucas Penha de Moura - 23/07/2022
+        :Edited by:
+
+        Explicit params:
+        :param status_type: the type of status one of: []
+
+        Implicit params (passed in the class instance or set by other functions):
+        None
+        """
+        status = core.models.Status.objects.values('id', 'name', 'description', 'order', 'image', 'type') \
+            .filter(type=status_type).order_by('order')
+
+        if not status:
+            response = {
+                'status': False,
+                'descricao': _('Nenhum status encontrado')
+            }
+            return response
+
+        response = {
+            'success': True,
+            'status': list(status)
         }
 
         return response

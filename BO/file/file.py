@@ -1,7 +1,6 @@
-from tabula import read_pdf, convert_into
+
 import pandas as pd
 
-import finance.models
 import util.datetime
 
 
@@ -14,17 +13,15 @@ class File:
 
     def extract_table_pdf(self, path, pdf_origin='picpay_statement'):
         # reads table from pdf file
-        df = read_pdf(path, pages="all")
-
         if pdf_origin == 'picpay_statement':
-            self.__picpay_statement(df)
+            self.__picpay_statement(path=path)
         elif pdf_origin == 'nubank_bill':
             pass
 
-    def __picpay_statement(self, dataframe):
+    def __picpay_statement_beta(self, dataframe):
         """
         :Name: __picpay_statement
-        :Description: Handles information aboute PicPay statement format
+        :Description: Handles information about PicPay statement format
         :Created by: Lucas Penha de Moura - 25/09/2022
         :Edited by:
 
@@ -52,7 +49,7 @@ class File:
 
         dataframe['amount'] = dataframe['amount'].apply(lambda x: float(x))
 
-        dataframe['reference'] = dataframe['date'].apply(lambda x: self.__set_reference(x.split(' ')[0]))
+        dataframe['reference'] = dataframe['date'].apply(lambda x: util.datetime.DateTime.get_period(x.split(' ')[0], input_format='%d/%M/y'))
         dataframe.reset_index(inplace=True)
 
         agg = dataframe.groupby(['reference'])
@@ -64,8 +61,39 @@ class File:
     def __nubank_bill(self, dataframe):
         pass
 
-    def __set_reference(self, date):
-        dat_compra_date = util.datetime.data_to_datetime(date, formato='%d/%m/%Y')
-        referencia_ano = dat_compra_date.year
-        referencia_mes = dat_compra_date.month
-        return referencia_ano * 100 + referencia_mes
+    # def __picpay_statement(self, path):
+    #     # Melhor implementação com Camelot
+    #
+    #     new_columns = {
+    #         'Data/Hora': 'date',
+    #         'Descrição das Movimentações': 'description',
+    #         'Valor': 'amount',
+    #     }
+    #
+    #     tables = camelot.read_pdf(path, pages='1-end')
+    #     df = pd.concat([table.df.rename(columns=table.df.iloc[0]).drop(table.df.index[0]) for table in tables])
+    #     df = df.rename(columns=new_columns)
+    #
+    #     # Remove unnecessary columns
+    #     df = df[df.columns[df.columns.isin(list(new_columns.values()))]]
+    #
+    #     # Clean data
+    #     df['date'] = df['date'].apply(lambda x: x.replace('\r', ' ').replace('\n', ' '))
+    #     df['amount'] = df['amount'].apply(lambda x: x.replace('R$ ', '').replace('.', '').replace(',', '.').replace(' ', ''))
+    #     df['amount'] = df['amount'].apply(lambda x: float(x))
+    #     df['period'] = df['date'].apply(lambda x: util.datetime.DateTime.get_period(x.split(' ')[0], is_date_str=True, input_format='%d/%m/%Y'))
+    #
+    #     # df['cumulated'] = df['amount'].cumsum()
+    #
+    #     list_period = df.groupby("period")
+    #     for i in list_period:
+    #         aux = i[1]
+    #         aux['cumulated'] = aux['amount'].cumsum()
+    #         print(aux)
+    #
+    #
+    #     # df['acumulado'] = df.groupby(['date']).cumsum()
+    #
+    #     # df.to_excel('teste.xlsx', index=False)
+    #     print('')
+
