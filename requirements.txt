@@ -8,6 +8,9 @@ djangorestframework-simplejwt==5.0.0
 # PDF table reader
 tabula-py
 
+# Cv2
+opencv-python
+
 psycopg2-binary
 requests~=2.23.0
 django-crontab
