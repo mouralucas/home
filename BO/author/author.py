@@ -41,7 +41,9 @@ class Author(BO.person.person.Person):
         authors = library.models.Author.objects.filter(is_translator=is_translator) \
             .values('id').annotate(nm_full=F('nm_full'),
                                    dat_birth=F('dat_birth'),
+                                   language_id=F('language_id'),
                                    nm_language=F('language__name'),
+                                   country_id=F('country_id'),
                                    nm_country=F('country__name')).order_by('nm_full')
 
         if not authors:
