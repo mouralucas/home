@@ -83,8 +83,8 @@ class Library:
         item.pages = pages if pages else None
         item.volume = volume if volume else 0
         item.edition = edition if edition else 1
-        item.dat_published = dat_published
-        item.dat_published_original = dat_published_original
+        item.dat_published = dat_published if dat_published not in (None, '', 'null') else None
+        item.dat_published_original = dat_published_original if dat_published_original not in (None, '', 'null') else None
         item.serie_id = serie_id
         item.collection_id = collection_id
         item.publisher_id = publisher if publisher and int(publisher) else None

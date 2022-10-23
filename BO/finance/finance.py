@@ -158,7 +158,7 @@ class Finance:
                                         nm_category=F('category__description'),
                                         category_id=F('category_id')
                                         ) \
-            .order_by('account_id', 'dat_purchase')
+            .order_by('-dat_purchase', 'account_id')
 
         response = {
             'status': True,

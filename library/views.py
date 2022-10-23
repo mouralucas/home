@@ -42,7 +42,7 @@ class Item(APIView):
 
     def post(self, *args, **kwargs):
         item_id = self.request.POST.get('item_id') if self.request.POST.get('item_id') != 'null' else None
-        status = self.request.POST.get('status')
+        status = self.request.POST.get('status_id')
         dat_status = self.request.POST.get('dat_status')
         main_author_id = self.request.POST.get('main_author_id') if self.request.POST.get('main_author') != '0' else None
         authors_id = json.loads(self.request.POST.get('authors_id')) if self.request.POST.get('authors_id') else None
@@ -51,7 +51,7 @@ class Item(APIView):
         title_original = self.request.POST.get('title_original')
         subtitle_original = self.request.POST.get('subtitle_original')
         isbn = self.request.POST.get('isbn')
-        isbn_10 = self.request.POST.get('isbn_10')
+        isbn_10 = self.request.POST.get('isbn10')
         type = self.request.POST.get('itemType')
         pages = self.request.POST.get('pages')
         volume = self.request.POST.get('volume')
