@@ -103,7 +103,7 @@ class Library:
         self.update_status(item=item, status=status, date=dat_status, request=request)
 
         self._set_author(item=item, author_list=main_author_id, is_main=True)
-        self._set_author(item=item, author_list=authors_id)
+        # self._set_author(item=item, author_list=authors_id)
 
         response = {
             'status': True,
@@ -134,8 +134,8 @@ class Library:
         if self.item_id:
             filters['id'] = self.item_id
 
-        item = library.models.Item.objects.values('id', 'title', 'subtitle', 'pages', 'volume', 'cover_price', 'payed_price', 'isbn_formatted', 'isbn10_formatted',
-                                                  'title_original', 'subtitle_original', 'edition', 'dimensions', 'height', 'width', 'thickness', 'resumo').filter(**filters) \
+        item = library.models.Item.objects.values('id', 'title', 'subtitle', 'pages', 'volume', 'cover_price', 'payed_price', 'isbn_formatted', 'isbn10_formatted', 'dat_published',
+                                                  'dat_published_original', 'title_original', 'subtitle_original', 'edition', 'dimensions', 'height', 'width', 'thickness', 'resumo').filter(**filters) \
             .annotate(nm_main_author=F('main_author__nm_full'),
                       id_main_autor=F('main_author_id'),
                       nm_serie=F('serie__name'),

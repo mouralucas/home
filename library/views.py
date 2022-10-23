@@ -43,7 +43,7 @@ class Item(APIView):
     def post(self, *args, **kwargs):
         item_id = self.request.POST.get('item_id') if self.request.POST.get('item_id') != 'null' else None
         status = self.request.POST.get('status_id')
-        dat_status = self.request.POST.get('dat_status')
+        dat_last_status = self.request.POST.get('dat_last_status')
         main_author_id = self.request.POST.get('main_author_id') if self.request.POST.get('main_author') != '0' else None
         authors_id = json.loads(self.request.POST.get('authors_id')) if self.request.POST.get('authors_id') else None
         title = self.request.POST.get('title')
@@ -77,7 +77,7 @@ class Item(APIView):
                                                                         dat_published_original=dat_published_original, serie_id=serie_id, collection_id=collection_id, publisher=publisher_id,
                                                                         item_format=item_format, language_id=language_id, cover_price=cover_price, payed_price=payed_price,
                                                                         dimensions=dimensions, heigth=height, width=width, thickness=thickness,
-                                                                        status=status, dat_status=dat_status, resumo=resumo)
+                                                                        status=status, dat_status=dat_last_status, resumo=resumo)
 
         return JsonResponse(response, safe=False)
 
