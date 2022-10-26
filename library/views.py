@@ -52,7 +52,7 @@ class Item(APIView):
         subtitle_original = self.request.POST.get('subtitle_original')
         isbn = self.request.POST.get('isbn')
         isbn_10 = self.request.POST.get('isbn10')
-        type = self.request.POST.get('itemType')
+        item_type = self.request.POST.get('itemType')
         pages = self.request.POST.get('pages')
         volume = self.request.POST.get('volume')
         edition = self.request.POST.get('edition')
@@ -72,12 +72,12 @@ class Item(APIView):
         resumo = self.request.POST.get('resumo')
 
         response = BO.library.library.Library(item_id=item_id).set_item(main_author_id=main_author_id, authors_id=authors_id, title=title, subtitle=subtitle, title_original=title_original,
-                                                                        subtitle_original=subtitle_original, isbn=isbn, isbn_10=isbn_10, type=type,
+                                                                        subtitle_original=subtitle_original, isbn=isbn, isbn_10=isbn_10, type=item_type,
                                                                         pages=pages, volume=volume, edition=edition, dat_published=dat_published,
                                                                         dat_published_original=dat_published_original, serie_id=serie_id, collection_id=collection_id, publisher=publisher_id,
                                                                         item_format=item_format, language_id=language_id, cover_price=cover_price, payed_price=payed_price,
                                                                         dimensions=dimensions, heigth=height, width=width, thickness=thickness,
-                                                                        status=status, dat_status=dat_last_status, resumo=resumo)
+                                                                        status=status, dat_status=dat_last_status, resumo=resumo, request=self.request)
 
         return JsonResponse(response, safe=False)
 
