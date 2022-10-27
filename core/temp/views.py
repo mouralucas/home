@@ -237,7 +237,7 @@ class MigrateLivroToItem(View):
             item.type = item_type
             item.cover_price = livro['valor_capa']
             item.payed_price = livro['valor_pago']
-            item.resumo = livro['resumo']
+            item.summary = livro['resumo']
             item.publisher_id = livro['editora_id']
             item.language_id = livro['idioma_id'].upper() if livro['idioma_id'].upper() else None
             item.last_status_id = livro['ultimo_status_id']
@@ -246,7 +246,7 @@ class MigrateLivroToItem(View):
             item.thickness = livro['profundidade']
             item.dimensions = livro['dimensoes']
             item.observation = livro['observacoes']
-            item.origem = livro['origem_cadastro']
+            item.origin = livro['origem_cadastro']
             item.serie_id = livro['serie_id']
             item.main_author_id = livro['autor_principal_id']
             item.collection_id = livro['colecao_id']

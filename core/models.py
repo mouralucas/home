@@ -74,6 +74,7 @@ class Log(models.Model):
 
         super(Log, self).save(*args, **kwargs)
 
+
 # TODO: editar para ser genérico e conter n elemento por usuário
 class ContatoLog(models.Model):
     celular_numero = models.CharField(max_length=50, null=True)

@@ -96,7 +96,7 @@ class Library:
         item.height = heigth if heigth else None
         item.width = width if width else None
         item.thickness = thickness if thickness else None
-        item.resumo = resumo if resumo else None
+        item.summary = resumo if resumo else None
         item.dat_last_status = dat_status
         item.save(request_=request)
 
@@ -135,7 +135,7 @@ class Library:
             filters['id'] = self.item_id
 
         item = library.models.Item.objects.values('id', 'title', 'subtitle', 'pages', 'volume', 'cover_price', 'payed_price', 'isbn_formatted', 'isbn10_formatted', 'dat_published',
-                                                  'dat_published_original', 'title_original', 'subtitle_original', 'edition', 'dimensions', 'height', 'width', 'thickness', 'resumo').filter(**filters) \
+                                                  'dat_published_original', 'title_original', 'subtitle_original', 'edition', 'dimensions', 'height', 'width', 'thickness', 'summary').filter(**filters) \
             .annotate(nm_main_author=F('main_author__nm_full'),
                       main_author_id=F('main_author_id'),
                       nm_serie=F('serie__name'),

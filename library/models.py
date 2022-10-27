@@ -180,9 +180,9 @@ class Item(core.models.Log):
     edition = models.IntegerField(null=True)
     serie = models.ForeignKey('library.Serie', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_serie')
     language = models.ForeignKey('core.Language', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_language')
-    cover = models.FileField(null=True, default='library/item/capa/sem_capa.png')
+    cover = models.FileField(null=True, default='library/item/cover/no_cover.png')
     volume = models.IntegerField(null=True)
-    publisher = models.ForeignKey('library.Publisher', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_pubisher')
+    publisher = models.ForeignKey('library.Publisher', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_publisher')
     authors = models.ManyToManyField('library.Author', through='library.ItemAuthor', related_name='%(app_label)s_%(class)s_authors')
     main_author = models.ForeignKey('library.Author', on_delete=models.DO_NOTHING, related_name='%(app_label)s_%(class)s_main_author', null=True)
     # category = models.ManyToManyField('library.Categoria', through='library.LivroCategoria', related_name='%(app_label)s_%(class)s_category')
@@ -202,10 +202,10 @@ class Item(core.models.Log):
     width = models.DecimalField(max_digits=7, decimal_places=2, null=True, help_text=_('Em centímetros'))
     thickness = models.DecimalField(max_digits=7, decimal_places=2, null=True, help_text=_('Em centímetros'))
 
-    resumo = models.TextField(null=True)
+    summary = models.TextField(null=True)
     observation = models.TextField(null=True)
 
-    origem = models.CharField(max_length=50, default='SYSTEM', null=True)
+    origin = models.CharField(max_length=50, default='SYSTEM', null=True)
 
     # def to_dict(self):
     #     opts = self._meta
