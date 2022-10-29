@@ -80,7 +80,7 @@ class Library:
         item.isbn10 = util.Format.clean_numeric(isbn_10)
         item.isbn10_formatted = isbn_10
         item.type = type
-        item.pages = pages if pages else None
+        item.pages = pages if pages and pages != '0' else None
         item.volume = volume if volume else 0
         item.edition = edition if edition else 1
         item.dat_published = dat_published if dat_published not in (None, '', 'null') else None
