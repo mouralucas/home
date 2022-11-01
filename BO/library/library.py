@@ -18,7 +18,7 @@ class Library:
     def set_item(self, main_author_id=None, authors_id=None, title=None, subtitle=None, title_original=None, subtitle_original=None, isbn=None, isbn_10=None, type=None,
                  pages=None, volume=None, edition=None, dat_published=None, dat_published_original=None, serie_id=None, collection_id=None, publisher=None,
                  item_format=None, language_id=None, cover_price=None, payed_price=None, dimensions=None, heigth=None, width=None, thickness=None,
-                 resumo=None, status=None, dat_status=None, request=None):
+                 summary=None, status=None, dat_status=None, request=None):
         """
         :Name: set_item
         :descrição: Atualiza o status do item
@@ -28,7 +28,7 @@ class Library:
         Explicit params:
         :param dat_status: The date of the current status of the item
         :param status: The current status of the item
-        :param resumo: The
+        :param summary: The
         :param thickness: The thickness of the item
         :param width: the width of the item
         :param heigth: The height of the item
@@ -96,7 +96,7 @@ class Library:
         item.height = heigth if heigth else None
         item.width = width if width else None
         item.thickness = thickness if thickness else None
-        item.summary = resumo if resumo else None
+        item.summary = summary if summary else None
         item.dat_last_status = dat_status
         item.save(request_=request)
 
@@ -136,7 +136,8 @@ class Library:
 
         item = library.models.Item.objects.values('id', 'title', 'subtitle', 'pages', 'volume', 'cover_price', 'payed_price', 'isbn_formatted', 'isbn10_formatted', 'dat_published',
                                                   'dat_published_original', 'title_original', 'subtitle_original', 'edition', 'dimensions', 'height', 'width', 'thickness', 'summary').filter(**filters) \
-            .annotate(nm_main_author=F('main_author__nm_full'),
+            .annotate(item_id=F('id'),
+                      nm_main_author=F('main_author__nm_full'),
                       main_author_id=F('main_author_id'),
                       nm_serie=F('serie__name'),
                       serie_id=F('serie_id'),
@@ -147,8 +148,8 @@ class Library:
                       nm_last_status=F('last_status__name'),
                       last_status_id=F('last_status_id'),
                       dat_last_status=F('dat_last_status'),
-                      item_type=F('type'),
-                      format=F('format'),
+                      itemType=F('type'),
+                      format_id=F('format'),
                       nm_language=F('language__name'),
                       language_id=F('language_id'),
                       ).order_by('title', 'volume')
@@ -461,11 +462,11 @@ class Library:
     def _set_author(self, item=None, author_list=None, is_main=False):
         """
         :Nome da classe/função: _cadastra_autor
-        :descrição: Cadastra a relação de item com autor
-        :Criação: Lucas Penha de Moura - 10/09/2021
+        :descrição: Cadastra a relação de item com autor;
+        :Criação: Lucas Penha de Moura — 10/09/2021
         :Edições:
             Motivo:
-        :return: True se o cadastro for bem sucedido, False caso contrário
+        :return: True se o cadastro for bem-sucedido, False caso contrário
         """
         if not isinstance(author_list, list):
             author_list = [author_list]
