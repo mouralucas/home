@@ -41,15 +41,16 @@ class Item(APIView):
         return JsonResponse(response, safe=False)
 
     def post(self, *args, **kwargs):
+        # Change to json.stringfy
         item_id = self.request.POST.get('item_id') if self.request.POST.get('item_id') != 'null' else None
         status = self.request.POST.get('status_id')
         dat_last_status = self.request.POST.get('dat_last_status')
         main_author_id = self.request.POST.get('main_author_id') if self.request.POST.get('main_author') != '0' else None
         authors_id = json.loads(self.request.POST.get('authors_id')) if self.request.POST.get('authors_id') else None
-        title = self.request.POST.get('title')
-        subtitle = self.request.POST.get('subtitle')
-        title_original = self.request.POST.get('title_original')
-        subtitle_original = self.request.POST.get('subtitle_original')
+        title = self.request.POST.get('title') if self.request.POST.get('title') not in ('null', None, '', '0') else None
+        subtitle = self.request.POST.get('subtitle') if self.request.POST.get('subtitle') not in ('null', None, '', '0') else None
+        title_original = self.request.POST.get('title_original') if self.request.POST.get('title_original') not in ('null', None, '', '0') else None
+        subtitle_original = self.request.POST.get('subtitle_original') if self.request.POST.get('subtitle_original') not in ('null', None, '', '0') else None
         isbn = self.request.POST.get('isbn')
         isbn_10 = self.request.POST.get('isbn10')
         item_type = self.request.POST.get('itemType')
@@ -66,10 +67,10 @@ class Item(APIView):
         cover_price = self.request.POST.get('cover_price')
         payed_price = self.request.POST.get('payed_price')
         dimensions = self.request.POST.get('dimensions')
-        height = self.request.POST.get('height')
-        width = self.request.POST.get('width')
-        thickness = self.request.POST.get('thickness')
-        resumo = self.request.POST.get('resumo')
+        height = self.request.POST.get('height') if self.request.POST.get('height') not in ('null', None, '', '0') else None
+        width = self.request.POST.get('width') if self.request.POST.get('width') not in ('null', None, '', '0') else None
+        thickness = self.request.POST.get('thickness') if self.request.POST.get('thickness') not in ('null', None, '', '0') else None
+        summary = self.request.POST.get('summary')
 
         response = BO.library.library.Library(item_id=item_id).set_item(main_author_id=main_author_id, authors_id=authors_id, title=title, subtitle=subtitle, title_original=title_original,
                                                                         subtitle_original=subtitle_original, isbn=isbn, isbn_10=isbn_10, type=item_type,
@@ -77,7 +78,7 @@ class Item(APIView):
                                                                         dat_published_original=dat_published_original, serie_id=serie_id, collection_id=collection_id, publisher=publisher_id,
                                                                         item_format=item_format, language_id=language_id, cover_price=cover_price, payed_price=payed_price,
                                                                         dimensions=dimensions, heigth=height, width=width, thickness=thickness,
-                                                                        status=status, dat_status=dat_last_status, resumo=resumo, request=self.request)
+                                                                        status=status, dat_status=dat_last_status, summary=summary, request=self.request)
 
         return JsonResponse(response, safe=False)
 
