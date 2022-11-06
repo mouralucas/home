@@ -82,6 +82,10 @@ class InvestmentStatement(core.models.Log):
     bank_tax = models.DecimalField(max_digits=10, decimal_places=2, null=True, help_text='Taxa de custódia da instituição finenceira')
     net_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, help_text='Valor para resgate antecipado, ou seja, antes do vencimento do título')
 
+    # Campos de controle
+    origin = models.CharField(max_length=50, default='SYSTEM')
+    is_validated = models.BooleanField(default=False)
+
     class Meta:
         db_table = u'"finance\".\"investment_statement"'
 
