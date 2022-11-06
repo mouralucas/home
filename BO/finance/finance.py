@@ -314,12 +314,12 @@ class Finance:
 
         return response
 
-    def get_extrato_investimentos(self):
-        invest = finance.models.ExtratoAplicacao.objects.values('id', 'vlr_investido', 'vlr_bruto', 'vlr_liquido', 'referencia') \
-            .filter(referencia=self.reference).annotate(nm_investimento=F('aplicacao__nm_descritivo')).order_by('aplicacao__nm_descritivo')
+    def get_investment_statement(self):
+        invest = finance.models.InvestmentStatement.objects.values('id', 'investment__amount_invested', 'vlr_bruto', 'vlr_liquido', 'referencia') \
+            .filter(reference=self.reference).annotate(nm_investimento=F('aplicacao__nm_descritivo')).order_by('aplicacao__nm_descritivo')
 
-        self.response['status'] = True
-        self.response['investimentos'] = list(invest)
+        self.response['success'] = True
+        self.response['investment_statement'] = list(invest)
 
         return self.response
 
@@ -337,7 +337,7 @@ class Finance:
         lista_itens = []
         for index, row in itens.iterrows():
             item = finance.models.FaturaImported()
-            item.reference = self.reference
+            item.period = self.reference
             item.data = datetime.strptime(row['date'], '%Y-%m-%d').date()
             item.amount = row['amount']
             item.amount_currency = row['amount']

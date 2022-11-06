@@ -54,7 +54,7 @@ class Investment(core.models.Log):
     description = models.TextField(null=True)
     dat_investment = models.DateField(null=True)
     qtd_titles = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-    price_investiment = models.DecimalField(max_digits=10, decimal_places=2, null=True, help_text='Preço do título no momento da compra')
+    price_investment = models.DecimalField(max_digits=10, decimal_places=2, null=True, help_text='Preço do título no momento da compra')
     amount_invested = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     profit_contracted = models.CharField(max_length=200, null=True, help_text='Rentabilidade a ser recebida se o título for mantido até o vencimento')
 
@@ -69,7 +69,7 @@ class Investment(core.models.Log):
 class InvestmentStatement(core.models.Log):
     investment = models.ForeignKey('Investment', on_delete=models.DO_NOTHING, null=True)
 
-    reference = models.IntegerField(null=True)
+    period = models.IntegerField(null=True)
     bank = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING, null=True)
     gross_profit_annual = models.CharField(max_length=200, null=True, help_text='Taxa equivalente a 1 ano')
     gross_profit = models.CharField(max_length=200, null=True, help_text='Da aplicação até hoje')

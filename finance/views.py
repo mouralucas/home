@@ -152,6 +152,16 @@ class Investment(View):
         return JsonResponse(response, safe=False)
 
 
+class InvestmentStatement(View):
+    @method_decorator(login_required)
+    def get(self, *args, **kwargs):
+        period = self.request.GET.get('period')
+
+        response = BO.finance.finance.Finance(period=period).get_investment_statement()
+
+        return JsonResponse(response, safe=False)
+
+
 class Csv(APIView):
     def get(self, *args, **kwargs):
         path = self.request.POST.get('pah')
