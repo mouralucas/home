@@ -79,13 +79,13 @@ class Bill(APIView):
     @method_decorator(login_required)
     def get(self, *args, **kwargs):
         bill_id = self.request.GET.get('credit_card_bill_id', 0)
-        referencia = self.request.GET.get('reference', util.datetime.DateTime().current_period())
-        card_id = self.request.GET.get('card')
+        period = self.request.GET.get('period', util.datetime.DateTime().current_period())
+        card_id = self.request.GET.get('credit_card_id')
 
         if card_id in ['', '0']:
             card_id = None
 
-        response = BO.finance.finance.Finance(period=referencia, credit_card_id=card_id).get_bill(credit_card_bill_id=bill_id)
+        response = BO.finance.finance.Finance(period=period, credit_card_id=card_id).get_bill(credit_card_bill_id=bill_id)
 
         return JsonResponse(response, safe=False)
 

@@ -232,8 +232,8 @@ class Finance:
                     'installment', 'tot_installment', 'description') \
             .filter(**filters) \
             .annotate(amount=F('amount'),
-                      card_id=F('credit_card_id'),
-                      nm_card=F('credit_card__name'),
+                      credit_card_id=F('credit_card_id'),
+                      nm_credit_card=F('credit_card__name'),
                       category_id=F('category_id'),
                       nm_category=F('category__description')
                       ).order_by('dat_purchase')
