@@ -98,8 +98,8 @@ class Bill(APIView):
         price_currency_dollar = self.request.POST.get('price_currency_dollar')
         dat_purchase = self.request.POST.get('dat_purchase')
         dat_payment = self.request.POST.get('dat_payment')
-        stallment = self.request.POST.get('stallment', 1)  # TODO: vira como forma de lista
-        tot_stallment = self.request.POST.get('tot_stallment', 1)
+        installment = self.request.POST.get('installment', 1)  # TODO: vira como forma de lista
+        tot_installment = self.request.POST.get('tot_installment', 1)
         currency = self.request.POST.get('currency')
         description = self.request.POST.get('description')
         category_id = self.request.POST.get('category_id')
@@ -107,7 +107,7 @@ class Bill(APIView):
 
         response = BO.finance.finance.Finance(bill_id=bill_id, amount=amount, amount_currency=amount_currency, price_currency_dollar=price_currency_dollar, price_dollar=price_dollar,
                                               dat_compra=dat_purchase, dat_pagamento=dat_payment, amount_tax=amount_tax,
-                                              installment=stallment, tot_installment=tot_stallment, currency_id=currency, description=description,
+                                              installment=installment, tot_installment=tot_installment, currency_id=currency, description=description,
                                               category_id=category_id, credit_card_id=card_id) \
             .set_bill(request=self.request)
 
