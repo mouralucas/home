@@ -27,7 +27,7 @@ class Finance:
 
         self.statement_id = statement_id
         self.bill_id = bill_id
-        self.reference = period
+        self.period = period
         self.amount = amount
         self.amount_currency = amount_currency
         self.price_currency_dollar = price_currency_dollar
@@ -129,7 +129,7 @@ class Finance:
         # Não modificado nomes
         self.__set_reference()
 
-        statement.reference = self.reference
+        statement.reference = self.period
         statement.amount = float(self.amount) * -1
         statement.dat_purchase = self.dat_compra
         statement.description = self.description
@@ -144,7 +144,7 @@ class Finance:
 
     def get_statement(self):
         filters = {
-            'reference': self.reference
+            'reference': self.period
         }
 
         if self.account_id:
@@ -183,11 +183,11 @@ class Finance:
         dat_pagamento_date = util.datetime.data_to_datetime(self.dat_pagamento, formato='%Y-%m-%d')
         referencia_ano = dat_pagamento_date.year
         referencia_mes = dat_pagamento_date.month
-        self.reference = referencia_ano * 100 + referencia_mes
+        self.period = referencia_ano * 100 + referencia_mes
 
         bill.credit_card_id = self.credit_card_id
         # Dates
-        bill.reference = self.reference
+        bill.period = self.period
         bill.dat_payment = dat_pagamento_date
         bill.dat_purchase = util.datetime.data_to_datetime(self.dat_compra, formato='%Y-%m-%d')
 
@@ -221,14 +221,14 @@ class Finance:
 
         else:
             filters = {
-                'reference': self.reference
+                'period': self.period
             }
 
             if self.credit_card_id:
                 filters['credit_card_id'] = self.credit_card_id
 
         bills = finance.models.CreditCardBill.objects \
-            .values('id', 'reference', 'dat_purchase', 'dat_payment',
+            .values('id', 'period', 'dat_purchase', 'dat_payment',
                     'installment', 'tot_installment', 'description') \
             .filter(**filters) \
             .annotate(amount=F('amount'),
@@ -248,7 +248,7 @@ class Finance:
     def get_bill_statistic(self):
         bills = finance.models.CreditCardBill.objects.all()
         qtd_total = bills.count()
-        qtd_reference = bills.filter(reference=self.reference).count()
+        qtd_reference = bills.filter(reference=self.period).count()
 
         response = {
             'status': True,
@@ -259,9 +259,9 @@ class Finance:
         return response
 
     def get_bill_history(self, months=13):
-        history = finance.models.CreditCardBill.objects.values('reference') \
+        history = finance.models.CreditCardBill.objects.values('period') \
             .filter(reference__range=(202001, 202112)).annotate(total=Sum('amount'),
-                                                                card=F('credit_card__name')).order_by('reference', 'credit_card_id')
+                                                                card=F('credit_card__name')).order_by('period', 'credit_card_id')
 
         history = pd.DataFrame(history)
         saida = history.pivot(index='reference', columns='card', values='total').fillna(0)
@@ -280,8 +280,8 @@ class Finance:
             'category__in': list(fixed_expenses)
         }
 
-        bills = finance.models.CreditCardBill.objects.values('reference', 'category__description') \
-            .filter(**filters).annotate(total=Sum('amount')).order_by('reference')
+        bills = finance.models.CreditCardBill.objects.values('period', 'category__description') \
+            .filter(**filters).annotate(total=Sum('amount')).order_by('period')
 
         statements = finance.models.BankStatement.objects.values('reference', 'category__description') \
             .filter(**filters).annotate(total=Sum('amount')).order_by('reference')
@@ -316,7 +316,7 @@ class Finance:
 
     def get_investment_statement(self):
         invest = finance.models.InvestmentStatement.objects.values('id', 'investment__amount_invested', 'vlr_bruto', 'vlr_liquido', 'referencia') \
-            .filter(reference=self.reference).annotate(nm_investimento=F('aplicacao__nm_descritivo')).order_by('aplicacao__nm_descritivo')
+            .filter(reference=self.period).annotate(nm_investimento=F('aplicacao__nm_descritivo')).order_by('aplicacao__nm_descritivo')
 
         self.response['success'] = True
         self.response['investment_statement'] = list(invest)
@@ -328,7 +328,7 @@ class Finance:
 
         base_name = os.path.basename(path)
         name = os.path.splitext(base_name)
-        self.reference = name[0].split('-')[1] + name[0].split('-')[2]
+        self.period = name[0].split('-')[1] + name[0].split('-')[2]
 
         for df in pd.read_csv(path, iterator=True, chunksize=10000, skiprows=skiprows):
             itens = itens.append(pd.DataFrame(df))
@@ -337,7 +337,7 @@ class Finance:
         lista_itens = []
         for index, row in itens.iterrows():
             item = finance.models.FaturaImported()
-            item.period = self.reference
+            item.period = self.period
             item.data = datetime.strptime(row['date'], '%Y-%m-%d').date()
             item.amount = row['amount']
             item.amount_currency = row['amount']
@@ -355,7 +355,7 @@ class Finance:
 
     def get_expenses(self, expense_type):
         filters = {
-            'reference': self.reference
+            'reference': self.period
         }
 
         excluders = {}
@@ -486,4 +486,4 @@ class Finance:
         dat_purchase = util.datetime.data_to_datetime(self.dat_compra, formato='%Y-%m-%d')
         year = dat_purchase.year
         month = dat_purchase.month
-        self.reference = year * 100 + month
+        self.period = year * 100 + month

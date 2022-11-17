@@ -108,7 +108,7 @@ class BankStatement(core.models.Log):
 
 class CreditCardBill(core.models.Log):
     credit_card = models.ForeignKey('finance.CreditCard', on_delete=models.DO_NOTHING, null=True)
-    reference = models.IntegerField(null=True, help_text=_('Anomes de referência'))
+    period = models.IntegerField(null=True, help_text=_('Anomes de referência'))
     dat_payment = models.DateField(null=True)
     dat_purchase = models.DateField(null=True)
     amount = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Sempre em reais, valor final na fatura'))

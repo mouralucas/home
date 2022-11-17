@@ -21,7 +21,7 @@ class MigrateFaturaToBill(View):
             bill.status = fatura['status']
             bill.id = fatura['id']
             bill.credit_card_id = fatura['cartao_credito_id']
-            bill.reference = fatura['referencia']
+            bill.period = fatura['referencia']
             bill.dat_payment = fatura['dat_pagamento']
             bill.dat_purchase = fatura['dat_compra']
             bill.amount = fatura['valor']
