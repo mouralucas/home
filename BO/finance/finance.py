@@ -1,20 +1,17 @@
-import os
 from collections import defaultdict
 from datetime import datetime
 
+import camelot
 import numpy as np
 import pandas as pd
 from dateutil.relativedelta import relativedelta
-from django.db.models import Sum, F, Case, When, BooleanField, CharField, Value
+from django.db.models import Sum, F, Case, When, CharField, Value
 from django.utils.translation import gettext_lazy as _
+from tabula import read_pdf
 
-import core.models
-import core.serializers
 import finance.models
 import finance.serializers
 import util.datetime
-import camelot
-from tabula import read_pdf, convert_into
 
 
 class Finance:
@@ -323,35 +320,35 @@ class Finance:
 
         return self.response
 
-    def import_csv_fatura(self, path=None, skiprows=0):
-        itens = pd.DataFrame([])
-
-        base_name = os.path.basename(path)
-        name = os.path.splitext(base_name)
-        self.period = name[0].split('-')[1] + name[0].split('-')[2]
-
-        for df in pd.read_csv(path, iterator=True, chunksize=10000, skiprows=skiprows):
-            itens = itens.append(pd.DataFrame(df))
-
-        lista_itens_retorno = []
-        lista_itens = []
-        for index, row in itens.iterrows():
-            item = finance.models.FaturaImported()
-            item.period = self.period
-            item.data = datetime.strptime(row['date'], '%Y-%m-%d').date()
-            item.amount = row['amount']
-            item.amount_currency = row['amount']
-            item.moeda_codigo = 'real'
-            item.is_validado = False
-            item.cat_referencia = row['category']
-            item.description = row['title']
-            item.cartao_credito_id = 'nubank'
-            lista_itens_retorno.append(finance.serializers.FaturaSerializer(item).data)
-            lista_itens.append(item)
-
-        finance.models.CreditCardBill.objects.bulk_create(lista_itens)
-
-        return lista_itens_retorno
+    # def import_csv_fatura(self, path=None, skiprows=0):
+    #     itens = pd.DataFrame([])
+    #
+    #     base_name = os.path.basename(path)
+    #     name = os.path.splitext(base_name)
+    #     self.period = name[0].split('-')[1] + name[0].split('-')[2]
+    #
+    #     for df in pd.read_csv(path, iterator=True, chunksize=10000, skiprows=skiprows):
+    #         itens = itens.append(pd.DataFrame(df))
+    #
+    #     lista_itens_retorno = []
+    #     lista_itens = []
+    #     for index, row in itens.iterrows():
+    #         item = finance.models.FaturaImported()
+    #         item.period = self.period
+    #         item.data = datetime.strptime(row['date'], '%Y-%m-%d').date()
+    #         item.amount = row['amount']
+    #         item.amount_currency = row['amount']
+    #         item.moeda_codigo = 'real'
+    #         item.is_validado = False
+    #         item.cat_referencia = row['category']
+    #         item.description = row['title']
+    #         item.cartao_credito_id = 'nubank'
+    #         lista_itens_retorno.append(finance.serializers.FaturaSerializer(item).data)
+    #         lista_itens.append(item)
+    #
+    #     finance.models.CreditCardBill.objects.bulk_create(lista_itens)
+    #
+    #     return lista_itens_retorno
 
     def get_expenses(self, expense_type):
         filters = {
@@ -385,15 +382,15 @@ class Finance:
 
         return response
 
-    def import_csv_investimento(self, path=None, skiprows=0):
-        itens = pd.DataFrame([])
-
-        df = pd.read_excel(path)
-
-        print(df)
-
-        for row in df.head().itertuples():
-            print(row)
+    # def import_csv_investimento(self, path=None, skiprows=0):
+    #     itens = pd.DataFrame([])
+    #
+    #     df = pd.read_excel(path)
+    #
+    #     print(df)
+    #
+    #     for row in df.head().itertuples():
+    #         print(row)
 
     def get_payment_date(self, dat_purchase, credit_card_id):
         card = finance.models.CreditCard.objects.filter(pk=credit_card_id, status=True).first()
