@@ -6,13 +6,12 @@ from finance import views
 urlpatterns = [
     re_path(r'^account$', views.BankAccount().as_view(), name='bank_account'),
     re_path(r'^card$', views.CreditCard().as_view(), name='credit_card'),
-    re_path(r'^bill$', views.Bill.as_view(), name='fatura'),
+    re_path(r'^bill$', views.CreditCardBill.as_view(), name='fatura'),
     re_path(r'bill/history', views.BillHistory.as_view()),
 
-    re_path(r'^statement$', views.Statement().as_view(), name='statement'),
+    re_path(r'^statement$', views.BankStatement().as_view(), name='statement'),
     re_path(r'^investmento$', views.Investment.as_view(), name='investment'),
     re_path(r'^fatura/csv$', views.Csv.as_view(), name='csv_fatura'),
-    re_path(r'^periodos$', views.Periodos.as_view(), name='periods'),
     re_path(r'^currency$', views.Currency.as_view(), name='currency'),
 
     re_path('^upload/pdf', views.PdfImport.as_view()),

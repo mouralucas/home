@@ -8,6 +8,7 @@ urlpatterns = [
     re_path(r'^module$', core.views.Module.as_view()),
     re_path(r'^category$', core.views.Category.as_view()),
     re_path(r'^status$', core.views.Status.as_view()),
+    re_path(r'^period', core.views.Period.as_view()),
 
     # Country related views
     re_path(r'^country$', core.views.Country.as_view(), name='country'),

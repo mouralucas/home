@@ -126,7 +126,7 @@ class Finance:
         # Não modificado nomes
         self.__set_reference()
 
-        statement.reference = self.period
+        statement.period = self.period
         statement.amount = float(self.amount) * -1
         statement.dat_purchase = self.dat_compra
         statement.description = self.description
@@ -141,13 +141,13 @@ class Finance:
 
     def get_statement(self):
         filters = {
-            'reference': self.period
+            'period': self.period
         }
 
         if self.account_id:
             filters['account_id'] = self.account_id
 
-        statement = finance.models.BankStatement.objects.values('id', 'reference', 'dat_purchase', 'description') \
+        statement = finance.models.BankStatement.objects.values('id', 'period', 'dat_purchase', 'description') \
             .filter(**filters).annotate(statement_id=F('id'),
                                         amount=F('amount'),
                                         nm_account=F('account__nm_bank'),
@@ -280,8 +280,8 @@ class Finance:
         bills = finance.models.CreditCardBill.objects.values('period', 'category__description') \
             .filter(**filters).annotate(total=Sum('amount')).order_by('period')
 
-        statements = finance.models.BankStatement.objects.values('reference', 'category__description') \
-            .filter(**filters).annotate(total=Sum('amount')).order_by('reference')
+        statements = finance.models.BankStatement.objects.values('period', 'category__description') \
+            .filter(**filters).annotate(total=Sum('amount')).order_by('period')
 
         evolucao = statements.union(bills)
 
@@ -320,39 +320,9 @@ class Finance:
 
         return self.response
 
-    # def import_csv_fatura(self, path=None, skiprows=0):
-    #     itens = pd.DataFrame([])
-    #
-    #     base_name = os.path.basename(path)
-    #     name = os.path.splitext(base_name)
-    #     self.period = name[0].split('-')[1] + name[0].split('-')[2]
-    #
-    #     for df in pd.read_csv(path, iterator=True, chunksize=10000, skiprows=skiprows):
-    #         itens = itens.append(pd.DataFrame(df))
-    #
-    #     lista_itens_retorno = []
-    #     lista_itens = []
-    #     for index, row in itens.iterrows():
-    #         item = finance.models.FaturaImported()
-    #         item.period = self.period
-    #         item.data = datetime.strptime(row['date'], '%Y-%m-%d').date()
-    #         item.amount = row['amount']
-    #         item.amount_currency = row['amount']
-    #         item.moeda_codigo = 'real'
-    #         item.is_validado = False
-    #         item.cat_referencia = row['category']
-    #         item.description = row['title']
-    #         item.cartao_credito_id = 'nubank'
-    #         lista_itens_retorno.append(finance.serializers.FaturaSerializer(item).data)
-    #         lista_itens.append(item)
-    #
-    #     finance.models.CreditCardBill.objects.bulk_create(lista_itens)
-    #
-    #     return lista_itens_retorno
-
     def get_expenses(self, expense_type):
         filters = {
-            'reference': self.period
+            'period': self.period
         }
 
         excluders = {}
@@ -381,16 +351,6 @@ class Finance:
         }
 
         return response
-
-    # def import_csv_investimento(self, path=None, skiprows=0):
-    #     itens = pd.DataFrame([])
-    #
-    #     df = pd.read_excel(path)
-    #
-    #     print(df)
-    #
-    #     for row in df.head().itertuples():
-    #         print(row)
 
     def get_payment_date(self, dat_purchase, credit_card_id):
         card = finance.models.CreditCard.objects.filter(pk=credit_card_id, status=True).first()
@@ -452,7 +412,7 @@ class Finance:
         list_statement = []
         for idx, i in df.iterrows():
             statement = finance.models.BankStatement()
-            statement.reference = i['period']
+            statement.period = i['period']
             statement.amount = i['amount']
             statement.dat_purchase = i['datetime']
             statement.description = i['description']

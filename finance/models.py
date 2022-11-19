@@ -92,7 +92,7 @@ class InvestmentStatement(core.models.Log):
 
 class BankStatement(core.models.Log):
     account = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING)
-    reference = models.IntegerField(null=True, help_text='Anomes de referência')
+    period = models.IntegerField(null=True, help_text='Anomes de referência')
     amount = models.DecimalField(max_digits=14, decimal_places=2)
     dat_purchase = models.DateField(null=True)
     category = models.ForeignKey('core.Category', on_delete=models.DO_NOTHING, null=True)

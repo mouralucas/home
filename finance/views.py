@@ -27,7 +27,7 @@ class CreditCard(APIView):
         return JsonResponse(response, safe=False)
 
 
-class Statement(APIView):
+class BankStatement(APIView):
     @method_decorator(login_required)
     def get(self, *args, **kwargs):
         period = self.request.GET.get('reference')
@@ -75,7 +75,7 @@ class PdfImport(APIView):
         return JsonResponse(response, safe=False)
 
 
-class Bill(APIView):
+class CreditCardBill(APIView):
     @method_decorator(login_required)
     def get(self, *args, **kwargs):
         bill_id = self.request.GET.get('credit_card_bill_id', 0)
@@ -169,13 +169,6 @@ class Csv(APIView):
         response = BO.finance.finance.Finance().import_csv_fatura(path='/run/media/lucas/Dados/Projetos/Financeiro/dados_csv/nubank-2021-11.csv')
         # response = BO.finance.finance.Financeiro().import_csv_investimento(path='/run/media/lucas/Dados/System/Documents/mega/Financeiro/2021/202106-PreFixado.xlsx')
         return JsonResponse(response, safe=False)
-
-
-class Periodos(APIView):
-    def get(self, *args, **kwargs):
-        periods = util.datetime.DateTime().list_period()
-
-        return JsonResponse(periods, safe=False)
 
 
 class Currency(APIView):

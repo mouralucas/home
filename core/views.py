@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from rest_framework.views import APIView
 
 import BO.core.core
+import util.datetime
 
 
 class Country(APIView):
@@ -34,6 +35,13 @@ class Category(APIView):
 
     def post(self, *args, **kwargs):
         pass
+
+
+class Period(APIView):
+    def get(self, *args, **kwargs):
+        periods = util.datetime.DateTime().list_period()
+
+        return JsonResponse(periods, safe=False)
 
 
 class Status(APIView):

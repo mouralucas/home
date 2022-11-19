@@ -63,7 +63,7 @@ class MigrateExtratoToStatement(View):
 
             statement.id = extrato['id']
             statement.account_id = extrato['conta_id']
-            statement.reference = extrato['referencia']
+            statement.period = extrato['referencia']
             statement.amount = extrato['valor']
             statement.dat_purchase = extrato['dat_compra']
             statement.category_id = extrato['categoria_id']
