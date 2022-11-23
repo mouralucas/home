@@ -106,7 +106,7 @@ class Library:
         # self._set_author(item=item, author_list=authors_id)
 
         response = {
-            'status': True,
+            'success': True,
             'item': None,
         }
 
@@ -158,7 +158,7 @@ class Library:
             item = item.first()
 
         response = {
-            'status': True,
+            'success': True,
             'items': list(item) if not is_unique else item
         }
 
@@ -197,7 +197,7 @@ class Library:
             authors = None
 
         response = {
-            'status': True,
+            'success': True,
             'descricao': None,
             'autores': list(authors),
         }
@@ -229,13 +229,13 @@ class Library:
 
         if not status:
             response = {
-                'status': False,
+                'success': False,
                 'descricao': 'Nenhuma status encontrado'
             }
             return response
 
         response = {
-            'status': True,
+            'success': True,
             'status_livros': list(status)
         }
 
@@ -253,13 +253,13 @@ class Library:
     #
     #     if not tipos:
     #         response = {
-    #             'status': False,
+    #             'success': False,
     #             'descricao': 'Nenhuma status encontrado'
     #         }
     #         return response
     #
     #     response = {
-    #         'status': True,
+    #         'success': True,
     #         'tipos': list(tipos)
     #     }
     #
@@ -269,7 +269,7 @@ class Library:
         item_types = [{'value': i[0], 'text': i[1], 'is_selected': True if i[0] == selected_id else False} for i in library.models.Item.ItemType.choices]
 
         response = {
-            'status': True,
+            'success': True,
             'qtd': len(item_types),
             'types': item_types
         }
@@ -292,7 +292,7 @@ class Library:
         formats = [{'value': i[0], 'text': i[1]} for i in library.models.Item.FormatType.choices]
 
         response = {
-            'status': True,
+            'success': True,
             'qtd': len(formats),
             'formats': formats
         }
@@ -313,26 +313,25 @@ class Library:
         Implicit params (passed in the class instance or set by other functions):
         None
         """
-        campos = ['id', 'name', 'nm_original']
 
-        series = library.models.Serie.objects.values(*campos).order_by('id')
+        series = library.models.Serie.objects.values('id', 'name', 'nm_original', 'description').active().order_by('name')
 
         if not series:
             response = {
-                'status': False,
-                'descricao': _('Nenhuma série encontrada')
+                'success': False,
+                'description': _('Nenhuma série encontrada')
             }
             return response
 
         response = {
-            'status': True,
+            'success': True,
             'series': list(series)
         }
 
         return response
 
     @staticmethod
-    def get_colecoes():
+    def get_collection():
         """
         :Name: get_colecoes
         :Description: Get all the item collections
@@ -345,19 +344,17 @@ class Library:
         Implicit params (passed in the class instance or set by other functions):
         None
         """
-        campos = ['id', 'name', 'description']
-
-        collections = library.models.Collection.objects.values(*campos).order_by('id')
+        collections = library.models.Collection.objects.values('id', 'name', 'description').order_by('name')
 
         if not collections:
             response = {
-                'status': False,
-                'descricao': 'Nenhuma coleção encontrado'
+                'success': False,
+                'description': 'Nenhuma coleção encontrado'
             }
             return response
 
         response = {
-            'status': True,
+            'success': True,
             'collections': list(collections),
         }
 
@@ -378,7 +375,7 @@ class Library:
         serie.save(request_=request)
 
         response = {
-            'status': True,
+            'success': True,
             'serie': None,
         }
 
@@ -398,21 +395,18 @@ class Library:
         Implicit params (passed in the class instance or set by other functions):
         None
         """
-        fields = ['id', 'name', 'description']
-
-        publishers = library.models.Publisher.objects.values(*fields).annotate(is_selected=Case(When(id=selected_id, then=True),
-                                                                                                default=False,
-                                                                                                output_field=BooleanField())).order_by('name')
+        publishers = library.models.Publisher.objects.values('id', 'name', 'description').active() \
+            .annotate(nm_country=F('country__name')).order_by('name')
 
         if not publishers:
             response = {
-                'status': False,
+                'success': False,
                 'description': _('Nenhuma editora encontrada')
             }
             return response
 
         response = {
-            'status': True,
+            'success': True,
             'publishers': list(publishers)
         }
 

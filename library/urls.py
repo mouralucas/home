@@ -10,8 +10,8 @@ urlpatterns = [
     re_path('^status$', views.Status.as_view(), name='status'),
     re_path('^type$', views.Type.as_view()),
     re_path('^format$', views.Format.as_view()),
-    re_path('^serie$', views.Serie.as_view(), name='serie'),
-    re_path('^collection$', views.Colecao.as_view(), name='colecao'),
-    re_path('^publisher$', views.Publisher.as_view(), name='publisher'),
+    re_path('^serie$', views.Serie.as_view()),
+    re_path('^collection$', views.Collection.as_view()),
+    re_path('^publisher$', views.Publisher.as_view()),
     re_path('^language$', views.Language.as_view(), name='language'),
 ]

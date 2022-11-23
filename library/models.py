@@ -51,6 +51,7 @@ class Publisher(core.models.Log):
     name = models.CharField(max_length=250, null=True)
     description = models.TextField(null=True)
     country = models.ForeignKey('core.Country', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_country')
+    parent = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
 
     class Meta:
         db_table = 'library"."publisher'

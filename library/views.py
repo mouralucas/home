@@ -184,11 +184,9 @@ class Serie(View):
         return JsonResponse(response, safe=False)
 
 
-class Colecao(View):
+class Collection(View):
     def get(self, *args, **kwargs):
-        selected_id = self.request.GET.get('selected_id') if self.request.GET.get('selected_id') != '' else None
-
-        response = BO.library.library.Library().get_colecoes()
+        response = BO.library.library.Library().get_collection()
 
         return JsonResponse(response, safe=False)
 
