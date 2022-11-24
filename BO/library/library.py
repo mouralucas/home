@@ -134,8 +134,10 @@ class Library:
         if self.item_id:
             filters['id'] = self.item_id
 
-        item = library.models.Item.objects.values('id', 'title', 'subtitle', 'pages', 'volume', 'cover_price', 'payed_price', 'isbn_formatted', 'isbn10_formatted', 'dat_published',
-                                                  'dat_published_original', 'title_original', 'subtitle_original', 'edition', 'dimensions', 'height', 'width', 'thickness', 'summary').filter(**filters) \
+        item = library.models.Item.objects.values('id', 'title', 'subtitle', 'pages', 'volume', 'cover_price',
+                                                  'payed_price', 'isbn_formatted', 'isbn10_formatted', 'dat_published',
+                                                  'dat_published_original', 'title_original', 'subtitle_original',
+                                                  'edition', 'dimensions', 'height', 'width', 'thickness', 'summary').filter(**filters) \
             .annotate(item_id=F('id'),
                       nm_main_author=F('main_author__nm_full'),
                       main_author_id=F('main_author_id'),
@@ -152,7 +154,8 @@ class Library:
                       format_id=F('format'),
                       nm_language=F('language__name'),
                       language_id=F('language_id'),
-                      # createdBy=F('created_by__nm_full')
+                      datCreated=F('dat_created'),
+                      datLastEdited=F('dat_last_edited')
                       ).order_by('title', 'volume')
 
         if is_unique:
