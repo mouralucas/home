@@ -271,7 +271,7 @@ class GenderTypes(models.TextChoices):
     NO_RESPONSE = ('no_response', _('Prefiro não responder'))
 
 
-class CyrruncyTypes(models.TextChoices):
+class CurrencyTypes(models.TextChoices):
     REAL = ('BRL', _('R$ - Real'))
     EURO = ('EUR', _('€ - Euro'))
     DOLAR = ('USD', _('$ - Dólar'))

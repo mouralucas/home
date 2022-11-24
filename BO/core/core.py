@@ -51,7 +51,7 @@ class Misc:
         return response
 
     def get_currency(self):
-        currency = [{'value': i[0], 'text': i[1]} for i in core.models.CyrruncyTypes.choices]
+        currency = [{'value': i[0], 'text': i[1]} for i in core.models.CurrencyTypes.choices]
 
         response = {
             'status': True,
