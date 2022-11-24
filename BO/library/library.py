@@ -152,6 +152,7 @@ class Library:
                       format_id=F('format'),
                       nm_language=F('language__name'),
                       language_id=F('language_id'),
+                      # createdBy=F('created_by__nm_full')
                       ).order_by('title', 'volume')
 
         if is_unique:

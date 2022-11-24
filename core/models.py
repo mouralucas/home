@@ -1,4 +1,5 @@
 import time
+import uuid
 
 from compositefk.fields import CompositeForeignKey
 from django.apps import apps
@@ -75,19 +76,59 @@ class Log(models.Model):
         super(Log, self).save(*args, **kwargs)
 
 
-# TODO: editar para ser genérico e conter n elemento por usuário
-class ContatoLog(models.Model):
-    celular_numero = models.CharField(max_length=50, null=True)
-    celular_ddd = models.CharField(max_length=3, null=True)
-    celular_completo = models.CharField(max_length=50, null=True)
-    celular_completo_form = models.CharField(max_length=50, null=True)
+class Person(Log):
+    """
+    :Name: Person
+    :Description:
+    :Created by: Lucas Penha de Moura - 14/08/2022
+    :Edited by:
+    """
 
-    telefone_numero = models.CharField(max_length=50, null=True)
-    telefone_ddd = models.CharField(max_length=3, null=True)
-    telefone_completo = models.CharField(max_length=50, null=True)
-    telefone_completo_form = models.CharField(max_length=50, null=True)
+    class IdTypes(models.TextChoices):
+        CPF = ('cpf', _('CPF'))
+        PASSPORT = ('passport', _('Passaporte'))
+
+    class SexTypes(models.TextChoices):
+        MALE = ('male', _('Masculino'))
+        FEMALE = ('female', _('Feminino'))
+        OTHER = ('other', _('Outro'))
+        NO_RESPONSE = ('no_response', _('Prefiro não responder'))
+
+    nm_full = models.CharField(_('Nome completo'), max_length=200, null=True)
+    nm_first = models.CharField(_('Primeiro nome'), max_length=200, null=True)
+    nm_last = models.CharField(_('Último nome'), max_length=200, null=True)
+
+    person_id = models.BigIntegerField(_('Identification of the person (id number, passport, etc)'), primary_key=True)
+    person_id_formatted = models.CharField(_('Formatted string of the person id'), max_length=20, null=True)
+
+    id_type = models.CharField(max_length=100, choices=IdTypes.choices, default=IdTypes.CPF, null=True)
+
+    dat_birth = models.DateField(null=True)
+    image = models.FileField(upload_to='account/images/person/', default='account/images/person/default.svg', null=True)
+
+    nm_mother = models.CharField(max_length=200, null=True)
+    nm_father = models.CharField(max_length=200, null=True)
 
     email = models.EmailField(max_length=200, null=True)
+
+    sex = models.CharField(max_length=50, choices=SexTypes.choices, default=SexTypes.NO_RESPONSE)
+
+    account = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
+    hash = models.UUIDField(default=uuid.uuid4)
+
+    class Meta(Log.Meta):
+        abstract = True
+
+
+class PersonContact(models.Model):
+    class ContactType(models.TextChoices):
+        EMAIL = ('email', _('e-mail'))
+        CELL = ('cellphone', _('Celular'))
+        PHONE = ('phone', _('Telefone'))
+
+    type = models.TextField(max_length=50, choices=ContactType.choices)
+    raw_value = models.CharField(max_length=100, help_text='The value entered by user')
+    formatted_value = models.CharField(max_length=100, help_text='The value formatted by the system, when applicable')
 
     class Meta(Log.Meta):
         abstract = True
