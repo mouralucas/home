@@ -153,7 +153,9 @@ class Finance:
                                         nm_account=F('account__nm_bank'),
                                         account_id=F('account_id'),
                                         nm_category=F('category__description'),
-                                        category_id=F('category_id')
+                                        category_id=F('category_id'),
+                                        datCreated=F('dat_created'),
+                                        datLastEdited=F('dat_last_edited')
                                         ) \
             .order_by('-dat_purchase', 'account_id')
 
@@ -232,7 +234,9 @@ class Finance:
                       credit_card_id=F('credit_card_id'),
                       nm_credit_card=F('credit_card__name'),
                       category_id=F('category_id'),
-                      nm_category=F('category__description')
+                      nm_category=F('category__description'),
+                      datCreated=F('dat_created'),
+                      datLastEdited=F('dat_last_edited')
                       ).order_by('dat_purchase')
 
         response = {

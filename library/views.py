@@ -51,8 +51,8 @@ class Item(APIView):
         subtitle = self.request.POST.get('subtitle') if self.request.POST.get('subtitle') not in ('null', None, '', '0') else None
         title_original = self.request.POST.get('title_original') if self.request.POST.get('title_original') not in ('null', None, '', '0') else None
         subtitle_original = self.request.POST.get('subtitle_original') if self.request.POST.get('subtitle_original') not in ('null', None, '', '0') else None
-        isbn = self.request.POST.get('isbn')
-        isbn_10 = self.request.POST.get('isbn10')
+        isbn_formatted = self.request.POST.get('isbn')
+        isbn_10_formatted = self.request.POST.get('isbn10')
         item_type = self.request.POST.get('itemType')
         pages = self.request.POST.get('pages')
         volume = self.request.POST.get('volume')
@@ -73,7 +73,7 @@ class Item(APIView):
         summary = self.request.POST.get('summary')
 
         response = BO.library.library.Library(item_id=item_id).set_item(main_author_id=main_author_id, authors_id=authors_id, title=title, subtitle=subtitle, title_original=title_original,
-                                                                        subtitle_original=subtitle_original, isbn=isbn, isbn_10=isbn_10, type=item_type,
+                                                                        subtitle_original=subtitle_original, isbn_formatted=isbn_formatted, isbn_10_formatted=isbn_10_formatted, type=item_type,
                                                                         pages=pages, volume=volume, edition=edition, dat_published=dat_published,
                                                                         dat_published_original=dat_published_original, serie_id=serie_id, collection_id=collection_id, publisher=publisher_id,
                                                                         item_format=item_format, language_id=language_id, cover_price=cover_price, payed_price=payed_price,
@@ -109,9 +109,9 @@ class Author(APIView):
 
     def post(self, *args, **kwargs):
         nm_full = self.request.POST.get('nm_full')
-        dat_birth = util.datetime.format_data(self.request.POST.get('dat_birth'))
+        dat_birth = self.request.POST.get('dat_birth')
         description = self.request.POST.get('description')
-        is_translator = False if self.request.POST.get('is_translator') == 'n' else True
+        is_translator = False
         language_id = self.request.POST.get('language_id')
         country_id = self.request.POST.get('country_id')
 

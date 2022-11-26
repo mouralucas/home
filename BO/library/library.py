@@ -15,7 +15,7 @@ class Library:
         self.item = item
         self.item_type = item_type
 
-    def set_item(self, main_author_id=None, authors_id=None, title=None, subtitle=None, title_original=None, subtitle_original=None, isbn=None, isbn_10=None, type=None,
+    def set_item(self, main_author_id=None, authors_id=None, title=None, subtitle=None, title_original=None, subtitle_original=None, isbn_formatted=None, isbn_10_formatted=None, type=None,
                  pages=None, volume=None, edition=None, dat_published=None, dat_published_original=None, serie_id=None, collection_id=None, publisher=None,
                  item_format=None, language_id=None, cover_price=None, payed_price=None, dimensions=None, heigth=None, width=None, thickness=None,
                  summary=None, status=None, dat_status=None, request=None):
@@ -45,8 +45,8 @@ class Library:
         :param edition: The edition of the title
         :param volume: The volume of the title
         :param pages: The pages of the title
-        :param isbn_10: the isbn 10 of the title
-        :param isbn: The isbn of te title
+        :param isbn_10_formatted: the isbn 10 of the title
+        :param isbn_formatted: The isbn of te title
         :param subtitle_original: The original subtitle of the item
         :param title_original: The otriginal title of the item
         :param subtitle: The subtitle of the item
@@ -75,10 +75,10 @@ class Library:
         item.subtitle = subtitle if subtitle else None
         item.title_original = title_original
         item.subtitle_original = subtitle_original if subtitle_original else None
-        item.isbn = util.Format.clean_numeric(isbn)
-        item.isbn_formatted = isbn
-        item.isbn10 = util.Format.clean_numeric(isbn_10)
-        item.isbn10_formatted = isbn_10
+        item.isbn = util.Format.clean_numeric(isbn_formatted)
+        item.isbn_formatted = isbn_formatted
+        item.isbn10 = util.Format.clean_numeric(isbn_10_formatted)
+        item.isbn10_formatted = isbn_10_formatted
         item.type = type
         item.pages = pages if pages and pages != '0' else None
         item.volume = volume if volume else 0
@@ -135,7 +135,7 @@ class Library:
             filters['id'] = self.item_id
 
         item = library.models.Item.objects.values('id', 'title', 'subtitle', 'pages', 'volume', 'cover_price',
-                                                  'payed_price', 'isbn_formatted', 'isbn10_formatted', 'dat_published',
+                                                  'payed_price', 'isbn', 'isbn_formatted', 'isbn10', 'isbn10_formatted', 'dat_published',
                                                   'dat_published_original', 'title_original', 'subtitle_original',
                                                   'edition', 'dimensions', 'height', 'width', 'thickness', 'summary').filter(**filters) \
             .annotate(item_id=F('id'),
@@ -156,7 +156,7 @@ class Library:
                       language_id=F('language_id'),
                       datCreated=F('dat_created'),
                       datLastEdited=F('dat_last_edited')
-                      ).order_by('title', 'volume')
+                      ).order_by('-dat_created')
 
         if is_unique:
             item = item.first()
