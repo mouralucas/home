@@ -65,11 +65,25 @@ class Log(models.Model):
         managed = True
         abstract = True
 
-    def save(self, request_=None, *args, **kwargs):
+    def save(self, request_=None, is_update=True, *args, **kwargs):
+        """
+        :Name: logout
+        :Created by: Lucas Penha de Moura - 07/08/2022
+        :Edited by:
+
+        Explicit params:
+        :param request_: the request body
+        :param is_update: if true add/update the last_edited_by and dat_last_edited fields
+
+        Implicit params (passed in the class instance or set by other functions):
+        None
+
+        Create the created_by/last_edited_by and corresponding dates logs
+        """
         if not self.id:
             self.created_by = request_.user if request_ else None
             self.dat_created = timezone.now()
-        else:
+        elif is_update:
             self.last_edited_by = request_.user if request_ else None
             self.dat_last_edited = timezone.now()
 

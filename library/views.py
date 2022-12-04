@@ -51,8 +51,8 @@ class Item(APIView):
         subtitle = self.request.POST.get('subtitle') if self.request.POST.get('subtitle') not in ('null', None, '', '0') else None
         title_original = self.request.POST.get('title_original') if self.request.POST.get('title_original') not in ('null', None, '', '0') else None
         subtitle_original = self.request.POST.get('subtitle_original') if self.request.POST.get('subtitle_original') not in ('null', None, '', '0') else None
-        isbn_formatted = self.request.POST.get('isbn')
-        isbn_10_formatted = self.request.POST.get('isbn10')
+        isbn_formatted = self.request.POST.get('isbn_formatted')
+        isbn_10_formatted = self.request.POST.get('isbn10_formatted')
         item_type = self.request.POST.get('itemType')
         pages = self.request.POST.get('pages')
         volume = self.request.POST.get('volume')
@@ -178,8 +178,8 @@ class Serie(View):
         descricao = self.request.POST.get('descricao')
         pais_id = self.request.POST.get('pais_id')
 
-        response = BO.library.library.Library().set_serie(nm_descritivo=nm_descritivo, nm_original=nm_original,
-                                                          descricao=descricao, pais_id=pais_id, request=self.request)
+        response = BO.library.library.Library().set_serie(name=nm_descritivo, nm_original=nm_original,
+                                                          description=descricao, country_id=pais_id, request=self.request)
 
         return JsonResponse(response, safe=False)
 
@@ -196,8 +196,8 @@ class Collection(View):
         descricao = self.request.POST.get('descricao')
         pais_id = self.request.POST.get('pais_id')
 
-        response = BO.library.library.Library().set_serie(nm_descritivo=nm_descritivo, nm_original=nm_original,
-                                                          descricao=descricao, pais_id=pais_id, request=self.request)
+        response = BO.library.library.Library().set_serie(name=nm_descritivo, nm_original=nm_original,
+                                                          description=descricao, country_id=pais_id, request=self.request)
 
         return JsonResponse(response, safe=False)
 

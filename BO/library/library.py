@@ -151,7 +151,7 @@ class Library:
                       last_status_id=F('last_status_id'),
                       dat_last_status=F('dat_last_status'),
                       itemType=F('type'),
-                      format_id=F('format'),
+                      itemFormatId=F('format'),
                       nm_language=F('language__name'),
                       language_id=F('language_id'),
                       datCreated=F('dat_created'),
@@ -244,30 +244,6 @@ class Library:
         }
 
         return response
-
-    # @staticmethod
-    # def get_tipos(campos=None, selected_id=None):
-    #     if campos is None:
-    #         campos = ['codigo', 'descricao']
-    #
-    #     tipos = core.models.Tipo.objects.values(*campos).filter(tipo='TIPO.LIVRO') \
-    #         .annotate(is_selected=Case(When(codigo=selected_id, then=True),
-    #                                    default=False,
-    #                                    output_field=BooleanField())).order_by('ordem')
-    #
-    #     if not tipos:
-    #         response = {
-    #             'success': False,
-    #             'descricao': 'Nenhuma status encontrado'
-    #         }
-    #         return response
-    #
-    #     response = {
-    #         'success': True,
-    #         'tipos': list(tipos)
-    #     }
-    #
-    #     return response
 
     def get_types(self, selected_id=None):
         item_types = [{'value': i[0], 'text': i[1], 'is_selected': True if i[0] == selected_id else False} for i in library.models.Item.ItemType.choices]
@@ -364,7 +340,7 @@ class Library:
 
         return response
 
-    def set_serie(self, serie=None, serie_id=None, nm_descritivo=None, nm_original=None, descricao=None, pais_id=None, request=None):
+    def set_serie(self, serie=None, serie_id=None, name=None, nm_original=None, description=None, country_id=None, request=None):
         if serie is None:
             serie = library.models.Serie()
         else:
@@ -372,10 +348,10 @@ class Library:
             if not serie:
                 serie = library.models.Serie()
 
-        serie.nm_descritivo = nm_descritivo,
+        serie.name = name,
         serie.nm_original = nm_original
-        serie.descricao = descricao
-        serie.pais_id = pais_id
+        serie.description = description
+        serie.country_id = country_id
         serie.save(request_=request)
 
         response = {
@@ -446,7 +422,7 @@ class Library:
                 new_status = library.models.ItemStatus(
                     **campos
                 )
-                new_status.save(request_=request)
+                new_status.save(request_=request, is_update=False)
 
                 if item:
                     item.last_status_id = status
