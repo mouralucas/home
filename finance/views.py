@@ -136,7 +136,6 @@ class Expense(APIView):
 
 class BillHistory(APIView):
     def get(self, *args, **kwargs):
-
         response = BO.finance.finance.Finance().get_bill_history()
 
         return JsonResponse(response, safe=False)
@@ -158,6 +157,18 @@ class InvestmentStatement(View):
         period = self.request.GET.get('period')
 
         response = BO.finance.finance.Finance(period=period).get_investment_statement()
+
+        return JsonResponse(response, safe=False)
+
+
+class InvestmentStatementUpload(View):
+    @method_decorator(login_required)
+    def get(self, *args, **kwargs):
+        #  1º criar upload do arquivo na pasta de arquivos
+        #  2º pegar response do upload e ler arquivo e salvar dados
+        #  3º Criar tabela para log de arquivos com dados cadastrados ou com possíveis erros
+        #       (que sabe mostrar em uma tabela os dados importados e esperar o ok do usuário)
+        response = None
 
         return JsonResponse(response, safe=False)
 
