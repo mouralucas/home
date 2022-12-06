@@ -14,7 +14,7 @@ urlpatterns = [
     re_path(r'^fatura/csv$', views.Csv.as_view(), name='csv_fatura'),
     re_path(r'^currency$', views.Currency.as_view(), name='currency'),
 
-    re_path('^upload/pdf', views.PdfImport.as_view()),
+    re_path(r'^upload/pdf', views.PdfImport.as_view()),
 
     re_path(r'^expenses', views.Expense.as_view()),
 
