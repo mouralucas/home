@@ -7,21 +7,25 @@ import file.models
 
 class Upload(APIView):
     def get(self, *args, **kwargs):
-        file = file.models.File.objects.first()
+        files = file.models.File.objects.first()
 
         response = {
-            'url': file.file.url
+            'url': files.file.url
         }
 
         return JsonResponse(response, safe=False)
 
     def post(self, *args, **kwargs):
-        file = self.request.FILES.get('file')
+        files = self.request.FILES.get('files[]')
 
         file_m = file.models.File()
-        file_m.file = file
+        file_m.file = files
         file_m.save()
-        response = {}
+
+        new_file = file.models.File.objects.filter(pk=file_m.pk).first()
+        response = {
+            'path': new_file.file.url
+        }
 
         return JsonResponse(response, safe=False)
 

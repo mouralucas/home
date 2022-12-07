@@ -1,3 +1,5 @@
+import warnings
+
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -15,21 +17,24 @@ class Login(TokenObtainPairView):
     :Criação: Lucas Penha de Moura - 01/02/2021
     :Edições:
     """
-    print('')
     serializer_class = BO.user.login.Login
 
 
 class LoginDjango(View):
+    warnings.warn("The login was migrated all for JWT token", DeprecationWarning, stacklevel=2)
+
     def get(self, *args, **kwargs):
+        warnings.warn("The login was migrated all for JWT token", DeprecationWarning, stacklevel=2)
         return render(self.request, 'user/login.html')
 
     def post(self, *args, **kwargs):
+        warnings.warn("The login was migrated all for JWT token", DeprecationWarning, stacklevel=2)
         """
         :Name: Login - post
         :Created by: Lucas Penha de Moura - 09/06/2022
         :Edited by:
 
-        Handles the input data and send to BO the proccess the login
+        Handles the input data and send to BO the process the login
         """
         username = self.request.POST.get('username')
         raw_password = self.request.POST.get('raw_password')

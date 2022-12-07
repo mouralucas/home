@@ -25,3 +25,11 @@ class Account(AbstractBaseUser):
 
     class Meta:
         db_table = 'public"."account'
+
+
+class User(core.models.Person):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    image = models.FileField(null=True)
+
+    class Meta:
+        db_table = 'public"."user'

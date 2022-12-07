@@ -112,7 +112,7 @@ class Person(Log):
     nm_first = models.CharField(_('Primeiro nome'), max_length=200, null=True)
     nm_last = models.CharField(_('Último nome'), max_length=200, null=True)
 
-    person_id = models.BigIntegerField(_('Identification of the person (id number, passport, etc)'), primary_key=True)
+    person_id = models.BigIntegerField(_('Identification of the person (id number, passport, etc)'), unique=True)
     person_id_formatted = models.CharField(_('Formatted string of the person id'), max_length=20, null=True)
 
     id_type = models.CharField(max_length=100, choices=IdTypes.choices, default=IdTypes.CPF, null=True)
