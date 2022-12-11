@@ -282,7 +282,7 @@ class Library:
     @staticmethod
     def get_collection():
         """
-        :Name: get_colecoes
+        :Name: get_collection
         :Description: Get all the item collections
         :Created by: Lucas Penha de Moura - 23/07/2022
         :Edited by:
@@ -318,7 +318,7 @@ class Library:
         :Edited by:
 
         Explicit params:
-        :param selected_id: The id of selected status when editing a item
+        None
 
         Implicit params (passed in the class instance or set by other functions):
         None
