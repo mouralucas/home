@@ -280,37 +280,6 @@ class Library:
         return response
 
     @staticmethod
-    def get_series():
-        """
-        :Name: get_series
-        :Description: Get all the item series
-        :Created by: Lucas Penha de Moura - 23/07/2022
-        :Edited by:
-
-        Explicit params:
-        :param selected_id: The id of selected status when editing a item
-
-        Implicit params (passed in the class instance or set by other functions):
-        None
-        """
-
-        series = library.models.Serie.objects.values('id', 'name', 'nm_original', 'description').active().order_by('name')
-
-        if not series:
-            response = {
-                'success': False,
-                'description': _('Nenhuma série encontrada')
-            }
-            return response
-
-        response = {
-            'success': True,
-            'series': list(series)
-        }
-
-        return response
-
-    @staticmethod
     def get_collection():
         """
         :Name: get_colecoes
@@ -340,17 +309,52 @@ class Library:
 
         return response
 
+    @staticmethod
+    def get_series():
+        """
+        :Name: get_series
+        :Description: Get all the item series
+        :Created by: Lucas Penha de Moura - 23/07/2022
+        :Edited by:
+
+        Explicit params:
+        :param selected_id: The id of selected status when editing a item
+
+        Implicit params (passed in the class instance or set by other functions):
+        None
+        """
+
+        series = library.models.Serie.objects.values('id', 'name', 'nm_original', 'description').annotate(
+            serie_id=F('id'),
+            country_id=F('country_id'),
+            nm_country=F('country__name')
+        ).active().order_by('name')
+
+        if not series:
+            response = {
+                'success': False,
+                'description': _('Nenhuma série encontrada')
+            }
+            return response
+
+        response = {
+            'success': True,
+            'series': list(series)
+        }
+
+        return response
+
     def set_serie(self, serie=None, serie_id=None, name=None, nm_original=None, description=None, country_id=None, request=None):
-        if serie is None:
+        if serie_id is None:
             serie = library.models.Serie()
         else:
             serie = library.models.Serie.objects.filter(pk=serie_id).first()
             if not serie:
                 serie = library.models.Serie()
 
-        serie.name = name,
-        serie.nm_original = nm_original
-        serie.description = description
+        serie.name = name.strip() if name else None
+        serie.nm_original = nm_original.strip() if nm_original else None
+        serie.description = description if description not in ('', None, 'null') else None
         serie.country_id = country_id
         serie.save(request_=request)
 

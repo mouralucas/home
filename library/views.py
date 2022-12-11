@@ -164,7 +164,7 @@ class Format(View):
         return JsonResponse(response, safe=False)
 
 
-class Serie(View):
+class Serie(APIView):
     def get(self, *args, **kwargs):
         selected_id = self.request.GET.get('selected_id') if self.request.GET.get('selected_id') != '' else None
 
@@ -173,13 +173,14 @@ class Serie(View):
         return JsonResponse(response, safe=False)
 
     def post(self, *args, **kwargs):
-        nm_descritivo = self.request.POST.get('nm_descritivo')
+        serie_id = self.request.POST.get('serie_id')
+        name = self.request.POST.get('name')
         nm_original = self.request.POST.get('nm_original')
-        descricao = self.request.POST.get('descricao')
-        pais_id = self.request.POST.get('pais_id')
+        description = self.request.POST.get('description')
+        country_id = self.request.POST.get('country_id')
 
-        response = BO.library.library.Library().set_serie(name=nm_descritivo, nm_original=nm_original,
-                                                          description=descricao, country_id=pais_id, request=self.request)
+        response = BO.library.library.Library().set_serie(serie_id=serie_id, name=name, nm_original=nm_original,
+                                                          description=description, country_id=country_id, request=self.request)
 
         return JsonResponse(response, safe=False)
 
