@@ -16,6 +16,7 @@ class Account(AbstractBaseUser):
     """
     objects = BaseUserManager()
 
+    id = models.UUIDField(primary_key=True)
     username = models.CharField(max_length=200, unique=True)
     USERNAME_FIELD = 'username'
     is_staff = models.BooleanField(default=False)

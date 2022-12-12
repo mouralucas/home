@@ -53,11 +53,11 @@ class Log(models.Model):
 
     status = models.BooleanField(null=True, default=True)
 
-    created_by = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_created')
-    last_edited_by = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_last_edit')
-    # deleted_by = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_deleted')
+    created_by = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_created_by')
+    last_edited_by = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_last_edit_by')
+    deleted_by = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_deleted_by')
 
-    dat_created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    dat_created = models.DateTimeField(null=True, blank=True)
     dat_last_edited = models.DateTimeField(null=True, blank=True)
     dat_deleted = models.DateTimeField(null=True, blank=True)
 
