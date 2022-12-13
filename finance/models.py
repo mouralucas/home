@@ -122,7 +122,7 @@ class CreditCardBill(core.models.Log):
     tax = models.DecimalField(max_digits=7, decimal_places=2, default=0, help_text=_('Iof total da compra, quando aplicável'))
     installment = models.SmallIntegerField(default=1)
     tot_installment = models.SmallIntegerField(default=1)
-    is_stallment = models.BooleanField(default=False)
+    is_installment = models.BooleanField(default=False)
     father = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
     description = models.TextField(null=True)
 
