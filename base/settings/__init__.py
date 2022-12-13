@@ -1,1 +1,1 @@
-from base.settings.desenvolvimento import *
+from base.settings.development import *

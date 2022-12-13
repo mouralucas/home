@@ -16,13 +16,11 @@ class Account(AbstractBaseUser):
     """
     objects = BaseUserManager()
 
-    id = models.UUIDField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     username = models.CharField(max_length=200, unique=True)
     USERNAME_FIELD = 'username'
     is_staff = models.BooleanField(default=False)
     is_first_login = models.BooleanField(default=True)
-
-    hash = models.UUIDField(null=True, default=uuid.uuid4)
 
     class Meta:
         db_table = 'public"."account'

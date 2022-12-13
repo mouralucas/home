@@ -11,9 +11,9 @@ class File(core.models.Log):
     size = models.IntegerField(null=True)
 
     main_category = models.ForeignKey('core.Category', on_delete=models.DO_NOTHING, null=True)
-
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_owner')
     is_directory = models.BooleanField(default=False)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name='%(app_label)s_%(class)s_parent')  # Cascade to delete all child when deleted
 
     class Meta:
         db_table = 'public"."files'

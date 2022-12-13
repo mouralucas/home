@@ -10,7 +10,6 @@ DATABASES = {
         'PORT': config('DB_PORT'),
         'TEST': {
             'NAME': config('DB_NAME'),
-            # 'MIGRATE': False
         }
     },
 }
