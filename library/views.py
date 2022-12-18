@@ -15,7 +15,7 @@ class ItemAuthor(View):
     def get(self, *args, **kwargs):
         book_id = self.request.GET.get('item_id')
 
-        response = BO.library.library.Library(item_id=book_id).get_item_authors(is_selected=True)
+        response = BO.library.library.Library(item_id=book_id).get_item_authors()
 
         return JsonResponse(response, safe=False)
 
@@ -108,6 +108,7 @@ class Author(APIView):
         return JsonResponse(response, safe=False)
 
     def post(self, *args, **kwargs):
+        author_id = self.request.POST.get('author_id')
         nm_full = self.request.POST.get('nm_full')
         dat_birth = self.request.POST.get('dat_birth')
         description = self.request.POST.get('description')
@@ -115,15 +116,16 @@ class Author(APIView):
         language_id = self.request.POST.get('language_id')
         country_id = self.request.POST.get('country_id')
 
-        response = BO.author.author.Author().set_author(nm_full=nm_full, dat_birth=dat_birth,
-                                                        description=description, is_translator=is_translator,
-                                                        language_id=language_id, country_id=country_id,
-                                                        request=self.request)
+        response = BO.author.author.Author(author_id=author_id).set_author(nm_full=nm_full, dat_birth=dat_birth,
+                                                                           description=description, is_translator=is_translator,
+                                                                           language_id=language_id, country_id=country_id,
+                                                                           request=self.request)
 
         return JsonResponse(response, safe=False)
 
 
 class Status(View):
+    permission_classes = [IsAuthenticated]
     """
     :Nome da classe/função: Status
     :descrição: View to handle informatiom about item status
@@ -141,6 +143,7 @@ class Status(View):
 
 
 class Type(View):
+    permission_classes = [IsAuthenticated]
     """
     :Nome da classe/função: Type
     :descrição: View to handle the different types of items
@@ -158,6 +161,8 @@ class Type(View):
 
 
 class Format(View):
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args, **kwargs):
         response = BO.library.library.Library().get_formats()
 
@@ -165,10 +170,12 @@ class Format(View):
 
 
 class Serie(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args, **kwargs):
         selected_id = self.request.GET.get('selected_id') if self.request.GET.get('selected_id') != '' else None
 
-        response = BO.library.library.Library().get_series()
+        response = BO.library.library.Library().get_serie()
 
         return JsonResponse(response, safe=False)
 
@@ -186,6 +193,8 @@ class Serie(APIView):
 
 
 class Collection(View):
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args, **kwargs):
         response = BO.library.library.Library().get_collection()
 
@@ -204,6 +213,7 @@ class Collection(View):
 
 
 class Publisher(View):
+    permission_classes = [IsAuthenticated]
     """
     :Nome da classe/função: Publisher
     :descrição: View to handle informatiom about publishers
@@ -223,7 +233,7 @@ class Publisher(View):
 class Language(View):
     """
     :Nome da classe/função: Language
-    :descrição: View to handle informations about languages
+    :descrição: View to handle informations about languages_
     :Criação: Lucas Penha de Moura - 20/02/2022
     :Edições:
     :return

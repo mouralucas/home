@@ -156,7 +156,7 @@ class Library:
                       language_id=F('language_id'),
                       datCreated=F('dat_created'),
                       datLastEdited=F('dat_last_edited')
-                      ).order_by('-dat_created')
+                      ).order_by('title', 'volume')
 
         if is_unique:
             item = item.first()
@@ -175,35 +175,32 @@ class Library:
         :Criação: Lucas Penha de Moura - 03/09/2021
         :Edições:
             Motivo:
-        :param is_selected: When true return all registerd authors and set the flag selected for mais author and others
+        :param is_selected: When true return all registered authors and set the flag selected for mais author and others
         :param is_translator
         :return:
         """
         item_authors = library.models.ItemAuthor.objects.filter(item_id=self.item_id)
 
-        if is_selected:
-            main_author = list(item_authors.values_list('author_id', flat=True).filter(is_main=True))
-            other_author = list(item_authors.values_list('author_id', flat=True).filter(is_main=False))
+        main_author = list(item_authors.values_list('author_id', flat=True).filter(is_main=True))
+        other_author = list(item_authors.values_list('author_id', flat=True).filter(is_main=False))
 
-            authors = library.models.Author.objects.values('id').filter(is_translator=is_translator) \
-                .annotate(nm_full=F('nm_full'),
-                          is_main_author_selected=Case(
-                              When(id__in=main_author, then=True),
-                              default=False,
-                              output_field=BooleanField()
-                          ),
-                          is_other_author_selected=Case(
-                              When(id__in=other_author, then=True),
-                              default=False,
-                              output_field=BooleanField()
-                          ))
-        else:
-            authors = None
+        authors = library.models.Author.objects.values('id').filter(is_translator=is_translator) \
+            .annotate(nm_full=F('nm_full'),
+                      is_main_author_selected=Case(
+                          When(id__in=main_author, then=True),
+                          default=False,
+                          output_field=BooleanField()
+                      ),
+                      is_other_author_selected=Case(
+                          When(id__in=other_author, then=True),
+                          default=False,
+                          output_field=BooleanField()
+                      ))
 
         response = {
             'success': True,
-            'descricao': None,
-            'autores': list(authors),
+            'description': None,
+            'authors': list(authors),
         }
 
         return response
@@ -264,7 +261,7 @@ class Library:
         :Edited by:
 
         Explicit params:
-        :param selected_id: The id of selected status when editing a item
+        None
 
         Implicit params (passed in the class instance or set by other functions):
         None
@@ -309,8 +306,10 @@ class Library:
 
         return response
 
-    @staticmethod
-    def get_series():
+    def set_collection(self):
+        pass
+    
+    def get_serie(self):
         """
         :Name: get_series
         :Description: Get all the item series
@@ -360,7 +359,7 @@ class Library:
 
         response = {
             'success': True,
-            'serie': None,
+            'serie': self.get_serie(),
         }
 
         return response

@@ -15,6 +15,8 @@ class Author(BO.person.person.Person):
             author = library.models.Author()
         else:
             author = library.models.Author.objects.filter(pk=self.author_id).first()
+            if not author:
+                author = library.models.Author()
 
         self.nm_full = nm_full
         self._name_handler()
@@ -23,7 +25,7 @@ class Author(BO.person.person.Person):
         author.nm_first = self.nm_first
         author.nm_last = self.nm_last
         author.language_id = language_id
-        author.country_id = None
+        author.country_id = country_id
         author.description = description
         author.dat_birth = dat_birth
         author.is_translator = is_translator
@@ -39,7 +41,8 @@ class Author(BO.person.person.Person):
 
     def get_author(self, is_translator=False):
         authors = library.models.Author.objects.filter(is_translator=is_translator) \
-            .values('id').annotate(nm_full=F('nm_full'),
+            .values('id').annotate(author_id=F('id'),
+                                   nm_full=F('nm_full'),
                                    dat_birth=F('dat_birth'),
                                    language_id=F('language_id'),
                                    nm_language=F('language__name'),

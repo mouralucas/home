@@ -9,7 +9,7 @@ class MigrateFaturaToBill(APIView):
         sql_alchemy = BO.conexao_db.conexao.SqlAlchemy(database='home_beta')
 
         bills_old = 'select * from finance.creditcard_bill order by id'
-        bills_new = finance.models.CreditCardBill.objects.all()
+        bills_new = finance.models.CreditCardBill.objects.values('id', 'dat_created', 'dat_purchase', 'amount')
 
 
         sql_alchemy.buscar(query=sql)
