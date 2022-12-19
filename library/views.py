@@ -43,7 +43,7 @@ class Item(APIView):
     def post(self, *args, **kwargs):
         # Change to json.stringfy
         item_id = self.request.POST.get('item_id') if self.request.POST.get('item_id') != 'null' else None
-        status = self.request.POST.get('status_id')
+        status = self.request.POST.get('last_status_id')
         dat_last_status = self.request.POST.get('dat_last_status')
         main_author_id = self.request.POST.get('main_author_id') if self.request.POST.get('main_author') != '0' else None
         authors_id = json.loads(self.request.POST.get('authors_id')) if self.request.POST.get('authors_id') else None
@@ -62,7 +62,7 @@ class Item(APIView):
         serie_id = self.request.POST.get('serie_id')
         collection_id = self.request.POST.get('collection_id')
         publisher_id = self.request.POST.get('publisher_id')
-        item_format = self.request.POST.get('format_id')
+        item_format = self.request.POST.get('itemFormatId')
         language_id = self.request.POST.get('language_id')
         cover_price = self.request.POST.get('cover_price')
         payed_price = self.request.POST.get('payed_price')

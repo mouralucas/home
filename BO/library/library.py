@@ -308,7 +308,7 @@ class Library:
 
     def set_collection(self):
         pass
-    
+
     def get_serie(self):
         """
         :Name: get_series
@@ -405,7 +405,7 @@ class Library:
 
         Explicit params:
         :param item: Item object
-        :param date: The date that occour the new status
+        :param date: The date that occur the new status
         :param status: The new status
         :param request: Request
         :return: Update status
@@ -413,17 +413,14 @@ class Library:
         Implicit params (passed in the class instance or set by other functions):
         None
         """
-        campos = {
-            'log_status_id': status,
-            'item': item,
-            'date': date
-        }
 
         try:
-            current_status = library.models.ItemStatus.objects.filter(item=item).first()
+            current_status = library.models.ItemStatus.objects.filter(item=item).order_by('-date').first()
             if not current_status or status != current_status.log_status_id:
                 new_status = library.models.ItemStatus(
-                    **campos
+                    log_status_id=status,
+                    item=item,
+                    date=date
                 )
                 new_status.save(request_=request, is_update=False)
 
