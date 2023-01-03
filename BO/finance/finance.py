@@ -140,9 +140,10 @@ class Finance:
         return response
 
     def get_statement(self):
-        filters = {
-            'period': self.period
-        }
+        # filters = {
+        #     'period': self.period
+        # }
+        filters = {}
 
         if self.account_id:
             filters['account_id'] = self.account_id
@@ -157,7 +158,7 @@ class Finance:
                                         datCreated=F('dat_created'),
                                         datLastEdited=F('dat_last_edited')
                                         ) \
-            .order_by('-dat_purchase', 'account_id')
+            .order_by('-dat_purchase')
 
         response = {
             'status': True,
