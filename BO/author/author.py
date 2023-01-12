@@ -8,7 +8,7 @@ import library.models
 class Author(BO.person.person.Person):
     def __init__(self, author_id=None):
         super(Author, self).__init__()
-        self.author_id = author_id
+        self.author_id = author_id if author_id != "null" else None
 
     def set_author(self, nm_full=None, dat_birth=None, language_id=None, country_id=None, is_translator=False, description=None, request=None):
         if not self.author_id:

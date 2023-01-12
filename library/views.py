@@ -2,13 +2,13 @@ import json
 
 from django.http import JsonResponse
 from django.views import View
-from BO.security.security import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import BO.author.author
 import BO.core.core
 import BO.library.library
-import util.datetime
+from BO.security.security import IsAuthenticated
 
 
 class ItemAuthor(View):
@@ -212,7 +212,7 @@ class Collection(View):
         return JsonResponse(response, safe=False)
 
 
-class Publisher(View):
+class Publisher(APIView):
     permission_classes = [IsAuthenticated]
     """
     :Nome da classe/função: Publisher
@@ -228,6 +228,18 @@ class Publisher(View):
         response = BO.library.library.Library().get_publishers(selected_id=selected_id)
 
         return JsonResponse(response, safe=False)
+
+    def post(self, *args, **kwargs):
+        publisher_id = self.request.POST.get('publisher_id')
+        name = self.request.POST.get('name')
+        description = self.request.POST.get('description')
+        country_id = self.request.POST.get('country_id')
+        parent_id = self.request.POST.get('parent_id')
+
+        response = BO.library.library.Library().set_publisher(name=name, description=description, country_id=country_id, parent_id=parent_id,
+                                                              publisher_id=publisher_id, request=self.request)
+
+        return Response(response)
 
 
 class Language(View):

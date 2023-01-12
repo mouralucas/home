@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -125,3 +127,26 @@ class ItemStatus(core.models.Log):
 
     class Meta:
         db_table = 'library"."item_logstatus'
+
+
+class Reading(core.models.Log):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    user = models.ForeignKey('user.User', on_delete=models.DO_NOTHING, null=True)
+    item = models.ForeignKey('library.Item', on_delete=models.DO_NOTHING)
+    dat_start = models.DateField()
+    dat_end = models.DateField(null=True)
+    is_dropped = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'library"."reading'
+
+
+class ReadingProgress(core.models.Log):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    reading = models.ForeignKey('library.Reading', on_delete=models.DO_NOTHING)
+    date = models.DateTimeField()
+    page = models.IntegerField(null=True)
+    percentage = models.DecimalField(max_digits=7, decimal_places=2, null=True)
+
+    class Meta:
+        db_table = 'library"."reading_progress'

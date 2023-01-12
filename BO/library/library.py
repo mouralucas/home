@@ -90,8 +90,8 @@ class Library:
         item.publisher_id = publisher if publisher and int(publisher) else None
         item.format = item_format
         item.language_id = language_id
-        item.cover_price = cover_price if cover_price else None
-        item.payed_price = payed_price if payed_price else None
+        item.cover_price = cover_price if cover_price else 0
+        item.payed_price = payed_price if payed_price else 0
         item.dimensions = dimensions if dimensions else None
         item.height = heigth if heigth else None
         item.width = width if width else None
@@ -100,7 +100,7 @@ class Library:
         item.dat_last_status = dat_status
         item.save(request_=request)
 
-        self.update_status(item=item, status=status, date=dat_status, request=request)
+        self.update_status(item=item, status=status, date=dat_status, is_update=False, request=request)
 
         self._set_author(item=item, author_list=main_author_id, is_main=True)
         # self._set_author(item=item, author_list=authors_id)
@@ -222,7 +222,7 @@ class Library:
         campos = ['id', 'name']
 
         status = core.models.Status.objects.values(*campos) \
-            .filter(type='LIBRARY_ITEM') \
+            .filter(type='LIBRARY_ITEM').active() \
             .annotate(is_selected=Case(When(id=selected_id, then=True),
                                        default=False,
                                        output_field=BooleanField())) \
@@ -379,7 +379,9 @@ class Library:
         None
         """
         publishers = library.models.Publisher.objects.values('id', 'name', 'description').active() \
-            .annotate(nm_country=F('country__name')).order_by('name')
+            .annotate(publisher_id=F('id'),
+                      nm_country=F('country__name'),
+                      country_id=F('country_id')).order_by('name')
 
         if not publishers:
             response = {
@@ -395,8 +397,27 @@ class Library:
 
         return response
 
+    def set_publisher(self, name, description=None, country_id=None, parent_id=None, publisher_id=None, request=None):
+        publisher = library.models.Publisher.objects.filter(pk=publisher_id).first()
+
+        if not publisher:
+            publisher = library.models.Publisher()
+
+        publisher.name = name
+        publisher.description = description
+        publisher.country_id = country_id if country_id != 'null' else None
+        publisher.parent_id = parent_id if parent_id != 'null' else None
+        publisher.save(request_=request)
+
+        response = {
+            'success': True,
+            'publisher_id': publisher.pk
+        }
+
+        return response
+
     @staticmethod
-    def update_status(item, status, date, request=None):
+    def update_status(item, status, date, is_update=True, request=None):
         """
         :Name: update_status
         :descrição: Atualiza o status do item
@@ -407,6 +428,7 @@ class Library:
         :param item: Item object
         :param date: The date that occur the new status
         :param status: The new status
+        :param is_update: Update the dat_last_edited and last_edited_by in correspondent table
         :param request: Request
         :return: Update status
 
@@ -426,7 +448,7 @@ class Library:
 
                 if item:
                     item.last_status_id = status
-                    item.save(request_=request)
+                    item.save(request_=request, is_update=is_update)
 
             return True
         except Exception as e:
