@@ -87,7 +87,7 @@ class Library:
         item.dat_published_original = dat_published_original if dat_published_original not in (None, '', 'null') else None
         item.serie_id = serie_id
         item.collection_id = collection_id
-        item.publisher_id = publisher if publisher and int(publisher) else None
+        item.publisher_id = publisher if publisher and int(publisher) else 0
         item.format = item_format
         item.language_id = language_id
         item.cover_price = cover_price if cover_price else 0
