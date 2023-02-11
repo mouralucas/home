@@ -242,7 +242,7 @@ class Finance:
 
         response = {
             'status': True,
-            'bill': list(bills) if credit_card_bill_id == 0 else bills
+            'bill': list(bills) if not credit_card_bill_id else bills
         }
 
         return response
