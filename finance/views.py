@@ -10,8 +10,12 @@ import BO.finance.finance
 import util.datetime
 from django.utils.translation import gettext_lazy as _
 
+from BO.security.security import IsAuthenticated
+
 
 class BankAccount(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args, **kwargs):
         response = BO.finance.finance.Finance().get_bank_accounts()
 
@@ -19,6 +23,8 @@ class BankAccount(APIView):
 
 
 class CreditCard(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args, **kwargs):
         selected_id = self.request.GET.get('selected_id')
 
@@ -28,7 +34,8 @@ class CreditCard(APIView):
 
 
 class BankStatement(APIView):
-    @method_decorator(login_required)
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args, **kwargs):
         period = self.request.GET.get('reference')
         account_id = self.request.GET.get('account_id')
@@ -76,7 +83,8 @@ class PdfImport(APIView):
 
 
 class CreditCardBill(APIView):
-    @method_decorator(login_required)
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args, **kwargs):
         bill_id = self.request.GET.get('credit_card_bill_id', 0)
         period = self.request.GET.get('period', util.datetime.DateTime().current_period())
@@ -115,7 +123,8 @@ class CreditCardBill(APIView):
 
 
 class ExpensesHistory(View):
-    @method_decorator(login_required)
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args, **kwargs):
         referencia = self.request.GET.get('referencia')
 
@@ -125,6 +134,8 @@ class ExpensesHistory(View):
 
 
 class Expense(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args, **kwargs):
         reference = self.request.GET.get('reference')
         expense_type = self.request.GET.get('expense_type')
@@ -135,6 +146,8 @@ class Expense(APIView):
 
 
 class BillHistory(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args, **kwargs):
         response = BO.finance.finance.Finance().get_bill_history()
 
@@ -142,17 +155,17 @@ class BillHistory(APIView):
 
 
 class Investment(View):
-    @method_decorator(login_required)
-    def get(self, *args, **kwargs):
-        referencia = self.request.GET.get('referencia')
+    permission_classes = [IsAuthenticated]
 
+    def get(self, *args, **kwargs):
         response = BO.finance.finance.Finance().get_investments()
 
         return JsonResponse(response, safe=False)
 
 
 class InvestmentStatement(View):
-    @method_decorator(login_required)
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args, **kwargs):
         period = self.request.GET.get('period')
 
@@ -162,7 +175,8 @@ class InvestmentStatement(View):
 
 
 class InvestmentStatementUpload(View):
-    @method_decorator(login_required)
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args, **kwargs):
         #  1º criar upload do arquivo na pasta de arquivos
         #  2º pegar response do upload e ler arquivo e salvar dados
