@@ -152,9 +152,9 @@ def split_anomes(anomes=None):
     return response
 
 
-def data_to_datetime(anomesdiaformatado, formato='%Y-%m-%d'):
+def date_to_datetime(date_str, output_format='%Y-%m-%d'):
     try:
-        return datetime.strptime(anomesdiaformatado, formato)
+        return datetime.strptime(date_str, output_format)
     except Exception as e:
         print(e)
         return None

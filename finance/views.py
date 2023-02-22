@@ -137,7 +137,7 @@ class Expense(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
-        reference = self.request.GET.get('reference')
+        reference = self.request.GET.get('period')
         expense_type = self.request.GET.get('expense_type')
 
         response = BO.finance.finance.Finance(period=reference).get_expenses(expense_type=expense_type)
@@ -158,12 +158,12 @@ class Investment(View):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
-        response = BO.finance.finance.Finance().get_investments()
+        response = BO.finance.finance.Finance().get_investment()
 
         return JsonResponse(response, safe=False)
 
 
-class InvestmentStatement(View):
+class InvestmentStatement(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
@@ -172,6 +172,9 @@ class InvestmentStatement(View):
         response = BO.finance.finance.Finance(period=period).get_investment_statement()
 
         return JsonResponse(response, safe=False)
+
+    def post(self, *args, **kwargs):
+        period = self.request.query_params.get('period')
 
 
 class InvestmentStatementUpload(View):
@@ -208,6 +211,6 @@ class PaymentDate(View):
         dat_purchase = self.request.GET.get('dat_purchase')
         credit_card_id = self.request.GET.get('credit_card_id')
 
-        response = BO.finance.finance.Finance().get_payment_date(dat_purchase=dat_purchase, credit_card_id=credit_card_id)
+        response = BO.finance.finance.Finance().get_due_date(dat_purchase=dat_purchase, credit_card_id=credit_card_id)
 
         return JsonResponse(response, safe=False)

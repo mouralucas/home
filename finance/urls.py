@@ -4,17 +4,17 @@ from django.views.generic import RedirectView
 from finance import views
 
 urlpatterns = [
-    # Account urls
+    # Account
     re_path(r'^account$', views.BankAccount().as_view()),
     re_path(r'^account/statement$', views.BankStatement().as_view()),
 
-    # Credit card urls
-    re_path(r'^card$', views.CreditCard().as_view()),
-    re_path(r'^bill$', views.CreditCardBill.as_view()),
-    re_path(r'^bill/history$', views.BillHistory.as_view()),
+    # Credit card
+    re_path(r'^credit-card$', views.CreditCard().as_view()),
+    re_path(r'^credit-card/bill$', views.CreditCardBill.as_view()),
+    re_path(r'^credit-card/bill/history$', views.BillHistory.as_view()),
     re_path(r'^fatura/csv$', views.Csv.as_view()),  # TODO: remove
 
-    # Investment urls
+    # Investment
     re_path(r'^investment$', views.Investment.as_view()),
     re_path(r'^investment/statement$', views.InvestmentStatement.as_view()),
     re_path(r'^investment/statement/upload$', views.InvestmentStatementUpload.as_view()),

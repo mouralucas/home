@@ -149,15 +149,15 @@ class Finance:
             filters['account_id'] = self.account_id
 
         statement = finance.models.BankStatement.objects.values('id', 'period', 'dat_purchase', 'description') \
-            .filter(**filters).annotate(statement_id=F('id'),
-                                        amount=F('amount'),
-                                        nm_account=F('account__nm_bank'),
-                                        account_id=F('account_id'),
-                                        nm_category=F('category__description'),
-                                        category_id=F('category_id'),
-                                        datCreated=F('dat_created'),
-                                        datLastEdited=F('dat_last_edited')
-                                        ) \
+            .filter(**filters).active().annotate(statement_id=F('id'),
+                                                 amount=F('amount'),
+                                                 nm_account=F('account__nm_bank'),
+                                                 account_id=F('account_id'),
+                                                 nm_category=F('category__description'),
+                                                 category_id=F('category_id'),
+                                                 datCreated=F('dat_created'),
+                                                 datLastEdited=F('dat_last_edited')
+                                                 ) \
             .order_by('-dat_purchase')
 
         response = {
@@ -180,7 +180,7 @@ class Finance:
             bill = finance.models.CreditCardBill()
 
         # Não modificado
-        dat_pagamento_date = util.datetime.data_to_datetime(self.dat_pagamento, formato='%Y-%m-%d')
+        dat_pagamento_date = util.datetime.date_to_datetime(self.dat_pagamento, output_format='%Y-%m-%d')
         referencia_ano = dat_pagamento_date.year
         referencia_mes = dat_pagamento_date.month
         self.period = referencia_ano * 100 + referencia_mes
@@ -189,7 +189,7 @@ class Finance:
         # Dates
         bill.period = self.period
         bill.dat_payment = dat_pagamento_date
-        bill.dat_purchase = util.datetime.data_to_datetime(self.dat_compra, formato='%Y-%m-%d')
+        bill.dat_purchase = util.datetime.date_to_datetime(self.dat_compra, output_format='%Y-%m-%d')
 
         # Amounts
         bill.amount = float(self.amount) * -1
@@ -260,19 +260,41 @@ class Finance:
 
         return response
 
+    # def get_bill_history(self, months=13):
+    #     history = finance.models.CreditCardBill.objects.values('period') \
+    #         .filter(reference__range=(202001, 202112)).annotate(total=Sum('amount'),
+    #                                                             card=F('credit_card__name')).order_by('period', 'credit_card_id')
+    #
+    #     history = pd.DataFrame(history)
+    #     saida = history.pivot(index='reference', columns='card', values='total').fillna(0)
+    #     saida.to_csv('pivot.csv')
+    #
+    #     response = {
+    #         'status': True,
+    #         'bills': saida.values.tolist(),
+    #     }
+    #     return response
+
     def get_bill_history(self, months=13):
         history = finance.models.CreditCardBill.objects.values('period') \
-            .filter(reference__range=(202001, 202112)).annotate(total=Sum('amount'),
-                                                                card=F('credit_card__name')).order_by('period', 'credit_card_id')
+            .annotate(total=Sum('amount')) \
+            .filter(period__range=(202201, 202212)).order_by('period')
 
-        history = pd.DataFrame(history)
-        saida = history.pivot(index='reference', columns='card', values='total').fillna(0)
-        saida.to_csv('pivot.csv')
+        history_by_card = finance.models.CreditCardBill.objects.values('period') \
+            .filter(period__range=(202201, 202212)).annotate(total=Sum('amount'),
+                                                             card=F('credit_card__name')).order_by('period', 'credit_card_id')
+
+        history_by_card = pd.DataFrame(history_by_card)
+        saida = history_by_card.pivot(index='period', columns='card', values='total').fillna(0)
+        saida.reset_index(inplace=True)
+        saida.rename(columns={'index': 'period'})
+        saida_2 = saida.to_dict()
 
         response = {
-            'status': True,
-            'bills': saida.values.tolist(),
+            'success': True,
+            'history': list(history_by_card)
         }
+
         return response
 
     def get_evolucao_categoria(self, months=13):
@@ -302,7 +324,12 @@ class Finance:
 
         return self.response
 
-    def get_investments(self):
+    def set_investment(self):
+
+        response = self.get_investment()
+        return response
+
+    def get_investment(self):
         investments = finance.models.Investment.objects.values('pk', 'name', 'dat_investment', 'amount_invested', 'price_investment',
                                                                'qtd_titles', 'profit_contracted', 'description') \
             .annotate(id=F('pk'),
@@ -357,7 +384,7 @@ class Finance:
 
         return response
 
-    def get_payment_date(self, dat_purchase, credit_card_id):
+    def get_due_date(self, dat_purchase, credit_card_id):
         card = finance.models.CreditCard.objects.filter(pk=credit_card_id, status=True).first()
 
         if not card or not dat_purchase:
@@ -370,7 +397,7 @@ class Finance:
         day_close = card.dat_closing
         day_payment = card.dat_due
 
-        dat_purchase = util.datetime.data_to_datetime(dat_purchase, formato='%d/%m/%Y')
+        dat_purchase = util.datetime.date_to_datetime(dat_purchase, output_format='%d/%m/%Y')
         day_purchase = dat_purchase.day
         month_purchase = dat_purchase.month
         year_purchase = dat_purchase.year
@@ -445,7 +472,7 @@ class Finance:
         print('')
 
     def __set_reference(self):
-        dat_purchase = util.datetime.data_to_datetime(self.dat_compra, formato='%Y-%m-%d')
+        dat_purchase = util.datetime.date_to_datetime(self.dat_compra, output_format='%Y-%m-%d')
         year = dat_purchase.year
         month = dat_purchase.month
         self.period = year * 100 + month
