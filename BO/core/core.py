@@ -93,8 +93,9 @@ class Misc:
             filters['father_id__isnull'] = True if show_mode == 'father' else False
 
         categories = core.models.Category.objects.values('id', 'name', 'description', 'comments').active() \
-            .annotate(id_father=F('father_id'),
-                      nm_father=F('father__name')).filter(**filters).order_by('order')
+            .filter(parent__status=True)\
+            .annotate(id_father=F('parent_id'),
+                      nm_father=F('parent__name')).filter(**filters).order_by('order')
 
         response = {
             'status': True,

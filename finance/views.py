@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 
 import BO.core.core
 import BO.finance.finance
+import BO.integration.vat_rate
 
 import util.datetime
 from django.utils.translation import gettext_lazy as _
@@ -201,7 +202,8 @@ class Csv(APIView):
 
 class Currency(APIView):
     def get(self, *args, **kwargs):
-        response = BO.core.core.Misc().get_currency()
+        # response = BO.core.core.Misc().get_currency()
+        response = BO.integration.vat_rate.VatRate().get_currency()
 
         return JsonResponse(response, safe=False)
 

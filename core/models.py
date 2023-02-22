@@ -235,7 +235,7 @@ class Category(Log):
     name = models.CharField(max_length=250, null=True)
     description = models.CharField(max_length=500)
     comments = models.TextField(null=True)
-    father = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
+    parent = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
     module = models.ForeignKey('core.Module', on_delete=models.DO_NOTHING, null=True)
     order = models.DecimalField(max_digits=10, decimal_places=4, null=True)
 
