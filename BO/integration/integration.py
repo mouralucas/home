@@ -2,6 +2,9 @@ import requests
 import json
 import unicodedata
 
+import core.models
+import core.log.models
+
 
 class Integration:
     """
@@ -11,34 +14,33 @@ class Integration:
     :Edited by:
     """
 
-    def __init__(self, body=None, headers=None):
+    def __init__(self, service, body=None, headers=None, request=None):
         self.url = None
         self.user = None
         self.password = None
+
+        self.service = service
 
         self.status_code = None
         self.body = body
         self.headers = headers
         self.response = None
 
+        self.request = request
+
     def save_log(self):
+        try:
+            new_log = core.log.models.ApiIntegration(
+                service=self.service,
+                url=self.url,
+                body=self.body,
+                headers=self.headers,
+                status_code=self.status_code
+            )
+            new_log.save(request_=self.request)
+        except Exception as e:
+            print(e)
         pass
-        # try:
-        #     log_model = apps.get_model('log', BANCO.capitalize() + 'Integracao')
-        #
-        #     nova_integracao = log_model(
-        #         servico=self.servico,
-        #         url=self.url,
-        #         body=self.body,
-        #         headers=self.headers,
-        #         response=self.response,
-        #         status_code=self.status_code,
-        #         tipo=self.tipo
-        #     )
-        #     nova_integracao.save(request_=self.request)
-        #     return True
-        # except:
-        #     return False
 
     def tratar_campo(self, campo=None):
         """
@@ -73,15 +75,6 @@ class Integration:
         self.save_log()
 
     def get(self, dumps=False, auth=None, parametros=None):
-        """
-        :Nome da classe/função: get
-        :descrição: Função para enviar uma requisição GET
-        :Criação: Nícolas Marinoni Grande - 17/08/2020
-        :Edições: Vinicius Maestrelli Wiggers - 23/04/2021
-            :Motivo: Adição do parâmetros(parametros) para requisição
-        :return:
-        """
-
         data = self.body
         if dumps:
             data = json.dumps(data)

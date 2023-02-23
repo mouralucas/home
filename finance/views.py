@@ -202,8 +202,8 @@ class Csv(APIView):
 
 class Currency(APIView):
     def get(self, *args, **kwargs):
-        # response = BO.core.core.Misc().get_currency()
-        response = BO.integration.vat_rate.VatRate().get_currency()
+        response = BO.core.core.Misc().get_currency()
+        # response = BO.integration.vat_rate.Vat().get_currency()
 
         return JsonResponse(response, safe=False)
 

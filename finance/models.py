@@ -150,6 +150,7 @@ class Currency(core.models.Log):
     id = models.CharField(max_length=5, primary_key=True)
     name = models.CharField(max_length=50)
     symbol = models.CharField(max_length=5)
+    is_shown = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'finance"."currency'

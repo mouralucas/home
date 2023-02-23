@@ -7,7 +7,6 @@ import core.models
 
 # Create your models here.
 class ApiIntegration(core.models.Log):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4())
     service = models.CharField(max_length=100)
     url = models.CharField(max_length=1500)
     headers = models.TextField(null=True)

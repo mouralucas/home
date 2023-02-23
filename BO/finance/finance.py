@@ -384,6 +384,19 @@ class Finance:
 
         return response
 
+    def get_currency(self, is_shown=True):
+        filters = {}
+
+        if is_shown:
+            filters['is_shown'] = True
+
+        currency = finance.models.Currency.objects.filter(**filters)
+
+        response = {
+            'success': True,
+            'currency': list(currency)
+        }
+
     def get_due_date(self, dat_purchase, credit_card_id):
         card = finance.models.CreditCard.objects.filter(pk=credit_card_id, status=True).first()
 

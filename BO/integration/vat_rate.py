@@ -1,9 +1,11 @@
 import requests
 from django.utils import timezone
 import json
+import BO.integration.integration
+import finance.models
 
 
-class VatRate:
+class Vat(BO.integration.integration.Integration):
     """
     :Name: VatRate
     :Description: Get the exchange rate from VAT Comply API
@@ -14,8 +16,9 @@ class VatRate:
             https://www.vatcomply.com/documentation
     """
 
-    def __int__(self):
-        self.url = 'https://api.vatcomply.com'
+    def __init__(self):
+        super().__init__(service='vat')
+        self.base_url = 'https://api.vatcomply.com'
 
     def get_rate(self, base='BRL', date=timezone.localdate()):
         pass
@@ -30,8 +33,21 @@ class VatRate:
         """
         # TODO: modificar para usar integration!!
         # TODO: ver erro do self.url
-        endpoint = 'https://api.vatcomply.com' + '/currencies'
+        self.url = self.base_url + '/currencies'
 
-        response = requests.get(endpoint)
-        response = json.loads(response.text)
+        self.get()
+        response = json.loads(self.response)
+
+        current_currencies = finance.models.Currency.objects.values_list('id', flat=True)
+        new_currency_list = []
+        for key, value in response.items():
+            if key not in list(current_currencies):
+                new_currency = finance.models.Currency(
+                    id=key,
+                    name=value['name'],
+                    symbol=value['symbol']
+                )
+                new_currency_list.append(new_currency)
+        finance.models.Currency.objects.bulk_create(new_currency_list)
+
         return response
