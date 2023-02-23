@@ -18,7 +18,7 @@ class Finance:
 
     def __init__(self, mes=None, ano=None, statement_id=None, bill_id=None, period=None, account_id=None, credit_card_id=None, amount=None,
                  amount_currency=None, price_currency_dollar=None, vlr_moeda=None, amount_tax=None, installment=None, tot_installment=None, dat_compra=None, dat_pagamento=None,
-                 description=None, category_id=None, currency_id=None, price_dollar=None):
+                 description=None, category_id=None, currency_id=None, price_dollar=None, cash_flow=None):
         self.mes = mes
         self.ano = ano
 
@@ -38,7 +38,8 @@ class Finance:
         self.categoria_id = category_id
         self.account_id = account_id
         self.credit_card_id = credit_card_id
-        self.currency = currency_id
+        self.currency_id = currency_id
+        self.cash_flow = cash_flow
 
         self.response = {}  # Deprecated
 
@@ -126,7 +127,13 @@ class Finance:
         # Não modificado nomes
         self.__set_reference()
 
+        if self.cash_flow == 'incoming':
+            multiplier = 1
+        else:
+            multiplier = -1
+
         statement.period = self.period
+        statement.category_id = self.currency_id
         statement.amount = float(self.amount) * -1
         statement.dat_purchase = self.dat_compra
         statement.description = self.description
@@ -390,12 +397,14 @@ class Finance:
         if is_shown:
             filters['is_shown'] = True
 
-        currency = finance.models.Currency.objects.filter(**filters)
+        currency = finance.models.Currency.objects.values('id', 'name', 'symbol').filter(**filters)
 
         response = {
             'success': True,
             'currency': list(currency)
         }
+
+        return response
 
     def get_due_date(self, dat_purchase, credit_card_id):
         card = finance.models.CreditCard.objects.filter(pk=credit_card_id, status=True).first()

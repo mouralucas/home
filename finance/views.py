@@ -55,9 +55,10 @@ class BankStatement(APIView):
         description = self.request.POST.get('description')
         category_id = self.request.POST.get('category_id')
         account_id = self.request.POST.get('account_id')
+        currency_id = self.request.POST.get('currencyId')
 
         response = BO.finance.finance.Finance(statement_id=statement_id, amount=amount, dat_compra=dat_purchase, description=description,
-                                              category_id=category_id, account_id=account_id) \
+                                              category_id=category_id, account_id=account_id, currency_id=currency_id) \
             .set_statement(request=self.request)
 
         return JsonResponse(response, safe=False)
@@ -202,7 +203,8 @@ class Csv(APIView):
 
 class Currency(APIView):
     def get(self, *args, **kwargs):
-        response = BO.core.core.Misc().get_currency()
+        # response = BO.core.core.Misc().get_currency()
+        response = BO.finance.finance.Finance().get_currency()
         # response = BO.integration.vat_rate.Vat().get_currency()
 
         return JsonResponse(response, safe=False)
