@@ -1,3 +1,5 @@
+import warnings
+
 from django.db.models import Case, When, BooleanField, F
 from django.utils.translation import gettext_lazy as _
 
@@ -51,6 +53,7 @@ class Misc:
         return response
 
     def get_currency(self):
+        warnings.warn("Use new function getCurrency in finance BO", DeprecationWarning, stacklevel=2)
         currency = [{'value': i[0], 'text': i[1]} for i in core.models.CurrencyTypes.choices]
 
         response = {
