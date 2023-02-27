@@ -38,7 +38,7 @@ class CreditCard(core.models.Log):
         db_table = 'finance"."credit_card'
 
 
-class InvestimentType(core.models.Log):
+class InvestmentType(core.models.Log):
     id = models.CharField(max_length=200, primary_key=True)
     name = models.CharField(max_length=300, null=True)
     description = models.TextField(null=True)
@@ -58,7 +58,7 @@ class Investment(core.models.Log):
     amount_invested = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     profit_contracted = models.CharField(max_length=200, null=True, help_text='Rentabilidade a ser recebida se o título for mantido até o vencimento')
 
-    type = models.ForeignKey('finance.InvestimentType', on_delete=models.DO_NOTHING, null=True)
+    type = models.ForeignKey('finance.InvestmentType', on_delete=models.DO_NOTHING, null=True)
 
     maturity = models.DateField(null=True)
 
