@@ -282,24 +282,15 @@ class Finance:
     #     }
     #     return response
 
-    def get_bill_history(self, months=13):
+    def get_bill_history(self, period_start=202302, months=13):
         history = finance.models.CreditCardBill.objects.values('period') \
-            .annotate(total=Sum('amount')) \
+            .annotate(total_amount=Sum('amount')) \
             .filter(period__range=(202201, 202212)).order_by('period')
-
-        history_by_card = finance.models.CreditCardBill.objects.values('period') \
-            .filter(period__range=(202201, 202212)).annotate(total=Sum('amount'),
-                                                             card=F('credit_card__name')).order_by('period', 'credit_card_id')
-
-        history_by_card = pd.DataFrame(history_by_card)
-        saida = history_by_card.pivot(index='period', columns='card', values='total').fillna(0)
-        saida.reset_index(inplace=True)
-        saida.rename(columns={'index': 'period'})
-        saida_2 = saida.to_dict()
 
         response = {
             'success': True,
-            'history': list(history_by_card)
+            'average': 3000,
+            'history': list(history)
         }
 
         return response

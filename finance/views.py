@@ -148,9 +148,12 @@ class Expense(APIView):
 
 
 class BillHistory(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
+        period_start = self.request.query_params.get('periodStart')
+        months = self.request.query_params.get('months')
+
         response = BO.finance.finance.Finance().get_bill_history()
 
         return JsonResponse(response, safe=False)
