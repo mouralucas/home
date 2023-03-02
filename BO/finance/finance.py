@@ -283,14 +283,18 @@ class Finance:
     #     return response
 
     def get_bill_history(self, period_start=202302, months=13):
+        # TODO: criar maneira de mostrar valores positivos e negativos dependendo da visualização
         history = finance.models.CreditCardBill.objects.values('period') \
             .annotate(total_amount=Sum('amount')) \
-            .filter(period__range=(202201, 202212)).order_by('period')
+            .filter(period__range=(202201, 202302)).order_by('period')
+
+        average = sum(item['total_amount'] for item in history)/len(history) if history else 0
 
         response = {
             'success': True,
-            'average': 3000,
-            'history': list(history)
+            'average': average,
+            'goal': 2800,
+            'history': list(history),
         }
 
         return response
