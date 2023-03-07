@@ -133,7 +133,7 @@ class Finance:
             multiplier = -1
 
         statement.period = self.period
-        statement.category_id = self.currency_id
+        statement.currency_id = self.currency_id
         statement.amount = float(self.amount) * -1
         statement.dat_purchase = self.dat_compra
         statement.description = self.description
@@ -267,39 +267,24 @@ class Finance:
 
         return response
 
-    # def get_bill_history(self, months=13):
-    #     history = finance.models.CreditCardBill.objects.values('period') \
-    #         .filter(reference__range=(202001, 202112)).annotate(total=Sum('amount'),
-    #                                                             card=F('credit_card__name')).order_by('period', 'credit_card_id')
-    #
-    #     history = pd.DataFrame(history)
-    #     saida = history.pivot(index='reference', columns='card', values='total').fillna(0)
-    #     saida.to_csv('pivot.csv')
-    #
-    #     response = {
-    #         'status': True,
-    #         'bills': saida.values.tolist(),
-    #     }
-    #     return response
-
-    def get_bill_history(self, period_start=202302, months=13):
+    def get_bill_history(self, period_start=201801, period_end=202302, months=13):
         # TODO: criar maneira de mostrar valores positivos e negativos dependendo da visualização
         history = finance.models.CreditCardBill.objects.values('period') \
             .annotate(total_amount=Sum('amount')) \
-            .filter(period__range=(202201, 202302)).order_by('period')
+            .filter(period__range=(period_start, period_end)).order_by('period')
 
         average = sum(item['total_amount'] for item in history)/len(history) if history else 0
 
         response = {
             'success': True,
             'average': average,
-            'goal': 2800,
+            'goal': 2300,
             'history': list(history),
         }
 
         return response
 
-    def get_evolucao_categoria(self, months=13):
+    def get_category_history(self, months=13):
         fixed_expenses = finance.models.CategoryGroup.objects.values_list('category', flat=True).filter(group='fixed_expenses')
         filters = {
             'reference__range': (202001, 202012),

@@ -98,6 +98,7 @@ class BankStatement(core.models.Log):
     dat_purchase = models.DateField(null=True)
     category = models.ForeignKey('core.Category', on_delete=models.DO_NOTHING, null=True)
     description = models.TextField(null=True)
+    # cash_flow = models.String
 
     # Campos de controle
     origin = models.CharField(max_length=50, default='SYSTEM')
@@ -114,12 +115,13 @@ class CreditCardBill(core.models.Log):
     dat_purchase = models.DateField(null=True)
     amount = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Sempre em reais, valor final na fatura'))
     amount_total = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Total da compra, quando existe parcelas'))
+    # amount_gross = null
     category = models.ForeignKey('core.Category', on_delete=models.DO_NOTHING, null=True)
 
     currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING)
     amount_currency = models.DecimalField(max_digits=14, decimal_places=2, null=True, help_text=_('Sempre real da compra, na moeda original'))
     price_dollar = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Usado em compra em outra moeda, em relação ao real'))
-    price_currency_dollar = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Valor da moeda em relação ao dolar, usado na conversão'))
+    price_currency_dollar = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Valor da moeda em relação ao dólar, usado na conversão'))
     tax = models.DecimalField(max_digits=7, decimal_places=2, default=0, help_text=_('Iof total da compra, quando aplicável'))
     installment = models.SmallIntegerField(default=1)
     tot_installment = models.SmallIntegerField(default=1)
@@ -167,7 +169,7 @@ class CurrencyRate(core.models.Log):
         db_table = 'finance"."currency_rate'
 
 
-class CategoryType(core.models.Log):
+class CashFlow(core.models.Log):
     class Type(models.TextChoices):
         INCOMING = ('incoming', _('Entrada'))
         OUTCOMING = 'outcoming', _('Saída')

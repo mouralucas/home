@@ -130,7 +130,7 @@ class ExpensesHistory(View):
     def get(self, *args, **kwargs):
         referencia = self.request.GET.get('referencia')
 
-        response = BO.finance.finance.Finance(period=referencia).get_evolucao_categoria()
+        response = BO.finance.finance.Finance(period=referencia).get_category_history()
 
         return JsonResponse(response, safe=False)
 
@@ -148,13 +148,14 @@ class Expense(APIView):
 
 
 class BillHistory(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
         period_start = self.request.query_params.get('periodStart')
+        period_end = self.request.query_params.get('periodEnd')
         months = self.request.query_params.get('months')
 
-        response = BO.finance.finance.Finance().get_bill_history()
+        response = BO.finance.finance.Finance().get_bill_history(period_start=period_start, period_end=period_end)
 
         return JsonResponse(response, safe=False)
 
