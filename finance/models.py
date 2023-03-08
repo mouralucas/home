@@ -4,6 +4,13 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 import core.models
+import finance.choices
+
+
+class InterestRate(models.TextChoices):
+    FIXED = ('FIXED', _('Pré-fixado'))
+    FLOATING = ('FLOATING', _('Pós-fixado'))
+    HYBRID = ('HYBRID', _('Hibrido'))
 
 
 class BankAccount(core.models.Log):
@@ -54,12 +61,11 @@ class Investment(core.models.Log):
     id = models.UUIDField(max_length=200, primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=200, null=True)
     description = models.TextField(null=True)
-    dat_investment = models.DateField(null=True)
-    qtd_titles = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-    price_investment = models.DecimalField(max_digits=10, decimal_places=2, null=True, help_text='Preço do título no momento da compra')
-    amount_invested = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-
-    # TODO: criar tabela com index (selic, %, etc)
+    date = models.DateField(null=True)
+    quantity = models.DecimalField(max_digits=15, decimal_places=5, null=True)
+    price = models.DecimalField(max_digits=15, decimal_places=5, null=True, help_text=_('Preço do título no momento da compra'))
+    amount = models.DecimalField(max_digits=15, decimal_places=5, null=True)
+    interest_rate = models.CharField(max_length=100, choices=finance.choices.InterestRate.choices)
 
     class Meta:
         db_table = 'finance"."investment'
@@ -182,33 +188,33 @@ class CurrencyRate(core.models.Log):
 
 
 ##### STOCK MARKET TABLES ######
-class Ticker(core.models.Log):
-    id = models.CharField(max_length=10, primary_key=True)
-    short_name = models.CharField(max_length=200, null=True)
-    long_name = models.CharField(max_length=200, null=True)
-    currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING, null=True)
-    logo_url = models.URLField(null=True, help_text='As shown in brapi API')
-
-    class Meta:
-        db_table = 'finance"."ticker'
-
-
-class TikerHistoricalPrice(core.models.Log):
-    date = models.DateField()
-    open = models.DecimalField(max_digits=28, decimal_places=14)
-    high = models.DecimalField(max_digits=28, decimal_places=14)
-    low = models.DecimalField(max_digits=28, decimal_places=14)
-    close = models.DecimalField(max_digits=28, decimal_places=14)
-    volume = models.IntegerField(null=True)
-
-    class Meta:
-        db_table = 'finance"."ticker_historical_price'
-
-
-class PrimeRate(core.models.Log):
-    country = models.ForeignKey('core.Country', on_delete=models.DO_NOTHING)
-    date = models.DateField()
-    value = models.DecimalField(max_digits=15, decimal_places=5)
-
-    class Meta:
-        db_table = 'finance"."prime_rate'
+# class Ticker(core.models.Log):
+#     id = models.CharField(max_length=10, primary_key=True)
+#     short_name = models.CharField(max_length=200, null=True)
+#     long_name = models.CharField(max_length=200, null=True)
+#     currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING, null=True)
+#     logo_url = models.URLField(null=True, help_text='As shown in brapi API')
+#
+#     class Meta:
+#         db_table = 'finance"."ticker'
+#
+#
+# class TikerHistoricalPrice(core.models.Log):
+#     date = models.DateField()
+#     open = models.DecimalField(max_digits=28, decimal_places=14)
+#     high = models.DecimalField(max_digits=28, decimal_places=14)
+#     low = models.DecimalField(max_digits=28, decimal_places=14)
+#     close = models.DecimalField(max_digits=28, decimal_places=14)
+#     volume = models.IntegerField(null=True)
+#
+#     class Meta:
+#         db_table = 'finance"."ticker_historical_price'
+#
+#
+# class PrimeRate(core.models.Log):
+#     country = models.ForeignKey('core.Country', on_delete=models.DO_NOTHING)
+#     date = models.DateField()
+#     value = models.DecimalField(max_digits=15, decimal_places=5)
+#
+#     class Meta:
+#         db_table = 'finance"."prime_rate'
