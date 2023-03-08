@@ -39,6 +39,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'core',
+    'core.integration',
     'core.log',
     'core.temp',
     'core.user',

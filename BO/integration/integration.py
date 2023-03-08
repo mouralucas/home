@@ -27,6 +27,7 @@ class Integration:
         self.response = None
 
         self.request = request
+        self.response_text = None
 
     def save_log(self):
         try:
@@ -42,22 +43,22 @@ class Integration:
             print(e)
         pass
 
-    def tratar_campo(self, campo=None):
-        """
-        :Nome da classe/função: tratar_campo
-        :descrição: Função para tratar o campos para enviar para integração
-        :Criação: Nícolas Marinoni Grande - 17/08/2020
-        :Edições:
-        :param campo: Valor a ser tratado
-        :return: Valor tratado
-        """
-        if isinstance(campo, str) and campo is not None:
-            campo = unicodedata.normalize('NFD', campo)
-
-        if isinstance(campo, Decimal):
-            campo = float(campo)
-
-        return campo if campo is not None else ''
+    # def tratar_campo(self, campo=None):
+    #     """
+    #     :Nome da classe/função: tratar_campo
+    #     :descrição: Função para tratar o campos para enviar para integração
+    #     :Criação: Nícolas Marinoni Grande - 17/08/2020
+    #     :Edições:
+    #     :param campo: Valor a ser tratado
+    #     :return: Valor tratado
+    #     """
+    #     if isinstance(campo, str) and campo is not None:
+    #         campo = unicodedata.normalize('NFD', campo)
+    #
+    #     if isinstance(campo, Decimal):
+    #         campo = float(campo)
+    #
+    #     return campo if campo is not None else ''
 
     def post(self, dumps=True, unicode=True, auth=None, json_content=False, parametros=None, ensure_ascii=False, timeout=15, verify=True):
         data = self.body
@@ -74,12 +75,12 @@ class Integration:
         self.status_code = resposta.status_code
         self.save_log()
 
-    def get(self, dumps=False, auth=None, parametros=None):
+    def get(self, dumps=False, auth=None, params=None):
         data = self.body
         if dumps:
             data = json.dumps(data)
 
-        resposta = requests.get(self.url, headers=self.headers, data=data, auth=auth, params=parametros)
+        resposta = requests.get(self.url, headers=self.headers, data=data, auth=auth, params=params)
         self.response = resposta.content
         self.response_text = resposta.text
         self.status_code = resposta.status_code

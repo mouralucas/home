@@ -99,18 +99,6 @@ class Finance:
 
         return response
 
-    # def get_category(self, selected_id=''):
-    #     categorias = core.models.Category.objects.values('id', 'description', 'comments').active() \
-    #         .annotate(is_selected=Case(When(id=selected_id, then=True),
-    #                                    default=False,
-    #                                    output_field=BooleanField()),
-    #                   id_father=F('father_id'),
-    #                   nm_father=F('father__description'))
-    #
-    #     self.response['status'] = True
-    #     self.response['categories'] = list(categorias)
-    #     return self.response
-
     def set_statement(self, request=None):
         if not self.dat_compra or not self.amount or not self.categoria_id or not self.account_id:
             response = {

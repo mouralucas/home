@@ -13,4 +13,6 @@ urlpatterns = [
     # Country related views
     re_path(r'^country$', core.views.Country.as_view(), name='country'),
     re_path(r'^country/states', core.views.State.as_view(), name='country_state'),
+
+    re_path(r'^integration/', include(('core.integration.urls', 'core.integration'), namespace='core')),
 ]

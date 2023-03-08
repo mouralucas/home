@@ -1,6 +1,9 @@
-import requests
-from django.utils import timezone
 import json
+from datetime import datetime
+
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+
 import BO.integration.integration
 import finance.models
 
@@ -20,8 +23,47 @@ class Vat(BO.integration.integration.Integration):
         super().__init__(service='vat')
         self.base_url = 'https://api.vatcomply.com'
 
-    def get_rate(self, base='BRL', date=timezone.localdate()):
-        pass
+    def get_currency_rate(self, base='USD', date=None):
+        if datetime.strptime(date, '%Y-%m-%d') < datetime.strptime('2008-01-02', '%Y-%m-%d'):
+            return {
+                'success': False,
+                'description': _('Não é possível buscar cotações anteriores a 02 de janeiro de 2008')
+            }
+
+        self.url = self.base_url + '/rates'
+        params = {
+            'date': date,
+            'base': base
+        }
+
+        currency_rate = finance.models.CurrencyRate.objects.filter(date=date, base_id=base)
+        wanted_currency_rates = finance.models.Currency.objects.values_list('id', flat=True).filter(is_shown=True)
+        if not currency_rate:
+            self.get(params=params)
+            response = json.loads(self.response)
+
+            rate_list = []
+            for key, value in response['rates'].items():
+                if key in wanted_currency_rates and base != key:
+                    aux = finance.models.CurrencyRate(
+                        date=date,
+                        base_id=base,
+                        currency_id=key,
+                        price=value
+                    )
+                    rate_list.append(aux)
+            finance.models.CurrencyRate.objects.bulk_create(rate_list)
+
+            return {
+                'success': True,
+                'inserted_qtd': len(rate_list),
+                'date': date,
+                'base': base,
+            }
+        return {
+            'success': False,
+            'description': _('Conversão para a moeda base já cadastrada para a data {date}'.format(date=date))
+        }
 
     def get_currency(self):
         """
