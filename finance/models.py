@@ -66,6 +66,7 @@ class Investment(core.models.Log):
     price = models.DecimalField(max_digits=15, decimal_places=5, null=True, help_text=_('Preço do título no momento da compra'))
     amount = models.DecimalField(max_digits=15, decimal_places=5, null=True)
     interest_rate = models.CharField(max_length=100, choices=finance.choices.InterestRate.choices)
+    interest_index = models.CharField(max_length=50)
 
     class Meta:
         db_table = 'finance"."investment'
