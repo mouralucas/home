@@ -14,7 +14,7 @@ class Integration:
     :Edited by:
     """
 
-    def __init__(self, service, body=None, headers=None, request=None):
+    def __init__(self, service, body=None, params=None, headers=None, request=None):
         self.url = None
         self.user = None
         self.password = None
@@ -23,6 +23,7 @@ class Integration:
 
         self.status_code = None
         self.body = body
+        self.params = params
         self.headers = headers
         self.response = None
 
@@ -35,8 +36,10 @@ class Integration:
                 service=self.service,
                 url=self.url,
                 body=self.body,
+                params=self.params,
                 headers=self.headers,
-                status_code=self.status_code
+                status_code=self.status_code,
+                response=self.response,
             )
             new_log.save(request_=self.request)
         except Exception as e:
@@ -75,12 +78,12 @@ class Integration:
         self.status_code = resposta.status_code
         self.save_log()
 
-    def get(self, dumps=False, auth=None, params=None):
+    def get(self, dumps=False, auth=None):
         data = self.body
         if dumps:
             data = json.dumps(data)
 
-        resposta = requests.get(self.url, headers=self.headers, data=data, auth=auth, params=params)
+        resposta = requests.get(self.url, headers=self.headers, data=data, auth=auth, params=self.params)
         self.response = resposta.content
         self.response_text = resposta.text
         self.status_code = resposta.status_code

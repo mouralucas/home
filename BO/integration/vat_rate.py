@@ -31,15 +31,16 @@ class Vat(BO.integration.integration.Integration):
             }
 
         self.url = self.base_url + '/rates'
-        params = {
+        self.params = {
             'date': date,
             'base': base
         }
 
+        # TODO: adicionar validação por base, moeda e dia e buscar caso não encontre e adicionar if pra não adicionar caso já existe outra combinação no mesmo dia
         currency_rate = finance.models.CurrencyRate.objects.filter(date=date, base_id=base)
         wanted_currency_rates = finance.models.Currency.objects.values_list('id', flat=True).filter(is_shown=True)
         if not currency_rate:
-            self.get(params=params)
+            self.get()
             response = json.loads(self.response)
 
             rate_list = []
