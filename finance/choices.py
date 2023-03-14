@@ -7,3 +7,9 @@ class InterestRate(models.TextChoices):
     FIXED = ('FIXED', _('Pré-fixado'))
     FLOATING = ('FLOATING', _('Pós-fixado'))
     HYBRID = ('HYBRID', _('Hibrido'))
+
+
+class CashFlow(models.TextChoices):
+    OUTGOING = ('OUTGOING', _('Saída'))
+    INCOMING = ('INCOMING', _('Entrada'))
+
