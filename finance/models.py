@@ -101,10 +101,11 @@ class BankStatement(core.models.Log):
     period = models.IntegerField(null=True, help_text='Anomes de referência')
     currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING)
     amount = models.DecimalField(max_digits=14, decimal_places=2)
+    amount_absolute = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('O mesmo do amount sem o sinal'))
     dat_purchase = models.DateField(null=True)
     category = models.ForeignKey('core.Category', on_delete=models.DO_NOTHING, null=True)
     description = models.TextField(null=True)
-    # cash_flow = models.String
+    cash_flow = models.CharField(max_length=100, choices=finance.choices.CashFlow.choices)
 
     # Campos de controle
     origin = models.CharField(max_length=50, default='SYSTEM')
@@ -120,8 +121,8 @@ class CreditCardBill(core.models.Log):
     dat_payment = models.DateField(null=True)
     dat_purchase = models.DateField(null=True)
     amount = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Sempre em reais, valor final na fatura'))
+    amount_absolute = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('O mesmo do amount sem o sinal'))
     amount_total = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Total da compra, quando existe parcelas'))
-    # amount_gross = null
     category = models.ForeignKey('core.Category', on_delete=models.DO_NOTHING, null=True)
 
     currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING)
@@ -134,6 +135,7 @@ class CreditCardBill(core.models.Log):
     is_installment = models.BooleanField(default=False)
     father = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
     description = models.TextField(null=True)
+    cash_flow = models.CharField(max_length=100, choices=finance.choices.CashFlow.choices)
 
     # Campos de controle
     origin = models.CharField(max_length=50, default='SYSTEM')
