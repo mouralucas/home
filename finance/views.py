@@ -56,9 +56,10 @@ class BankStatement(APIView):
         category_id = self.request.POST.get('category_id')
         account_id = self.request.POST.get('account_id')
         currency_id = self.request.POST.get('currencyId')
+        cash_flow_id = self.request.POST.get('cashFlowId')
 
         response = BO.finance.finance.Finance(statement_id=statement_id, amount=amount, dat_compra=dat_purchase, description=description,
-                                              category_id=category_id, account_id=account_id, currency_id=currency_id) \
+                                              category_id=category_id, account_id=account_id, currency_id=currency_id, cash_flow_id=cash_flow_id) \
             .set_statement(request=self.request)
 
         return JsonResponse(response, safe=False)
@@ -114,11 +115,12 @@ class CreditCardBill(APIView):
         description = self.request.POST.get('description')
         category_id = self.request.POST.get('category_id')
         card_id = self.request.POST.get('card_id')
+        cash_flow_id = self.request.POST.get('cashFlowId')
 
         response = BO.finance.finance.Finance(bill_id=bill_id, amount=amount, amount_currency=amount_currency, price_currency_dollar=price_currency_dollar, price_dollar=price_dollar,
                                               dat_compra=dat_purchase, dat_pagamento=dat_payment, amount_tax=amount_tax,
                                               installment=installment, tot_installment=tot_installment, currency_id=currency, description=description,
-                                              category_id=category_id, credit_card_id=card_id) \
+                                              category_id=category_id, credit_card_id=card_id, cash_flow_id=cash_flow_id) \
             .set_bill(request=self.request)
 
         return JsonResponse(response, safe=False)

@@ -18,7 +18,7 @@ class Finance:
 
     def __init__(self, mes=None, ano=None, statement_id=None, bill_id=None, period=None, account_id=None, credit_card_id=None, amount=None,
                  amount_currency=None, price_currency_dollar=None, vlr_moeda=None, amount_tax=None, installment=None, tot_installment=None, dat_compra=None, dat_pagamento=None,
-                 description=None, category_id=None, currency_id=None, price_dollar=None, cash_flow=None):
+                 description=None, category_id=None, currency_id=None, price_dollar=None, cash_flow_id=None):
         self.mes = mes
         self.ano = ano
 
@@ -39,7 +39,7 @@ class Finance:
         self.account_id = account_id
         self.credit_card_id = credit_card_id
         self.currency_id = currency_id
-        self.cash_flow = cash_flow
+        self.cash_flow_id = cash_flow_id
 
         self.response = {}  # Deprecated
 
@@ -115,7 +115,7 @@ class Finance:
         # Não modificado nomes
         self.__set_reference()
 
-        if self.cash_flow == 'incoming':
+        if self.cash_flow_id == 'incoming':
             multiplier = 1
         else:
             multiplier = -1
@@ -123,11 +123,13 @@ class Finance:
         statement.period = self.period
         statement.currency_id = self.currency_id
         statement.amount = float(self.amount) * -1
+        statement.amount_absolute = float(self.amount)
         statement.dat_purchase = self.dat_compra
         statement.description = self.description
         statement.category_id = self.categoria_id
         statement.account_id = self.account_id
         statement.is_validated = True
+        statement.cash_flow = self.cash_flow_id
         statement.save(request_=request)
 
         response = self.get_statement()
@@ -188,6 +190,7 @@ class Finance:
 
         # Amounts
         bill.amount = float(self.amount) * -1
+        bill.amount_absolute = float(self.amount)
         bill.amount_total = self.amount  # TODO: modificar para adicionar o valor total de compras parceladas
         bill.amount_currency = float(self.amount) * -1
         bill.price_currency_dollar = self.price_currency_dollar
@@ -256,9 +259,8 @@ class Finance:
         return response
 
     def get_bill_history(self, period_start=201801, period_end=202302, months=13):
-        # TODO: criar maneira de mostrar valores positivos e negativos dependendo da visualização
         history = finance.models.CreditCardBill.objects.values('period') \
-            .annotate(total_amount=Sum('amount')) \
+            .annotate(total_amount=Sum('amount_absolute')) \
             .filter(period__range=(period_start, period_end)).order_by('period')
 
         average = sum(item['total_amount'] for item in history)/len(history) if history else 0
