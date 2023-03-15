@@ -320,6 +320,20 @@ class Finance:
 
         return response
 
+    def get_summary(self):
+        # credit_card_bill = finance.models.CreditCardBill.objects.filter(period=self.period)
+        bank_statement = finance.models.BankStatement.objects.filter(period=self.period)
+        # balance = bank_statement.values(Sum('amount'))
+
+        response = {
+            'success': True,
+            'balance': 10.35,
+            'incoming': 8100,
+            'outgoing': -6700
+        }
+
+        return response
+
     def get_investment_statement(self):
         invest = finance.models.InvestmentStatement.objects.values('id', 'investment__amount_invested', 'vlr_bruto', 'vlr_liquido', 'referencia') \
             .filter(reference=self.period).annotate(nm_investimento=F('aplicacao__nm_descritivo')).order_by('aplicacao__nm_descritivo')

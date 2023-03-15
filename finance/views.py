@@ -1,16 +1,14 @@
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.utils.decorators import method_decorator
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from django.views import View
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import BO.core.core
 import BO.finance.finance
 import BO.integration.vat_rate
-
 import util.datetime
-from django.utils.translation import gettext_lazy as _
-
 from BO.security.security import IsAuthenticated
 
 
@@ -58,8 +56,10 @@ class BankStatement(APIView):
         currency_id = self.request.POST.get('currencyId')
         cash_flow_id = self.request.POST.get('cashFlowId')
 
-        response = BO.finance.finance.Finance(statement_id=statement_id, amount=amount, dat_compra=dat_purchase, description=description,
-                                              category_id=category_id, account_id=account_id, currency_id=currency_id, cash_flow_id=cash_flow_id) \
+        response = BO.finance.finance.Finance(statement_id=statement_id, amount=amount, dat_compra=dat_purchase,
+                                              description=description,
+                                              category_id=category_id, account_id=account_id, currency_id=currency_id,
+                                              cash_flow_id=cash_flow_id) \
             .set_statement(request=self.request)
 
         return JsonResponse(response, safe=False)
@@ -96,7 +96,8 @@ class CreditCardBill(APIView):
         if card_id in ['', '0']:
             card_id = None
 
-        response = BO.finance.finance.Finance(period=period, credit_card_id=card_id).get_bill(credit_card_bill_id=bill_id)
+        response = BO.finance.finance.Finance(period=period, credit_card_id=card_id).get_bill(
+            credit_card_bill_id=bill_id)
 
         return JsonResponse(response, safe=False)
 
@@ -117,10 +118,13 @@ class CreditCardBill(APIView):
         card_id = self.request.POST.get('card_id')
         cash_flow_id = self.request.POST.get('cashFlowId')
 
-        response = BO.finance.finance.Finance(bill_id=bill_id, amount=amount, amount_currency=amount_currency, price_currency_dollar=price_currency_dollar, price_dollar=price_dollar,
+        response = BO.finance.finance.Finance(bill_id=bill_id, amount=amount, amount_currency=amount_currency,
+                                              price_currency_dollar=price_currency_dollar, price_dollar=price_dollar,
                                               dat_compra=dat_purchase, dat_pagamento=dat_payment, amount_tax=amount_tax,
-                                              installment=installment, tot_installment=tot_installment, currency_id=currency, description=description,
-                                              category_id=category_id, credit_card_id=card_id, cash_flow_id=cash_flow_id) \
+                                              installment=installment, tot_installment=tot_installment,
+                                              currency_id=currency, description=description,
+                                              category_id=category_id, credit_card_id=card_id,
+                                              cash_flow_id=cash_flow_id) \
             .set_bill(request=self.request)
 
         return JsonResponse(response, safe=False)
@@ -185,6 +189,17 @@ class InvestmentStatement(APIView):
         period = self.request.query_params.get('period')
 
 
+class Summary(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, *args, **kwargs):
+        period = self.request.query_params.get('period', 202301)
+
+        response = BO.finance.finance.Finance(period=period).get_summary()
+
+        return Response(response)
+
+
 class InvestmentStatementUpload(View):
     permission_classes = [IsAuthenticated]
 
@@ -202,7 +217,8 @@ class Csv(APIView):
     def get(self, *args, **kwargs):
         path = self.request.POST.get('pah')
 
-        response = BO.finance.finance.Finance().import_csv_fatura(path='/run/media/lucas/Dados/Projetos/Financeiro/dados_csv/nubank-2021-11.csv')
+        response = BO.finance.finance.Finance().import_csv_fatura(
+            path='/run/media/lucas/Dados/Projetos/Financeiro/dados_csv/nubank-2021-11.csv')
         # response = BO.finance.finance.Financeiro().import_csv_investimento(path='/run/media/lucas/Dados/System/Documents/mega/Financeiro/2021/202106-PreFixado.xlsx')
         return JsonResponse(response, safe=False)
 

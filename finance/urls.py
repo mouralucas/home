@@ -12,12 +12,14 @@ urlpatterns = [
     re_path(r'^credit-card$', views.CreditCard().as_view()),
     re_path(r'^credit-card/bill$', views.CreditCardBill.as_view()),
     re_path(r'^credit-card/bill/history$', views.BillHistory.as_view()),
-    re_path(r'^fatura/csv$', views.Csv.as_view()),  # TODO: remove
 
     # Investment
     re_path(r'^investment$', views.Investment.as_view()),
     re_path(r'^investment/statement$', views.InvestmentStatement.as_view()),
     re_path(r'^investment/statement/upload$', views.InvestmentStatementUpload.as_view()),
+
+    # Dashboard
+    re_path(r'summary', views.Summary.as_view()),
 
     # Other
     re_path(r'^currency$', views.Currency.as_view()),
