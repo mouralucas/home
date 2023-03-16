@@ -264,7 +264,7 @@ class Finance:
                       total_amount_absolute=Sum('amount_absolute')) \
             .filter(period__range=(period_start, period_end)).order_by('period')
 
-        average = sum(item['total_amount'] for item in history) / len(history) if history else 0
+        average = sum(item['total_amount_absolute'] for item in history) / len(history) if history else 0
 
         response = {
             'success': True,
