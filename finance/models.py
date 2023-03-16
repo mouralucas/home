@@ -149,6 +149,7 @@ class CategoryGroup(core.models.Log):
     class GroupType(models.TextChoices):
         FIXED_EXPENSES = ('fixed_expenses', _('Despesas fixas'))
         VARIABLE_EXPENSES = ('variable_expenses', _('Despesas variáveis'))
+        NOT_EXPENSE = ('not_expense', _('Não é despesa'))  # Usado para categoria de transferência de valores entre contas
 
     category = models.ForeignKey('core.Category', on_delete=models.CASCADE, null=True)
     group = models.CharField(max_length=50, choices=GroupType.choices, default=GroupType.VARIABLE_EXPENSES)
@@ -175,7 +176,6 @@ class CurrencyRate(core.models.Log):
 
     class Meta:
         db_table = 'finance"."currency_rate'
-
 
 # class CashFlow(core.models.Log):
 #     class Type(models.TextChoices):
