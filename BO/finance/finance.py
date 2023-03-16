@@ -377,11 +377,13 @@ class Finance:
         return response
 
     def get_category_expense(self):
+        # Categorias que não são despesas representam transações que não afetam a quantidade de dinheiro
+        # Normalmente são categorias de transferências e depósitos para contas do mesmo titular
         cat_not_expense = finance.models.CategoryGroup.objects.values_list('category_id', flat=True).filter(group='not_expense')
-        statement = finance.models.BankStatement.objects\
-            .values('category__parent__description')\
+        statement = finance.models.BankStatement.objects \
+            .values('category__parent__description') \
             .annotate(category=F('category__parent__description'),
-                      total=Sum('amount_absolute'))\
+                      total=Sum('amount_absolute')) \
             .filter(period=self.period, cash_flow='OUTGOING').exclude(category_id__in=list(cat_not_expense))
 
         response = {
