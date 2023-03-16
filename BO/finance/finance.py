@@ -322,15 +322,21 @@ class Finance:
         return response
 
     def get_summary(self):
-        # credit_card_bill = finance.models.CreditCardBill.objects.filter(period=self.period)
+        credit_card_bill = finance.models.CreditCardBill.objects.values_list('amount', flat=True).filter(period=self.period)
         bank_statement = finance.models.BankStatement.objects.filter(period=self.period)
-        # balance = bank_statement.values(Sum('amount'))
+        bank_statement_incoming = sum(list(bank_statement.values_list('amount', flat=True).filter(cash_flow='INCOMING')))
+        bank_statement_outgoing = sum(list(bank_statement.values_list('amount', flat=True).filter(cash_flow='OUTGOING')))
+        bank_statement_balance = bank_statement_incoming + bank_statement_outgoing
+
 
         response = {
             'success': True,
-            'balance': 10.35,
-            'incoming': 8100,
-            'outgoing': -6700
+            'period': self.period,
+            'balance': bank_statement_balance,
+            'incoming': bank_statement_incoming,
+            'outgoing': bank_statement_outgoing,
+            'credit': sum(list(credit_card_bill)),
+            'credit_qtd': len(credit_card_bill),
         }
 
         return response
