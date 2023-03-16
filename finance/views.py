@@ -1,5 +1,4 @@
 from django.http import JsonResponse
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from rest_framework.response import Response
@@ -138,19 +137,28 @@ class ExpensesHistory(View):
 
         response = BO.finance.finance.Finance(period=referencia).get_category_history()
 
-        return JsonResponse(response, safe=False)
+        return Response(response)
 
 
 class Expense(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
-        reference = self.request.GET.get('period')
+        period = self.request.GET.get('period')
         expense_type = self.request.GET.get('expense_type')
 
-        response = BO.finance.finance.Finance(period=reference).get_expenses(expense_type=expense_type)
+        response = BO.finance.finance.Finance(period=period).get_expenses(expense_type=expense_type)
 
         return JsonResponse(response, safe=False)
+
+
+class ExpenseCategory(APIView):
+    def get(self, *args, **kwargs):
+        period = self.request.GET.get('period')
+
+        response = BO.finance.finance.Finance(period=period).get_category_expense()
+
+        return Response(response)
 
 
 class BillHistory(APIView):

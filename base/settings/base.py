@@ -92,10 +92,6 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.contrib.messages.context_processors.messages',
             ],
-            'libraries': {
-                'poll_extras': 'templatetags.poll_extras',
-                'data_filters': 'templatetags.data_filters',
-            }
         },
     },
 ]

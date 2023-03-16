@@ -26,8 +26,8 @@ urlpatterns = [
 
     re_path(r'^upload/pdf', views.PdfImport.as_view()),
 
-    re_path(r'^expenses', views.Expense.as_view()),
-
+    re_path(r'^expense$', views.Expense.as_view()),
+    re_path(r'^expense/category$', views.ExpenseCategory.as_view()),
     re_path(r'^expenses/history$', views.ExpensesHistory.as_view()),
     re_path(r'^payment/date$', views.PaymentDate.as_view()),
 ]

@@ -260,10 +260,11 @@ class Finance:
 
     def get_bill_history(self, period_start=201801, period_end=202302, months=13):
         history = finance.models.CreditCardBill.objects.values('period') \
-            .annotate(total_amount=Sum('amount_absolute')) \
+            .annotate(total_amount=Sum('amount'),
+                      total_amount_absolute=Sum('amount_absolute')) \
             .filter(period__range=(period_start, period_end)).order_by('period')
 
-        average = sum(item['total_amount'] for item in history)/len(history) if history else 0
+        average = sum(item['total_amount'] for item in history) / len(history) if history else 0
 
         response = {
             'success': True,
@@ -371,6 +372,20 @@ class Finance:
         response = {
             'status': True,
             'expenses': list(grouped_values)
+        }
+
+        return response
+
+    def get_category_expense(self):
+        statement = finance.models.BankStatement.objects\
+            .values('category__parent__description')\
+            .annotate(category=F('category__parent__description'),
+                      total=Sum('amount_absolute'))\
+            .filter(period=self.period, cash_flow='OUTGOING')
+
+        response = {
+            'success': True,
+            'expenses': list(statement)
         }
 
         return response
