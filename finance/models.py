@@ -119,6 +119,8 @@ class BankAccountMonthlyBalance(core.models.Log):
     account = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING)
     period = models.IntegerField(null=True, help_text=_('Período de referência'))
     amount = models.DecimalField(max_digits=14, decimal_places=2)
+    earning = models.DecimalField(max_digits=14, decimal_places=2)
+    total_amount = models.DecimalField(max_digits=14, decimal_places=2)
 
     class Meta:
         db_table = 'finance"."bank_account_monthly_balance'

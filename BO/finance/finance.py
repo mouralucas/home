@@ -115,14 +115,14 @@ class Finance:
         # Não modificado nomes
         self.__set_reference()
 
-        if self.cash_flow_id == 'incoming':
+        if self.cash_flow_id == 'INCOMING':
             multiplier = 1
         else:
             multiplier = -1
 
         statement.period = self.period
         statement.currency_id = self.currency_id
-        statement.amount = float(self.amount) * -1
+        statement.amount = float(self.amount) * multiplier
         statement.amount_absolute = float(self.amount)
         statement.dat_purchase = self.dat_compra
         statement.description = self.description
