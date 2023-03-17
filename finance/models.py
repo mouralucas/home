@@ -98,7 +98,7 @@ class Investment(core.models.Log):
 
 class BankStatement(core.models.Log):
     account = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING)
-    period = models.IntegerField(null=True, help_text='Período de referência')
+    period = models.IntegerField(null=True, help_text=_('Período de referência'))
     currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING)
     amount = models.DecimalField(max_digits=14, decimal_places=2)
     amount_absolute = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('O mesmo do amount sem o sinal'))
@@ -113,6 +113,15 @@ class BankStatement(core.models.Log):
 
     class Meta:
         db_table = 'finance"."bank_statement'
+
+
+class BankAccountMonthlyBalance(core.models.Log):
+    account = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING)
+    period = models.IntegerField(null=True, help_text=_('Período de referência'))
+    amount = models.DecimalField(max_digits=14, decimal_places=2)
+
+    class Meta:
+        db_table = 'finance"."bank_account_monthly_balance'
 
 
 class CreditCardBill(core.models.Log):
