@@ -259,7 +259,7 @@ class Finance:
         return response
 
     def get_bill_history(self, period_start=201801, period_end=202302, months=13):
-        history = finance.models.CreditCardBill.objects.values('period') \
+        history = finance.models.CreditCardBill.objects.values('period', 'credit_card_id') \
             .annotate(total_amount=Sum('amount'),
                       total_amount_absolute=Sum('amount_absolute')) \
             .filter(period__range=(period_start, period_end)).order_by('period')
