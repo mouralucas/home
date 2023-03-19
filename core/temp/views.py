@@ -19,6 +19,7 @@ class Balance(APIView):
                 statement = finance.models.BankStatement.objects \
                     .filter(period__lte=i, account_id=j)
 
+                # O valor só da certo no primeiro mês, não esta considerando o "saldo anterior" pq não soma o rendimento
                 balance = statement \
                     .exclude(category_id__in=['saldo_anterior', 'rendimento']).aggregate(balance=Sum('amount'))
 
@@ -27,12 +28,16 @@ class Balance(APIView):
                 total = statement \
                     .exclude(category_id__in=['saldo_anterior']).aggregate(total=Sum('amount'))
 
+                earnings = earning['earning'] if earning['earning'] else 0
+                total_amount = total['total'] if total['total'] else 0
+                balance_amount = total_amount - earnings
+
                 aux = {
                     'account': j,
                     'period': i,
-                    'balance': balance['balance'] if balance else None,
-                    'earning': earning['earning'] if earning else None,
-                    'total_amount': total['total'] if total else None
+                    'balance': balance_amount,
+                    'earning': earnings,
+                    'total_amount': total_amount
                 }
                 balance_list.append(aux)
 

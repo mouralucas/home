@@ -1,4 +1,5 @@
 import uuid
+import warnings
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -7,13 +8,38 @@ import core.models
 import finance.choices
 
 
-class InterestRate(models.TextChoices):
-    FIXED = ('FIXED', _('Pré-fixado'))
-    FLOATING = ('FLOATING', _('Pós-fixado'))
-    HYBRID = ('HYBRID', _('Hibrido'))
+class Bank(core.models.Log):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    code = models.SmallIntegerField(null=True)
+    name = models.CharField(max_length=150)
+
+    class Meta:
+        db_table = 'finance"."bank'
+
+
+class Account(core.models.Log):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    bank = models.ForeignKey('finance.Bank', on_delete=models.DO_NOTHING)
+    owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
+    nickname = models.CharField(max_length=100, null=True)
+    description = models.TextField(_('Descrição da conta'), null=True)
+    branch = models.IntegerField(null=True)
+    branch_formatted = models.CharField(max_length=30, null=True)
+    account_number = models.IntegerField(null=True)
+    digit = models.SmallIntegerField(null=True)
+    account_number_formatted = models.CharField(max_length=150, null=True)
+    dat_open = models.DateField(null=True, help_text='Data de início do contrato')
+    dat_close = models.DateField(null=True, help_text='Data de fim do contrato')
+
+    class Meta:
+        db_table = 'finance"."account'
 
 
 class BankAccount(core.models.Log):
+    """
+        Essa tabela deve mudar para só contar dados básicos de uma conta bancária/banco (ver como salvar tickets)
+        Uma nova tabela Account deve ser criada para lincar user e banco
+    """
     id = models.CharField(_('Identificador da conta'), max_length=100, primary_key=True)
     nm_bank = models.CharField(_('Nome da conta'), max_length=150, null=True)
     description = models.TextField(_('Descrição da conta'), null=True)
@@ -47,16 +73,6 @@ class CreditCard(core.models.Log):
         db_table = 'finance"."credit_card'
 
 
-# class InvestmentType(core.models.Log):
-#     id = models.CharField(max_length=200, primary_key=True)
-#     name = models.CharField(max_length=300, null=True)
-#     description = models.TextField(null=True)
-#     father = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
-#
-#     class Meta:
-#         db_table = 'finance"."investment_type'
-
-
 class Investment(core.models.Log):
     id = models.UUIDField(max_length=200, primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=200, null=True)
@@ -67,33 +83,10 @@ class Investment(core.models.Log):
     amount = models.DecimalField(max_digits=15, decimal_places=5, null=True)
     interest_rate = models.CharField(max_length=100, choices=finance.choices.InterestRate.choices)
     interest_index = models.CharField(max_length=50)
+    custodian = models.ForeignKey('finance.Bank', on_delete=models.DO_NOTHING)
 
     class Meta:
         db_table = 'finance"."investment'
-
-
-# class InvestmentStatement(core.models.Log):
-#     investment = models.ForeignKey('Investment', on_delete=models.DO_NOTHING, null=True)
-#
-#     period = models.IntegerField(null=True)
-#     bank = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING, null=True)
-#     gross_profit_annual = models.CharField(max_length=200, null=True, help_text='Taxa equivalente a 1 ano')
-#     gross_profit = models.CharField(max_length=200, null=True, help_text='Da aplicação até hoje')
-#     gross_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-#     investment_time = models.IntegerField(null=True, help_text='Dias corridos, contados a partir da data de liquidação do investimento')
-#     ir_tax_rate = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-#     ir_tax = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-#     iof_tax = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-#     b3_tax = models.DecimalField(max_digits=10, decimal_places=2, null=True, help_text='Taxa de custódia da B3')
-#     bank_tax = models.DecimalField(max_digits=10, decimal_places=2, null=True, help_text='Taxa de custódia da instituição finenceira')
-#     net_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, help_text='Valor para resgate antecipado, ou seja, antes do vencimento do título')
-#
-#     # Campos de controle
-#     origin = models.CharField(max_length=50, default='SYSTEM')
-#     is_validated = models.BooleanField(default=False)
-#
-#     class Meta:
-#         db_table = u'"finance\".\"investment_statement"'
 
 
 class BankStatement(core.models.Log):
@@ -187,19 +180,6 @@ class CurrencyRate(core.models.Log):
 
     class Meta:
         db_table = 'finance"."currency_rate'
-
-# class CashFlow(core.models.Log):
-#     class Type(models.TextChoices):
-#         INCOMING = ('incoming', _('Entrada'))
-#         OUTCOMING = 'outcoming', _('Saída')
-#         INVESTMENT = 'investment', _('Investimentos')
-#
-#     type = models.CharField(max_length=15, choices=Type.choices)
-#     category = models.ForeignKey('core.Category', on_delete=models.DO_NOTHING)
-#
-#     class Meta:
-#         db_table = 'finance"."category_type'
-
 
 ##### STOCK MARKET TABLES ######
 # class Ticker(core.models.Log):
