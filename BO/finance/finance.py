@@ -471,22 +471,22 @@ class Finance:
             aux['cumulated'] = aux['amount'].cumsum()
             print(aux)
 
-        list_statement = []
-        for idx, i in df.iterrows():
-            statement = finance.models.BankStatement()
-            statement.period = i['period']
-            statement.amount = i['amount']
-            statement.dat_purchase = i['datetime']
-            statement.description = i['description']
-            statement.is_validated = False
-            statement.origin = 'PDF_IMPORT'
-            statement.account_id = 'picpay'
-            list_statement.append(statement)
+        # list_statement = []
+        # for idx, i in df.iterrows():
+        #     statement = finance.models.BankStatement()
+        #     statement.period = i['period']
+        #     statement.amount = i['amount']
+        #     statement.dat_purchase = i['datetime']
+        #     statement.description = i['description']
+        #     statement.is_validated = False
+        #     statement.origin = 'PDF_IMPORT'
+        #     statement.account_id = 'picpay'
+        #     list_statement.append(statement)
 
-        finance.models.BankStatement.objects.bulk_create(list_statement)
+        # finance.models.BankStatement.objects.bulk_create(list_statement)
         # df['acumulado'] = df.groupby(['date']).cumsum()
 
-        # df.to_excel('teste.xlsx', index=False)
+        df.to_excel('teste.xlsx', index=False)
         print('')
 
     def import_picpay_bill(self, path, period):
