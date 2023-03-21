@@ -259,7 +259,7 @@ class Finance:
         return response
 
     def get_bill_history(self, period_start=201801, period_end=202302, months=13):
-        history = finance.models.CreditCardBill.objects.values('period', 'credit_card_id') \
+        history = finance.models.CreditCardBill.objects.values('period') \
             .annotate(total_amount=Sum('amount'),
                       total_amount_absolute=Sum('amount_absolute')) \
             .filter(period__range=(period_start, period_end)).order_by('period')
@@ -328,7 +328,6 @@ class Finance:
         bank_statement_outgoing = sum(list(bank_statement.values_list('amount', flat=True).filter(cash_flow='OUTGOING')))
         bank_statement_balance = bank_statement_incoming + bank_statement_outgoing
 
-
         response = {
             'success': True,
             'period': self.period,
@@ -383,7 +382,7 @@ class Finance:
         return response
 
     def get_category_expense(self):
-        # Categorias que não são despesas representam transações que não afetam a quantidade de dinheiro
+        # Categorias que não são despesas representam transações que não afetam a quantidade de dinheiro em conta
         # Normalmente são categorias de transferências e depósitos para contas do mesmo titular
         cat_not_expense = finance.models.CategoryGroup.objects.values_list('category_id', flat=True).filter(group='not_expense')
         statement = finance.models.BankStatement.objects \
@@ -398,6 +397,9 @@ class Finance:
         }
 
         return response
+
+    def get_credit_debit_proportion(self):
+        pass
 
     def get_currency(self, is_shown=True):
         filters = {}
