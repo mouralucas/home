@@ -394,10 +394,17 @@ class Finance:
             .annotate(category=F('category__parent__description'),
                       total=Sum('amount_absolute')) \
             .filter(period=self.period, cash_flow='OUTGOING').exclude(category_id__in=list(cat_not_expense))
+        credit_card = finance.models.CreditCardBill.objects \
+            .values('category__parent__description') \
+            .annotate(category=F('category__parent__description'),
+                      total=Sum('amount_absolute')) \
+            .filter(period=self.period, cash_flow='OUTGOING').exclude(category_id__in=list(cat_not_expense))
+
+        aux = list(statement) + list(credit_card)
 
         response = {
             'success': True,
-            'expenses': list(statement)
+            'expenses': aux
         }
 
         return response
