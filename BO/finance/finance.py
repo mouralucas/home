@@ -322,10 +322,14 @@ class Finance:
         return response
 
     def get_summary(self):
+        cat_not_expense = finance.models.CategoryGroup.objects.values_list('category_id', flat=True).filter(group='not_expense')
+
         credit_card_bill = finance.models.CreditCardBill.objects.values_list('amount', flat=True).filter(period=self.period)
         bank_statement = finance.models.BankStatement.objects.filter(period=self.period)
-        bank_statement_incoming = sum(list(bank_statement.values_list('amount', flat=True).filter(cash_flow='INCOMING')))
-        bank_statement_outgoing = sum(list(bank_statement.values_list('amount', flat=True).filter(cash_flow='OUTGOING')))
+        bank_statement_incoming = sum(list(bank_statement.values_list('amount', flat=True)
+                                           .filter(cash_flow='INCOMING').exclude(category_id__in=list(cat_not_expense))))
+        bank_statement_outgoing = sum(list(bank_statement.values_list('amount', flat=True)
+                                           .filter(cash_flow='OUTGOING').exclude(category_id__in=list(cat_not_expense))))
         bank_statement_balance = bank_statement_incoming + bank_statement_outgoing
 
         response = {
