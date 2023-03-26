@@ -205,6 +205,8 @@ class Finance:
 
         bill.is_validated = True
 
+        bill.cash_flow = 'OUTGOING'
+
         bill.save(request_=request)
 
         response = self.get_bill()
@@ -400,11 +402,17 @@ class Finance:
                       total=Sum('amount_absolute')) \
             .filter(period=self.period, cash_flow='OUTGOING').exclude(category_id__in=list(cat_not_expense))
 
-        aux = list(statement) + list(credit_card)
+        expenses = statement.union(credit_card)
+
+        grouped_values = defaultdict(float)
+        for info in list(expenses):
+            grouped_values[info['category']] += float(info['total'])
+
+        grouped_values = [{'category': year, 'total': grouped_values[year]} for year in sorted(grouped_values, reverse=True)]
 
         response = {
             'success': True,
-            'expenses': aux
+            'expenses': list(grouped_values)
         }
 
         return response
