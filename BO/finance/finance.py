@@ -132,6 +132,7 @@ class Finance:
         statement.account_id = self.account_id
         statement.is_validated = True
         statement.cash_flow = self.cash_flow_id
+        statement.owner_id = self.owner
         statement.save(request_=request)
 
         response = self.get_statement()
@@ -140,7 +141,7 @@ class Finance:
 
     def get_statement(self):
         filters = {
-            'account__owner_id': self.owner
+            'owner_id': self.owner
         }
 
         if self.account_id:

@@ -57,11 +57,12 @@ class AccountStatement(APIView):
         account_id = self.request.POST.get('account_id')
         currency_id = self.request.POST.get('currencyId')
         cash_flow_id = self.request.POST.get('cashFlowId')
+        user = self.request.user.id
 
         response = BO.finance.finance.Finance(statement_id=statement_id, amount=amount, dat_compra=dat_purchase,
                                               description=description,
                                               category_id=category_id, account_id=account_id, currency_id=currency_id,
-                                              cash_flow_id=cash_flow_id) \
+                                              cash_flow_id=cash_flow_id, owner=user) \
             .set_statement(request=self.request)
 
         return JsonResponse(response, safe=False)
