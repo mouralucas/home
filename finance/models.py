@@ -61,6 +61,7 @@ class BankAccount(core.models.Log):
 
 class CreditCard(core.models.Log):
     id = models.CharField(max_length=100, primary_key=True)
+    owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=100)
     bank_account = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING, null=True)
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING, null=True)
@@ -125,6 +126,7 @@ class BankAccountMonthlyBalance(core.models.Log):
 
 class CreditCardBill(core.models.Log):
     credit_card = models.ForeignKey('finance.CreditCard', on_delete=models.DO_NOTHING, null=True)
+    owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     period = models.IntegerField(null=True, help_text=_('Período de referência'))
     dat_payment = models.DateField(null=True)
     dat_purchase = models.DateField(null=True)

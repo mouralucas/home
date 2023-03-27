@@ -209,6 +209,8 @@ class Finance:
 
         bill.cash_flow = 'OUTGOING'
 
+        bill.owner_id = self.owner
+
         bill.save(request_=request)
 
         response = self.get_bill()
@@ -216,7 +218,9 @@ class Finance:
         return response
 
     def get_bill(self, credit_card_bill_id=None):
-        filters = {}
+        filters = {
+            'owner_id': self.owner
+        }
         if credit_card_bill_id:
             # bills = bills.filter(id=credit_card_bill_id).first()
             filters['id'] = credit_card_bill_id
@@ -250,7 +254,7 @@ class Finance:
         return response
 
     def get_bill_statistic(self):
-        bills = finance.models.CreditCardBill.objects.all()
+        bills = finance.models.CreditCardBill.objects.filter(owner_id=self.owner)
         qtd_total = bills.count()
         qtd_reference = bills.filter(reference=self.period).count()
 
@@ -266,7 +270,7 @@ class Finance:
         history = finance.models.CreditCardBill.objects.values('period') \
             .annotate(total_amount=Sum('amount'),
                       total_amount_absolute=Sum('amount_absolute')) \
-            .filter(period__range=(period_start, period_end)).order_by('period')
+            .filter(period__range=(period_start, period_end), owner_id=self.owner).order_by('period')
 
         average = sum(item['total_amount_absolute'] for item in history) / len(history) if history else 0
 
@@ -283,7 +287,8 @@ class Finance:
         fixed_expenses = finance.models.CategoryGroup.objects.values_list('category', flat=True).filter(group='fixed_expenses')
         filters = {
             'reference__range': (202001, 202012),
-            'category__in': list(fixed_expenses)
+            'category__in': list(fixed_expenses),
+            'owner_id': self.owner
         }
 
         bills = finance.models.CreditCardBill.objects.values('period', 'category__description') \
@@ -328,8 +333,9 @@ class Finance:
     def get_summary(self):
         cat_not_expense = finance.models.CategoryGroup.objects.values_list('category_id', flat=True).filter(group='not_expense')
 
-        credit_card_bill = finance.models.CreditCardBill.objects.values_list('amount', flat=True).filter(period=self.period)
-        bank_statement = finance.models.BankStatement.objects.filter(period=self.period)
+        credit_card_bill = finance.models.CreditCardBill.objects.values_list('amount', flat=True).filter(period=self.period, owner_id=self.owner)
+        bank_statement = finance.models.BankStatement.objects.filter(period=self.period, owner_id=self.owner)
+
         bank_statement_incoming = sum(list(bank_statement.values_list('amount', flat=True)
                                            .filter(cash_flow='INCOMING').exclude(category_id__in=list(cat_not_expense))))
         bank_statement_outgoing = sum(list(bank_statement.values_list('amount', flat=True)
@@ -359,7 +365,8 @@ class Finance:
 
     def get_expenses(self, expense_type):
         filters = {
-            'period': self.period
+            'period': self.period,
+            'owner_id': self.owner
         }
 
         excluders = {}
@@ -393,16 +400,24 @@ class Finance:
         # Categorias que não são despesas representam transações que não afetam a quantidade de dinheiro em conta
         # Normalmente são categorias de transferências e depósitos para contas do mesmo titular
         cat_not_expense = finance.models.CategoryGroup.objects.values_list('category_id', flat=True).filter(group='not_expense')
+
+        filters = {
+            'period': self.period,
+            'cash_flow': 'OUTGOING',
+            'owner_id': self.owner
+        }
+
         statement = finance.models.BankStatement.objects \
             .values('category__parent__description') \
             .annotate(category=F('category__parent__description'),
                       total=Sum('amount_absolute')) \
-            .filter(period=self.period, cash_flow='OUTGOING').exclude(category_id__in=list(cat_not_expense))
+            .filter(**filters).exclude(category_id__in=list(cat_not_expense))
+
         credit_card = finance.models.CreditCardBill.objects \
             .values('category__parent__description') \
             .annotate(category=F('category__parent__description'),
                       total=Sum('amount_absolute')) \
-            .filter(period=self.period, cash_flow='OUTGOING').exclude(category_id__in=list(cat_not_expense))
+            .filter(**filters).exclude(category_id__in=list(cat_not_expense))
 
         expenses = statement.union(credit_card)
 

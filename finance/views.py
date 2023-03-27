@@ -95,11 +95,12 @@ class CreditCardBill(APIView):
         bill_id = self.request.GET.get('credit_card_bill_id', 0)
         period = self.request.GET.get('period', util.datetime.DateTime().current_period())
         card_id = self.request.GET.get('credit_card_id')
+        user = self.request.user.id
 
         if card_id in ['', '0']:
             card_id = None
 
-        response = BO.finance.finance.Finance(period=period, credit_card_id=card_id).get_bill(
+        response = BO.finance.finance.Finance(period=period, credit_card_id=card_id, owner=user).get_bill(
             credit_card_bill_id=bill_id)
 
         return JsonResponse(response, safe=False)
@@ -120,6 +121,7 @@ class CreditCardBill(APIView):
         category_id = self.request.POST.get('category_id')
         card_id = self.request.POST.get('card_id')
         cash_flow_id = self.request.POST.get('cashFlowId')
+        user = self.request.user.id
 
         response = BO.finance.finance.Finance(bill_id=bill_id, amount=amount, amount_currency=amount_currency,
                                               price_currency_dollar=price_currency_dollar, price_dollar=price_dollar,
@@ -127,7 +129,7 @@ class CreditCardBill(APIView):
                                               installment=installment, tot_installment=tot_installment,
                                               currency_id=currency, description=description,
                                               category_id=category_id, credit_card_id=card_id,
-                                              cash_flow_id=cash_flow_id) \
+                                              cash_flow_id=cash_flow_id, owner=user) \
             .set_bill(request=self.request)
 
         return JsonResponse(response, safe=False)
@@ -150,8 +152,9 @@ class Expense(APIView):
     def get(self, *args, **kwargs):
         period = self.request.GET.get('period')
         expense_type = self.request.GET.get('expense_type')
+        user = self.request.user.id
 
-        response = BO.finance.finance.Finance(period=period).get_expenses(expense_type=expense_type)
+        response = BO.finance.finance.Finance(period=period, owner=user).get_expenses(expense_type=expense_type)
 
         return JsonResponse(response, safe=False)
 
@@ -159,8 +162,9 @@ class Expense(APIView):
 class ExpenseCategory(APIView):
     def get(self, *args, **kwargs):
         period = self.request.GET.get('period')
+        user = self.request.user.id
 
-        response = BO.finance.finance.Finance(period=period).get_category_expense()
+        response = BO.finance.finance.Finance(period=period, owner=user).get_category_expense()
 
         return Response(response)
 
@@ -172,8 +176,9 @@ class BillHistory(APIView):
         period_start = self.request.query_params.get('periodStart')
         period_end = self.request.query_params.get('periodEnd')
         months = self.request.query_params.get('months')
+        user = self.request.user.id
 
-        response = BO.finance.finance.Finance().get_bill_history(period_start=period_start, period_end=period_end)
+        response = BO.finance.finance.Finance(owner=user).get_bill_history(period_start=period_start, period_end=period_end)
 
         return JsonResponse(response, safe=False)
 
@@ -206,8 +211,9 @@ class Summary(APIView):
 
     def get(self, *args, **kwargs):
         period = self.request.query_params.get('period', 202301)
+        user = self.request.user.id
 
-        response = BO.finance.finance.Finance(period=period).get_summary()
+        response = BO.finance.finance.Finance(period=period, owner=user).get_summary()
 
         return Response(response)
 
