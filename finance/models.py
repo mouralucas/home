@@ -28,8 +28,8 @@ class Account(core.models.Log):
     account_number = models.IntegerField(null=True)
     digit = models.SmallIntegerField(null=True)
     account_number_formatted = models.CharField(max_length=150, null=True)
-    dat_open = models.DateField(null=True, help_text='Data de início do contrato')
-    dat_close = models.DateField(null=True, help_text='Data de fim do contrato')
+    dat_open = models.DateField(null=True, help_text=_('Data de início do contrato'))
+    dat_close = models.DateField(null=True, help_text=_('Data de fim do contrato'))
 
     class Meta:
         db_table = 'finance"."account'
@@ -63,9 +63,10 @@ class CreditCard(core.models.Log):
     id = models.CharField(max_length=100, primary_key=True)
     name = models.CharField(max_length=100)
     bank_account = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING, null=True)
+    account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING, null=True)
     description = models.CharField(max_length=500, null=True)
-    dat_start = models.DateField(null=True, help_text='Data de início do contrato')
-    dat_end = models.DateField(null=True, help_text='Data de fim do contrato')
+    dat_start = models.DateField(null=True, help_text=_('Data de início do contrato'))
+    dat_end = models.DateField(null=True, help_text=_('Data de fim do contrato'))
     dat_due = models.IntegerField(null=True)
     dat_closing = models.IntegerField(null=True, help_text=_('Data de fechamento da fatura'))
 
@@ -75,6 +76,7 @@ class CreditCard(core.models.Log):
 
 class Investment(core.models.Log):
     id = models.UUIDField(max_length=200, primary_key=True, default=uuid.uuid4)
+    owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=200, null=True)
     description = models.TextField(null=True)
     date = models.DateField(null=True)
@@ -90,7 +92,8 @@ class Investment(core.models.Log):
 
 
 class BankStatement(core.models.Log):
-    account = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING)
+    account_old = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING)
+    account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING, related_name='bank_statement_account')
     period = models.IntegerField(null=True, help_text=_('Período de referência'))
     currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING)
     amount = models.DecimalField(max_digits=14, decimal_places=2)

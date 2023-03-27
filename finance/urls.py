@@ -5,8 +5,8 @@ from finance import views
 
 urlpatterns = [
     # Account
-    re_path(r'^account$', views.BankAccount().as_view()),
-    re_path(r'^account/statement$', views.BankStatement().as_view()),
+    re_path(r'^account$', views.Account().as_view()),
+    re_path(r'^account/statement$', views.AccountStatement().as_view()),
 
     # Credit card
     re_path(r'^credit-card$', views.CreditCard().as_view()),

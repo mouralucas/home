@@ -11,11 +11,13 @@ import util.datetime
 from BO.security.security import IsAuthenticated
 
 
-class BankAccount(APIView):
+class Account(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
-        response = BO.finance.finance.Finance().get_bank_accounts()
+        user = self.request.user.id
+
+        response = BO.finance.finance.Finance(owner=user).get_accounts()
 
         return JsonResponse(response, safe=False)
 
@@ -31,17 +33,18 @@ class CreditCard(APIView):
         return JsonResponse(response, safe=False)
 
 
-class BankStatement(APIView):
+class AccountStatement(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
         period = self.request.GET.get('reference')
         account_id = self.request.GET.get('account_id')
+        user = self.request.user.id
 
         if account_id in ['', '0']:
             account_id = None
 
-        response = BO.finance.finance.Finance(period=period, account_id=account_id).get_statement()
+        response = BO.finance.finance.Finance(period=period, account_id=account_id, owner=user).get_statement()
 
         return JsonResponse(response, safe=False)
 

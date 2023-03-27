@@ -18,7 +18,7 @@ class Finance:
 
     def __init__(self, mes=None, ano=None, statement_id=None, bill_id=None, period=None, account_id=None, credit_card_id=None, amount=None,
                  amount_currency=None, price_currency_dollar=None, vlr_moeda=None, amount_tax=None, installment=None, tot_installment=None, dat_compra=None, dat_pagamento=None,
-                 description=None, category_id=None, currency_id=None, price_dollar=None, cash_flow_id=None):
+                 description=None, category_id=None, currency_id=None, price_dollar=None, cash_flow_id=None, owner=None):
         self.mes = mes
         self.ano = ano
 
@@ -40,10 +40,11 @@ class Finance:
         self.credit_card_id = credit_card_id
         self.currency_id = currency_id
         self.cash_flow_id = cash_flow_id
+        self.owner = owner
 
         self.response = {}  # Deprecated
 
-    def get_bank_accounts(self):
+    def get_accounts(self):
         """
         :Name: get_bank_accounts
         :Description: get the list of accounts
@@ -58,13 +59,14 @@ class Finance:
 
         Return: the list of saved accounts
         """
-        bank_accounts = finance.models.BankAccount.objects.values('id', 'nm_bank', 'branch_formatted', 'account_number_formatted', 'dat_start', 'dat_end').active()
+        bank_accounts = finance.models.Account.objects\
+            .values('id', 'nickname', 'branch_formatted', 'account_number_formatted', 'dat_open', 'dat_close').filter(owner=self.owner).active()
 
         response = {
             'status': True,
             'description': None,
             'quantity': len(bank_accounts),
-            'bank_accounts': list(bank_accounts),
+            'accounts': list(bank_accounts),
         }
 
         return response
@@ -137,10 +139,9 @@ class Finance:
         return response
 
     def get_statement(self):
-        # filters = {
-        #     'period': self.period
-        # }
-        filters = {}
+        filters = {
+            'account__owner_id': self.owner
+        }
 
         if self.account_id:
             filters['account_id'] = self.account_id
@@ -148,7 +149,7 @@ class Finance:
         statement = finance.models.BankStatement.objects.values('id', 'period', 'dat_purchase', 'description') \
             .filter(**filters).active().annotate(statement_id=F('id'),
                                                  amount=F('amount'),
-                                                 nm_account=F('account__nm_bank'),
+                                                 nm_account=F('account__nickname'),
                                                  account_id=F('account_id'),
                                                  nm_category=F('category__description'),
                                                  category_id=F('category_id'),
