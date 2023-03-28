@@ -10,10 +10,11 @@ import util.datetime
 
 
 class Library:
-    def __init__(self, item_id=None, item=None, item_type=None):
+    def __init__(self, item_id=None, item=None, item_type=None, owner=None):
         self.item_id = item_id
         self.item = item
         self.item_type = item_type
+        self.owner = owner
 
     def set_item(self, main_author_id=None, authors_id=None, title=None, subtitle=None, title_original=None, subtitle_original=None, isbn_formatted=None, isbn_10_formatted=None, type=None,
                  pages=None, volume=None, edition=None, dat_published=None, dat_published_original=None, serie_id=None, collection_id=None, publisher=None,
@@ -98,6 +99,7 @@ class Library:
         item.thickness = thickness if thickness else None
         item.summary = summary if summary else None
         item.dat_last_status = dat_status
+        item.owner_id = self.owner
         item.save(request_=request)
 
         self.update_status(item=item, status=status, date=dat_status, is_update=False, request=request)
@@ -126,7 +128,9 @@ class Library:
         :param self.item_type: The type of the item (book, manga, etc)
         :param self.item_id: The id of the item
         """
-        filters = {}
+        filters = {
+            'owner_id': self.owner
+        }
 
         if self.item_type:
             filters['type'] = self.item_type

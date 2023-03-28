@@ -71,8 +71,9 @@ class Item(APIView):
         width = self.request.POST.get('width') if self.request.POST.get('width') not in ('null', None, '', '0') else None
         thickness = self.request.POST.get('thickness') if self.request.POST.get('thickness') not in ('null', None, '', '0') else None
         summary = self.request.POST.get('summary')
+        user = self.request.user.id
 
-        response = BO.library.library.Library(item_id=item_id).set_item(main_author_id=main_author_id, authors_id=authors_id, title=title, subtitle=subtitle, title_original=title_original,
+        response = BO.library.library.Library(item_id=item_id, owner=user).set_item(main_author_id=main_author_id, authors_id=authors_id, title=title, subtitle=subtitle, title_original=title_original,
                                                                         subtitle_original=subtitle_original, isbn_formatted=isbn_formatted, isbn_10_formatted=isbn_10_formatted, type=item_type,
                                                                         pages=pages, volume=volume, edition=edition, dat_published=dat_published,
                                                                         dat_published_original=dat_published_original, serie_id=serie_id, collection_id=collection_id, publisher=publisher_id,

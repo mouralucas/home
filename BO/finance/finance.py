@@ -157,7 +157,8 @@ class Finance:
                                                  nm_category=F('category__description'),
                                                  category_id=F('category_id'),
                                                  datCreated=F('dat_created'),
-                                                 datLastEdited=F('dat_last_edited')
+                                                 datLastEdited=F('dat_last_edited'),
+                                                 cash_flow_id=F('cash_flow')
                                                  ) \
             .order_by('-dat_purchase')
 

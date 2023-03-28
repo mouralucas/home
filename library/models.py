@@ -63,6 +63,7 @@ class Item(core.models.Log):
         BOOK = ('book', _('Livro'))
         MANGA = ('manga', _('Mangá'))
 
+    owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     isbn = models.BigIntegerField(null=True)
     isbn_formatted = models.CharField(max_length=100, null=True)
     isbn10 = models.BigIntegerField(null=True)
