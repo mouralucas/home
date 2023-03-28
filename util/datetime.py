@@ -175,11 +175,17 @@ def concat_date_time(date, time, tz_offset=0):
 
 def current_yearmonth():
     """
-   :Nome da classe/função: current_yearmonth
-   :descrição: Função para retornar o anomes atual
-   :Criação: Lucas Penha de Moura - 18/04/2022
-   :Edições:
-   """
+    :Name: get_category
+    :Description: Get the current period mmyyyy
+    :Created by: Lucas Penha de Moura - 18/04/2022
+    :Edited by:
+
+    Explicit params:
+    None
+
+    Implicit params (passed in the class instance or set by other functions):
+    None
+    """
     warnings.warn('Deprecated due to new DateTime class .\nUse DateTime.current_period.')
     month = timezone.localtime().month
     year = timezone.localtime().year

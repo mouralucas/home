@@ -210,7 +210,7 @@ class Summary(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
-        period = self.request.query_params.get('period', 202301)
+        period = self.request.query_params.get('period', util.datetime.DateTime().current_period())
         user = self.request.user.id
 
         response = BO.finance.finance.Finance(period=period, owner=user).get_summary()

@@ -61,7 +61,7 @@ class Finance:
 
         Return: the list of saved accounts
         """
-        bank_accounts = finance.models.Account.objects\
+        bank_accounts = finance.models.Account.objects \
             .values('id', 'nickname', 'branch_formatted', 'account_number_formatted', 'dat_open', 'dat_close').filter(owner=self.owner).active()
 
         response = {
@@ -229,9 +229,7 @@ class Finance:
             filters['id'] = credit_card_bill_id
 
         else:
-            filters = {
-                'period': self.period
-            }
+            filters['period'] = self.period
 
             if self.credit_card_id:
                 filters['credit_card_id'] = self.credit_card_id
