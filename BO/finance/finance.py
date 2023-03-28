@@ -13,6 +13,8 @@ import finance.models
 import finance.serializers
 import util.datetime
 
+import datetime
+
 
 class Finance:
 
@@ -465,19 +467,19 @@ class Finance:
         day_close = card.dat_closing
         day_payment = card.dat_due
 
-        dat_purchase = util.datetime.date_to_datetime(dat_purchase, output_format='%d/%m/%Y')
-        day_purchase = dat_purchase.day
-        month_purchase = dat_purchase.month
-        year_purchase = dat_purchase.year
+        dat_purchase = datetime.date(year=2023, month=4, day=27)
 
-        # TODO: there is a problem when closing day is in previous month, then the simple rule of >= does not apply
-        dat_payment = datetime(day=day_payment, month=month_purchase, year=year_purchase)
-        if day_purchase >= day_close:
-            dat_payment = dat_payment + relativedelta(months=1)
+        if dat_purchase.day > day_close:
+            next_month = dat_purchase.replace(month=dat_purchase.month + 1, day=day_close)
+            dat_payment = next_month + datetime.timedelta(days=10)
+        else:
+            dat_payment = dat_purchase.replace(day=day_close) + datetime.timedelta(days=10)
+
+        print("A data de pagamento é:", dat_payment.strftime("%d/%m/%Y"))
 
         response = {
             'status': True,
-            'dat_payment': dat_payment.date()
+            'dat_payment': dat_payment
         }
         print(dat_payment.date())
         return response

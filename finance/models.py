@@ -3,6 +3,7 @@ import warnings
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from numpy import number
 
 import core.models
 import finance.choices
@@ -93,7 +94,7 @@ class Investment(core.models.Log):
 
 
 class BankStatement(core.models.Log):
-    account_old = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING)
+    account_old = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING, null=True)
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING, related_name='bank_statement_account')
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     period = models.IntegerField(null=True, help_text=_('Período de referência'))
