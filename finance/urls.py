@@ -30,4 +30,7 @@ urlpatterns = [
     re_path(r'^expense/category$', views.ExpenseCategory.as_view()),
     re_path(r'^expenses/history$', views.ExpensesHistory.as_view()),
     re_path(r'^payment/date$', views.PaymentDate.as_view()),
+
+    # File content uploads for some banks
+    re_path('file/upload/excel/pagbank', views.ImportExcelPagBank.as_view())
 ]

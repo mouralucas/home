@@ -36,6 +36,7 @@ class Account(core.models.Log):
         db_table = 'finance"."account'
 
 
+# Deprecated
 class BankAccount(core.models.Log):
     """
         Essa tabela deve mudar para só contar dados básicos de uma conta bancária/banco (ver como salvar tickets)

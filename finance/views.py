@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 
 import BO.core.core
 import BO.finance.finance
+import BO.finance.data_import
 import BO.integration.vat_rate
 import util.datetime
 from BO.security.security import IsAuthenticated
@@ -258,3 +259,12 @@ class PaymentDate(View):
         response = BO.finance.finance.Finance().get_due_date(dat_purchase=dat_purchase, credit_card_id=credit_card_id)
 
         return JsonResponse(response, safe=False)
+
+
+class ImportExcelPagBank(APIView):
+    def post(self, *args, **kwargs):
+        path = self.request.query_params.get('excel_path', 'C:\\Users\\lucas\\OneDrive\\Financeiro\\Extratos\\Mãe\\Pag-202302.xlsx')
+
+        response = BO.finance.data_import.Pagbank(path=path).excel()
+
+        return Response(response)

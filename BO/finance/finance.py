@@ -116,13 +116,13 @@ class Finance:
         else:
             statement = finance.models.BankStatement()
 
-        # Não modificado nomes
         self.__set_reference()
 
         if self.cash_flow_id == 'INCOMING':
             multiplier = 1
         else:
-            multiplier = -1
+            # If amount already lower than zero no need to change again
+            multiplier = -1 if float(self.amount) > 0 else 1
 
         statement.period = self.period
         statement.currency_id = self.currency_id
@@ -158,7 +158,7 @@ class Finance:
                                                  category_id=F('category_id'),
                                                  datCreated=F('dat_created'),
                                                  datLastEdited=F('dat_last_edited'),
-                                                 cash_flow_id=F('cash_flow')
+                                                 cashFlowId=F('cash_flow')
                                                  ) \
             .order_by('-dat_purchase')
 
@@ -539,6 +539,13 @@ class Finance:
         df['date_form'] = df['day']
         print(df.dtypes)
         print('')
+
+    def import_pagbank_excel_statement(self, path, period):
+        statement = pd.read_excel(path, sheet_name='Sheet0')
+
+        print('')
+
+
 
     def __set_reference(self):
         dat_purchase = util.datetime.date_to_datetime(self.dat_compra, output_format='%Y-%m-%d')
