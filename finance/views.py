@@ -188,9 +188,10 @@ class Investment(View):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
-        response = BO.finance.finance.Finance().get_investment()
-
-        return JsonResponse(response, safe=False)
+        # response = BO.finance.finance.Finance().get_investment()
+        #
+        # return JsonResponse(response, safe=False)
+        pass
 
 
 class InvestmentStatement(APIView):

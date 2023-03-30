@@ -2,6 +2,7 @@ from django.urls import re_path
 from django.views.generic import RedirectView
 
 from finance import views
+from finance import views_investment
 
 urlpatterns = [
     # Account
@@ -14,7 +15,7 @@ urlpatterns = [
     re_path(r'^credit-card/bill/history$', views.BillHistory.as_view()),
 
     # Investment
-    re_path(r'^investment$', views.Investment.as_view()),
+    re_path(r'^investment$', views_investment.Investment.as_view()),
     re_path(r'^investment/statement$', views.InvestmentStatement.as_view()),
     re_path(r'^investment/statement/upload$', views.InvestmentStatementUpload.as_view()),
 
