@@ -238,6 +238,8 @@ class Category(Log):
     parent = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
     module = models.ForeignKey('core.Module', on_delete=models.DO_NOTHING, null=True)
     order = models.DecimalField(max_digits=10, decimal_places=4, null=True)
+    is_default = models.BooleanField(default=False)
+    owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING, null=True, help_text='Category created by the user')
 
     class Meta:
         db_table = 'public"."category'

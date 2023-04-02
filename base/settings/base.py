@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'core.log',
     'core.temp',
     'core.user',
+    'core.security',
 
     'corsheaders',
 
@@ -97,10 +98,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'base.wsgi.application'
-
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
