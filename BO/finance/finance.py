@@ -133,7 +133,7 @@ class Finance:
                                                  datLastEdited=F('dat_last_edited'),
                                                  cashFlowId=F('cash_flow')
                                                  ) \
-            .order_by('-dat_purchase')
+            .order_by('-dat_purchase', '-dat_created')
 
         response = {
             'status': True,
