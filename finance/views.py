@@ -12,17 +12,6 @@ import util.datetime
 from BO.security.security import IsAuthenticated
 
 
-class Account(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, *args, **kwargs):
-        user = self.request.user.id
-
-        response = BO.finance.finance.Finance(owner=user).get_accounts()
-
-        return JsonResponse(response, safe=False)
-
-
 class CreditCard(APIView):
     permission_classes = [IsAuthenticated]
 

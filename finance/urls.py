@@ -3,10 +3,11 @@ from django.views.generic import RedirectView
 
 from finance import views
 from finance import views_investment
+from finance import views_account
 
 urlpatterns = [
     # Account
-    re_path(r'^account$', views.Account().as_view()),
+    re_path(r'^account$', views_account.Account().as_view()),
     re_path(r'^account/statement$', views.AccountStatement().as_view()),
 
     # Credit card

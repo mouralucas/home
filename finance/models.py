@@ -21,8 +21,7 @@ class Bank(core.models.Log):
 class Account(core.models.Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     bank = models.ForeignKey('finance.Bank', on_delete=models.DO_NOTHING)
-    owner_old = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
-    owner = models.ForeignKey('user.User', on_delete=models.DO_NOTHING, related_name='finance_account_owner')
+    owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     nickname = models.CharField(max_length=100, null=True)
     description = models.TextField(_('Descrição da conta'), null=True)
     branch = models.IntegerField(null=True)
@@ -64,8 +63,7 @@ class BankAccount(core.models.Log):
 
 class CreditCard(core.models.Log):
     id = models.CharField(max_length=100, primary_key=True)
-    owner_old = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
-    owner = models.ForeignKey('user.User', on_delete=models.DO_NOTHING, related_name='finance_credit_card_owner')
+    owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=100)
     bank_account = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING, null=True)
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING, null=True)
@@ -81,8 +79,7 @@ class CreditCard(core.models.Log):
 
 class Investment(core.models.Log):
     id = models.UUIDField(max_length=200, primary_key=True, default=uuid.uuid4)
-    owner_old = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
-    owner = models.ForeignKey('user.User', on_delete=models.DO_NOTHING, related_name='finance_investment_owner')
+    owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=200)
     description = models.TextField(null=True)
     date = models.DateField()
@@ -101,8 +98,7 @@ class Investment(core.models.Log):
 class BankStatement(core.models.Log):
     account_old = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING, null=True)
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING, related_name='bank_statement_account')
-    owner_old = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
-    owner = models.ForeignKey('user.User', on_delete=models.DO_NOTHING, related_name='finance_bank_statement_owner')
+    owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     period = models.IntegerField(null=True, help_text=_('Período de referência'))
     currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING)
     amount = models.DecimalField(max_digits=14, decimal_places=2)
@@ -133,8 +129,7 @@ class BankAccountMonthlyBalance(core.models.Log):
 
 class CreditCardBill(core.models.Log):
     credit_card = models.ForeignKey('finance.CreditCard', on_delete=models.DO_NOTHING, null=True)
-    owner_old = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
-    owner = models.ForeignKey('user.User', on_delete=models.DO_NOTHING)
+    owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     period = models.IntegerField(null=True, help_text=_('Período de referência'))
     dat_payment = models.DateField(null=True)
     dat_purchase = models.DateField(null=True)
