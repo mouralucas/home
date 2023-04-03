@@ -54,7 +54,7 @@ class ProfileAccount(core.models.Log):
 
 
 class GroupAccount(core.models.Log):
-    profile = models.ForeignKey('security.Profile', on_delete=models.DO_NOTHING)
+    group = models.ForeignKey('security.Group', on_delete=models.DO_NOTHING)
     account = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     code = models.CharField(max_length=50, null=True)
     dat_start = models.DateField(null=True)
