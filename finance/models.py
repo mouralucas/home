@@ -155,7 +155,7 @@ class CreditCardBill(core.models.Log):
     is_validated = models.BooleanField(default=False)
 
     class Meta:
-        db_table = 'finance"."creditcard_bill'
+        db_table = 'finance"."credit_card_bill'
 
 
 class CategoryGroup(core.models.Log):
