@@ -108,6 +108,20 @@ class BankStatement(core.models.Log):
     description = models.TextField(null=True)
     cash_flow = models.CharField(max_length=100, choices=finance.choices.CashFlow.choices)
 
+    # Currency exchange fields
+    currency_reference = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING, default='BRL', related_name='finance_statement_currency_reference', help_text=_('Moeda de referência'))
+    amount_reference = models.DecimalField(max_digits=14, decimal_places=2, default=0, help_text=_('Total na moeda de referência, no caso de câmbio, senão o mesmo valor de amount'))
+
+    dollar_quote = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Para conta em outras moedas, em relação a moeda de referência'))
+
+    tax = models.DecimalField(max_digits=14, decimal_places=5, default=0, help_text=_('Iof, aplicado sobre a cotação'))
+    perc_tax = models.DecimalField(max_digits=7, decimal_places=2, default=0, help_text=_('Percentagem do IOF'))
+    bank_fee = models.DecimalField(max_digits=14, decimal_places=5, default=0, help_text=_('Spread do banco, aplicado sobre a cotação'))
+    perc_bank_fee = models.DecimalField(max_digits=7, decimal_places=2, default=0, help_text=_('Percentagem de spread do banco'))
+    effective_rate = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('VET: valor efetivo total. valor total do câmbio com as taxas e impostos'))
+    # Add compos de porcentagem dos impostos e taxas e no front colocar apenas campo aberto pras porcentagem e calcular na mão
+    # Procurar forma de apresentar os valores em reais quando for relacionado a transferência para a conta em dolares, mas manter só o valor quando transação normal e dolar
+
     # Campos de controle
     origin = models.CharField(max_length=50, default='SYSTEM')
     is_validated = models.BooleanField(default=False)

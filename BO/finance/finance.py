@@ -131,7 +131,9 @@ class Finance:
                                                  category_id=F('category_id'),
                                                  datCreated=F('dat_created'),
                                                  datLastEdited=F('dat_last_edited'),
-                                                 cashFlowId=F('cash_flow')
+                                                 cashFlowId=F('cash_flow'),
+                                                 currencyId=F('currency_id'),
+                                                 currencySymbol=F('currency__symbol')
                                                  ) \
             .order_by('-dat_purchase', '-dat_created')
 
