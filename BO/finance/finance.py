@@ -443,19 +443,17 @@ class Finance:
 
         dat_purchase = datetime.date(year=2023, month=4, day=27)
 
-        if dat_purchase.day > day_close:
-            next_month = dat_purchase.replace(month=dat_purchase.month + 1, day=day_close)
-            dat_payment = next_month + datetime.timedelta(days=10)
+        if day_close > day_payment and dat_purchase.day < day_close:
+            # add validação de mes de janeiro considerar ano anterior
+            # add validação de mes de dezembro considerar próximo ano
+            data_fechamento = datetime.date(dat_purchase.year, dat_purchase.month - 1, day_close)
+            data_pagamento = datetime.date(dat_purchase.year, dat_purchase.month + 1, day_payment)
+
+            print('Fechamento em {fec}, pagamento em {pag}'.format(fec=data_fechamento, pag=data_pagamento))
         else:
-            dat_payment = dat_purchase.replace(day=day_close) + datetime.timedelta(days=10)
+            print('Else')
 
-        print("A data de pagamento é:", dat_payment.strftime("%d/%m/%Y"))
-
-        response = {
-            'status': True,
-            'dat_payment': dat_payment
-        }
-        print(dat_payment.date())
+        response = {}
         return response
 
     def import_picpay_statement(self, path):
@@ -519,8 +517,6 @@ class Finance:
         statement = pd.read_excel(path, sheet_name='Sheet0')
 
         print('')
-
-
 
     def __set_reference(self):
         dat_purchase = util.datetime.date_to_datetime(self.dat_compra, output_format='%Y-%m-%d')
