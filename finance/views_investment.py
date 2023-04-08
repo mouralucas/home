@@ -12,3 +12,10 @@ class Investment(APIView):
 
     def post(self, *args, **kwargs):
         pass
+
+
+class Proportion(APIView):
+    def get(self, *args, **kwargs):
+        response = BO.finance.investment.Investment().get_proportion()
+
+        return Response(response)

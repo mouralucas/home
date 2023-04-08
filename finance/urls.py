@@ -17,6 +17,7 @@ urlpatterns = [
 
     # Investment
     re_path(r'^investment$', views_investment.Investment.as_view()),
+    re_path(r'^investment/proportion$', views_investment.Proportion.as_view()),
     re_path(r'^investment/statement$', views.InvestmentStatement.as_view()),
     re_path(r'^investment/statement/upload$', views.InvestmentStatementUpload.as_view()),
 

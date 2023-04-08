@@ -279,6 +279,28 @@ class Region(Log):
         db_table = 'public"."country_region'
 
 
+class SystemLanguages(Log):
+    # Tabela que será usada para sistema multi-idioma
+    # Contará com tabela auxiliar para registrar id_texto, id_idioma, texto_base,
+    id = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'public"."system_language'
+
+
+class DynamicTextTranslation(Log):
+    # Texto sem parent_id indica o idioma base, todos os filhos significam traduções
+    # O id dessa tabela deverá ficar na tabela com texto dinâmico, quando procurar por outro idioma diferente do português buscar pelo parent_id + language_id, senão por id
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    language = models.ForeignKey('core.SystemLanguages', on_delete=models.DO_NOTHING)
+    text = models.TextField()
+    parent = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
+
+    class Meta:
+        db_table = 'public"."dynamic_text_translate'
+
+
 # Choices available throughout the project
 class GenderTypes(models.TextChoices):
     MALE = ('male', _('Masculino'))
@@ -292,3 +314,4 @@ class CurrencyTypes(models.TextChoices):
     EURO = ('EUR', _('€ - Euro'))
     DOLAR = ('USD', _('$ - Dólar'))
     CK_CROW = ('CZK', _('Kč - Coroa Tcheca'))
+

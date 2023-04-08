@@ -77,11 +77,26 @@ class CreditCard(core.models.Log):
         db_table = 'finance"."credit_card'
 
 
+class InvestmentType(core.models.Log):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    name = models.CharField(max_length=200)
+    description = models.CharField(max_length=600, null=True)
+    # teste de colunas com texto com idioma dinâmico
+    dynamic_name = models.ForeignKey('core.DynamicTextTranslation', on_delete=models.DO_NOTHING, null=True, related_name='finance_investment_type_dynamic_name')
+    dynamic_description = models.ForeignKey('core.DynamicTextTranslation', on_delete=models.DO_NOTHING, null=True, related_name='finance_investment_type_dynamic_description')
+
+    parent = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
+
+    class Meta:
+        db_table = 'finance"."investment_type'
+
+
 class Investment(core.models.Log):
     id = models.UUIDField(max_length=200, primary_key=True, default=uuid.uuid4)
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=200)
     description = models.TextField(null=True)
+    type = models.ForeignKey('finance.InvestmentType', on_delete=models.DO_NOTHING)
     date = models.DateField()
     dat_maturity = models.DateField()
     quantity = models.DecimalField(max_digits=15, decimal_places=5, null=True)
@@ -203,6 +218,7 @@ class CurrencyRate(core.models.Log):
 
     class Meta:
         db_table = 'finance"."currency_rate'
+
 
 ##### STOCK MARKET TABLES ######
 # class Ticker(core.models.Log):

@@ -173,14 +173,14 @@ class BillHistory(APIView):
         return JsonResponse(response, safe=False)
 
 
-class Investment(View):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, *args, **kwargs):
-        # response = BO.finance.finance.Finance().get_investment()
-        #
-        # return JsonResponse(response, safe=False)
-        pass
+# class Investment(View):
+#     permission_classes = [IsAuthenticated]
+#
+#     def get(self, *args, **kwargs):
+#         # response = BO.finance.finance.Finance().get_investment()
+#         #
+#         # return JsonResponse(response, safe=False)
+#         pass
 
 
 class InvestmentStatement(APIView):
