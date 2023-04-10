@@ -35,10 +35,11 @@ class Item(APIView):
         item_id = self.request.GET.get('item_id')
         item_type = self.request.GET.get('item_type')
         is_unique = True if self.request.GET.get('is_unique') else False
+        user = self.request.user.id
 
-        response = BO.library.library.Library(item_id=item_id, item_type=item_type).get_item(is_unique=is_unique)
+        response = BO.library.library.Library(owner=user, item_id=item_id, item_type=item_type).get_item(is_unique=is_unique)
 
-        return JsonResponse(response, safe=False)
+        return Response(response)
 
     def post(self, *args, **kwargs):
         # Change to json.stringfy

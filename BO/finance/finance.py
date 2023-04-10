@@ -220,7 +220,7 @@ class Finance:
                       nm_category=F('category__description'),
                       datCreated=F('dat_created'),
                       datLastEdited=F('dat_last_edited')
-                      ).order_by('dat_purchase')
+                      ).order_by('-dat_purchase', '-dat_created')
 
         response = {
             'status': True,
