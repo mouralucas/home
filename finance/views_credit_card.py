@@ -28,7 +28,7 @@ class CreditCardBill(APIView):
         if card_id in ['', '0']:
             card_id = None
 
-        response = BO.finance.credit_card.CreditCard(period=period, credit_card_id=card_id, owner=user)\
+        response = BO.finance.credit_card.CreditCard(period=period, credit_card_id=card_id, owner=user) \
             .get_bill(credit_card_bill_id=bill_id)
 
         return Response(response)

@@ -13,7 +13,7 @@ urlpatterns = [
 
     # Credit card
     re_path(r'^credit-card$', views_credit_card.CreditCard().as_view()),
-    re_path(r'^credit-card/bill$', views.CreditCardBill.as_view()),
+    re_path(r'^credit-card/bill$', views_credit_card.CreditCardBill.as_view()),
     re_path(r'^credit-card/bill/history$', views.BillHistory.as_view()),
 
     # Investment

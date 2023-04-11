@@ -5,8 +5,8 @@ import finance.models
 
 
 class Investment:
-    def __init__(self):
-        pass
+    def __init__(self, investment_id=None):
+        self.investment_id = investment_id
 
     def set_investment(self):
         # Set investment code
@@ -16,18 +16,24 @@ class Investment:
     def get_investment(self):
         filters = {}
 
-        investments = finance.models.Investment.objects.values('pk', 'name', 'description', 'amount', 'price',
-                                                               'date', 'dat_maturity', 'interest_rate', 'interest_index') \
+        if self.investment_id:
+            filters['pk'] = self.investment_id
+
+        investments = finance.models.Investment.objects.values('pk', 'name', 'description', 'amount', 'price', 'quantity',
+                                                               'date') \
             .annotate(id=F('pk'),
-                      nm_custodian=F('custodian__name'),
-                      id_custodian=F('custodian_id'),
-                      id_type=F('type_id'),
-                      nm_type=F('type__name')).order_by('-date').active().filter(**filters)
+                      maturityDate=F('dat_maturity'),
+                      interestRate=F('interest_rate'),
+                      interestIndex=F('interest_index'),
+                      custodianName=F('custodian__name'),
+                      custodianId=F('custodian_id'),
+                      investmentTypeId=F('type_id'),
+                      investmentTypeName=F('type__name')).order_by('-date').active().filter(**filters)
 
         response = {
             'success': True,
             'description': None,
-            'investment': list(investments)
+            'investment': list(investments) if not self.investment_id else investments.first()
         }
 
         return response

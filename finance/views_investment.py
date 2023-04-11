@@ -6,7 +6,9 @@ import BO.finance.investment
 
 class Investment(APIView):
     def get(self, *args, **kwargs):
-        response = BO.finance.investment.Investment().get_investment()
+        investment_id = self.request.query_params.get('investment_id')
+
+        response = BO.finance.investment.Investment(investment_id=investment_id).get_investment()
 
         return Response(response)
 
