@@ -7,20 +7,10 @@ from rest_framework.views import APIView
 import BO.core.core
 import BO.finance.finance
 import BO.finance.data_import
+import BO.finance.credit_card
 import BO.integration.vat_rate
 import util.datetime
 from BO.security.security import IsAuthenticated
-
-
-class CreditCard(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, *args, **kwargs):
-        selected_id = self.request.GET.get('selected_id')
-
-        response = BO.finance.finance.Finance().get_credit_cards()
-
-        return JsonResponse(response, safe=False)
 
 
 class AccountStatement(APIView):
@@ -78,51 +68,7 @@ class PdfImport(APIView):
         return JsonResponse(response, safe=False)
 
 
-class CreditCardBill(APIView):
-    permission_classes = [IsAuthenticated]
 
-    def get(self, *args, **kwargs):
-        bill_id = self.request.GET.get('credit_card_bill_id', 0)
-        period = self.request.GET.get('period', util.datetime.DateTime().current_period())
-        card_id = self.request.GET.get('credit_card_id')
-        user = self.request.user.id
-
-        if card_id in ['', '0']:
-            card_id = None
-
-        response = BO.finance.finance.Finance(period=period, credit_card_id=card_id, owner=user).get_bill(
-            credit_card_bill_id=bill_id)
-
-        return JsonResponse(response, safe=False)
-
-    def post(self, *args, **kwargs):
-        bill_id = self.request.POST.get('fatura_id')
-        amount = self.request.POST.get('amount')
-        amount_currency = self.request.POST.get('amount_currency')
-        price_dollar = self.request.POST.get('price_dollar')
-        amount_tax = self.request.POST.get('amount_tax')
-        price_currency_dollar = self.request.POST.get('price_currency_dollar')
-        dat_purchase = self.request.POST.get('dat_purchase')
-        dat_payment = self.request.POST.get('dat_payment')
-        installment = self.request.POST.get('installment', 1)  # TODO: vira como forma de lista
-        tot_installment = self.request.POST.get('tot_installment', 1)
-        currency = self.request.POST.get('currency')
-        description = self.request.POST.get('description')
-        category_id = self.request.POST.get('category_id')
-        card_id = self.request.POST.get('card_id')
-        cash_flow_id = self.request.POST.get('cashFlowId')
-        user = self.request.user.id
-
-        response = BO.finance.finance.Finance(bill_id=bill_id, amount=amount, amount_currency=amount_currency,
-                                              price_currency_dollar=price_currency_dollar, price_dollar=price_dollar,
-                                              dat_compra=dat_purchase, dat_pagamento=dat_payment, amount_tax=amount_tax,
-                                              installment=installment, tot_installment=tot_installment,
-                                              currency_id=currency, description=description,
-                                              category_id=category_id, credit_card_id=card_id,
-                                              cash_flow_id=cash_flow_id, owner=user) \
-            .set_bill(request=self.request)
-
-        return JsonResponse(response, safe=False)
 
 
 class ExpensesHistory(View):
@@ -171,16 +117,6 @@ class BillHistory(APIView):
         response = BO.finance.finance.Finance(owner=user).get_bill_history(period_start=period_start, period_end=period_end)
 
         return JsonResponse(response, safe=False)
-
-
-# class Investment(View):
-#     permission_classes = [IsAuthenticated]
-#
-#     def get(self, *args, **kwargs):
-#         # response = BO.finance.finance.Finance().get_investment()
-#         #
-#         # return JsonResponse(response, safe=False)
-#         pass
 
 
 class InvestmentStatement(APIView):
@@ -258,3 +194,10 @@ class ImportExcelPagBank(APIView):
         response = BO.finance.data_import.Pagbank(path=path).excel()
 
         return Response(response)
+
+
+class Bank(APIView):
+    def get(self, *args, **kwargs):
+        bank = BO.finance.finance.Finance().get_bank()
+
+        return Response(bank)

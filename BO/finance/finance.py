@@ -46,36 +46,6 @@ class Finance:
 
         self.response = {}  # Deprecated
 
-    def get_credit_cards(self):
-        """
-        :Name: get_credit_cards
-        :Description: get the list of credit cards
-        :Created by: Lucas Penha de Moura - 02/10/2022
-        :Edited by:
-
-        Explicit params:
-        None
-
-        Implicit params (passed in the class instance or set by other functions):
-        None
-
-        Return: the list of saved credit cards
-        """
-        # TODO: mudar para receber parâmetro de status
-        credit_cards = finance.models.CreditCard.objects.values('id', 'name', 'description', 'dat_closing', 'dat_due').active() \
-            .annotate(nm_status=Case(When(status=True, then=Value('Ativo')),
-                                     default=Value('Cancelado'),
-                                     output_field=CharField())).order_by('-status', 'id')
-
-        response = {
-            'status': True,
-            'description': None,
-            'quantity': len(credit_cards),
-            'credit_cards': list(credit_cards),
-        }
-
-        return response
-
     def set_statement(self, request=None):
         if not self.dat_compra or not self.amount or not self.categoria_id or not self.account_id:
             response = {
@@ -195,39 +165,6 @@ class Finance:
 
         return response
 
-    def get_bill(self, credit_card_bill_id=None):
-        filters = {
-            'owner_id': self.owner
-        }
-        if credit_card_bill_id:
-            # bills = bills.filter(id=credit_card_bill_id).first()
-            filters['id'] = credit_card_bill_id
-
-        else:
-            filters['period'] = self.period
-
-            if self.credit_card_id:
-                filters['credit_card_id'] = self.credit_card_id
-
-        bills = finance.models.CreditCardBill.objects \
-            .values('id', 'period', 'dat_purchase', 'dat_payment',
-                    'installment', 'tot_installment', 'description') \
-            .filter(**filters) \
-            .annotate(amount=F('amount'),
-                      credit_card_id=F('credit_card_id'),
-                      nm_credit_card=F('credit_card__name'),
-                      category_id=F('category_id'),
-                      nm_category=F('category__description'),
-                      datCreated=F('dat_created'),
-                      datLastEdited=F('dat_last_edited')
-                      ).order_by('-dat_purchase', '-dat_created')
-
-        response = {
-            'status': True,
-            'bill': list(bills) if not credit_card_bill_id else bills
-        }
-
-        return response
 
     def get_bill_statistic(self):
         bills = finance.models.CreditCardBill.objects.filter(owner_id=self.owner)
@@ -284,58 +221,6 @@ class Finance:
 
         self.response['status'] = True
         self.response['faturas'] = default
-
-        return self.response
-
-    def set_investment(self):
-
-        response = self.get_investment()
-        return response
-
-    def get_investment(self):
-        investments = finance.models.Investment.objects.values('pk', 'name', 'dat_investment', 'amount_invested', 'price_investment',
-                                                               'qtd_titles', 'profit_contracted', 'description') \
-            .annotate(id=F('pk'),
-                      type=F('type__name'))
-
-        response = {
-            'status': True,
-            'description': None,
-            'investments': list(investments)
-        }
-
-        return response
-
-    def get_summary(self):
-        cat_not_expense = finance.models.CategoryGroup.objects.values_list('category_id', flat=True).filter(group='not_expense')
-
-        credit_card_bill = finance.models.CreditCardBill.objects.values_list('amount', flat=True).filter(period=self.period, owner_id=self.owner)
-        bank_statement = finance.models.BankStatement.objects.filter(period=self.period, owner_id=self.owner)
-
-        bank_statement_incoming = sum(list(bank_statement.values_list('amount', flat=True)
-                                           .filter(cash_flow='INCOMING').exclude(category_id__in=list(cat_not_expense))))
-        bank_statement_outgoing = sum(list(bank_statement.values_list('amount', flat=True)
-                                           .filter(cash_flow='OUTGOING').exclude(category_id__in=list(cat_not_expense))))
-        bank_statement_balance = bank_statement_incoming + bank_statement_outgoing
-
-        response = {
-            'success': True,
-            'period': self.period,
-            'balance': bank_statement_balance,
-            'incoming': bank_statement_incoming,
-            'outgoing': bank_statement_outgoing,
-            'credit': sum(list(credit_card_bill)),
-            'credit_qtd': len(credit_card_bill),
-        }
-
-        return response
-
-    def get_investment_statement(self):
-        invest = finance.models.InvestmentStatement.objects.values('id', 'investment__amount_invested', 'vlr_bruto', 'vlr_liquido', 'referencia') \
-            .filter(reference=self.period).annotate(nm_investimento=F('aplicacao__nm_descritivo')).order_by('aplicacao__nm_descritivo')
-
-        self.response['success'] = True
-        self.response['investment_statement'] = list(invest)
 
         return self.response
 
@@ -412,21 +297,6 @@ class Finance:
 
     def get_credit_debit_proportion(self):
         pass
-
-    def get_currency(self, is_shown=True):
-        filters = {}
-
-        if is_shown:
-            filters['is_shown'] = True
-
-        currency = finance.models.Currency.objects.values('id', 'name', 'symbol').filter(**filters)
-
-        response = {
-            'success': True,
-            'currency': list(currency)
-        }
-
-        return response
 
     def get_due_date(self, dat_purchase, credit_card_id):
         card = finance.models.CreditCard.objects.filter(pk=credit_card_id, status=True).first()
@@ -523,3 +393,54 @@ class Finance:
         year = dat_purchase.year
         month = dat_purchase.month
         self.period = year * 100 + month
+
+    # Manter no BO Finance, pois é função geral de finance, todas as específicas serão migrados (account, investment, credit card, etc.)
+    def get_bank(self):
+        bank = finance.models.Bank.objects.values('id', 'name', 'code').active()
+
+        response = {
+            'success': True,
+            'bank': list(bank)
+        }
+
+        return response
+
+    @staticmethod
+    def get_currency(is_shown=True):
+        filters = {}
+
+        if is_shown:
+            filters['is_shown'] = True
+
+        currency = finance.models.Currency.objects.values('id', 'name', 'symbol').filter(**filters)
+
+        response = {
+            'success': True,
+            'currency': list(currency)
+        }
+
+        return response
+
+    def get_summary(self):
+        cat_not_expense = finance.models.CategoryGroup.objects.values_list('category_id', flat=True).filter(group='not_expense')
+
+        credit_card_bill = finance.models.CreditCardBill.objects.values_list('amount', flat=True).filter(period=self.period, owner_id=self.owner)
+        bank_statement = finance.models.BankStatement.objects.filter(period=self.period, owner_id=self.owner)
+
+        bank_statement_incoming = sum(list(bank_statement.values_list('amount', flat=True)
+                                           .filter(cash_flow='INCOMING').exclude(category_id__in=list(cat_not_expense))))
+        bank_statement_outgoing = sum(list(bank_statement.values_list('amount', flat=True)
+                                           .filter(cash_flow='OUTGOING').exclude(category_id__in=list(cat_not_expense))))
+        bank_statement_balance = bank_statement_incoming + bank_statement_outgoing
+
+        response = {
+            'success': True,
+            'period': self.period,
+            'balance': bank_statement_balance,
+            'incoming': bank_statement_incoming,
+            'outgoing': bank_statement_outgoing,
+            'credit': sum(list(credit_card_bill)),
+            'credit_qtd': len(credit_card_bill),
+        }
+
+        return response

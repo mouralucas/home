@@ -4,6 +4,7 @@ from django.views.generic import RedirectView
 from finance import views
 from finance import views_investment
 from finance import views_account
+from finance import views_credit_card
 
 urlpatterns = [
     # Account
@@ -11,12 +12,13 @@ urlpatterns = [
     re_path(r'^account/statement$', views.AccountStatement().as_view()),
 
     # Credit card
-    re_path(r'^credit-card$', views.CreditCard().as_view()),
+    re_path(r'^credit-card$', views_credit_card.CreditCard().as_view()),
     re_path(r'^credit-card/bill$', views.CreditCardBill.as_view()),
     re_path(r'^credit-card/bill/history$', views.BillHistory.as_view()),
 
     # Investment
     re_path(r'^investment$', views_investment.Investment.as_view()),
+    re_path(r'^investment/type$', views_investment.InvestmentType.as_view()),
     re_path(r'^investment/proportion$', views_investment.Proportion.as_view()),
     re_path(r'^investment/statement$', views.InvestmentStatement.as_view()),
     re_path(r'^investment/statement/upload$', views.InvestmentStatementUpload.as_view()),
@@ -26,6 +28,7 @@ urlpatterns = [
 
     # Other
     re_path(r'^currency$', views.Currency.as_view()),
+    re_path(r'^bank$', views.Bank.as_view()),
 
     re_path(r'^upload/pdf', views.PdfImport.as_view()),
 

@@ -14,6 +14,15 @@ class Investment(APIView):
         pass
 
 
+class InvestmentType(APIView):
+    def get(self, *args, **kwargs):
+        show_mode = self.request.GET.get('show_mode')
+
+        response = BO.finance.investment.Investment().get_investment_type(show_mode=show_mode)
+
+        return Response(response)
+
+
 class Proportion(APIView):
     def get(self, *args, **kwargs):
         response = BO.finance.investment.Investment().get_proportion()

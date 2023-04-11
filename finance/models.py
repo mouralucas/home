@@ -92,6 +92,13 @@ class InvestmentType(core.models.Log):
 
 
 class Investment(core.models.Log):
+    """
+        Model para registrar todos os investimentos feitos
+        Caso seja um investimento recorrente, como cofrinhos do Picpay ou o Ultravioleta do Nubank cada depósito é criado uma linha
+            sendo atribuído o id do pai, somando o total do valor a cada depósito no registro pai
+
+        Este model não contém a evolução do investimento, para isso consultar o model InvestmentStatement.
+    """
     id = models.UUIDField(max_length=200, primary_key=True, default=uuid.uuid4)
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=200)
@@ -105,16 +112,22 @@ class Investment(core.models.Log):
     interest_rate = models.CharField(max_length=100, choices=finance.choices.InterestRate.choices)
     interest_index = models.CharField(max_length=50)
     custodian = models.ForeignKey('finance.Bank', on_delete=models.DO_NOTHING)
+    parent_id = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
 
     class Meta:
         db_table = 'finance"."investment'
+
+
+class InvestmentStatement(core.models.Log):
+    # adicionar coluna com o total anterior, total depositado e total de rendimento para cada investimento pai para cada periodo
+    period = models.SmallIntegerField(help_text=_('Período de referência'))
 
 
 class BankStatement(core.models.Log):
     account_old = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING, null=True)
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING, related_name='bank_statement_account')
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
-    period = models.IntegerField(null=True, help_text=_('Período de referência'))
+    period = models.SmallIntegerField(help_text=_('Período de referência'))
     currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING)
     amount = models.DecimalField(max_digits=14, decimal_places=2)
     amount_absolute = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('O mesmo do amount sem o sinal'))
@@ -218,7 +231,6 @@ class CurrencyRate(core.models.Log):
 
     class Meta:
         db_table = 'finance"."currency_rate'
-
 
 ##### STOCK MARKET TABLES ######
 # class Ticker(core.models.Log):
