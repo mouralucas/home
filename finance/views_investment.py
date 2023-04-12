@@ -13,7 +13,25 @@ class Investment(APIView):
         return Response(response)
 
     def post(self, *args, **kwargs):
-        pass
+        parent_id = self.request.data.get('parentId')
+        name = self.request.data.get('name')
+        date = self.request.data.get('date')
+        quantity = self.request.data.get('quantity')
+        price = self.request.data.get('price')
+        amount = self.request.data.get('amount')
+        cash_flow = self.request.data.get('cashFlow')
+        interest_rate = self.request.data.get('interestRate')
+        interest_index = self.request.data.get('interestIndex')
+        investment_type_id = self.request.data.get('investmentTypeId')
+        dat_maturity = self.request.data.get('maturityDate')
+        custodian_id = self.request.data.get('custodianId')
+        user = self.request.user.id
+
+        response = BO.finance.investment.Investment().set_investment(parent_id=parent_id, name=name, date=date, quantity=quantity, price=price, amount=amount,
+                                                                     cash_flow=cash_flow, interest_rate=interest_rate, interest_index=interest_index,
+                                                                     investment_type_id=investment_type_id, dat_maturity=dat_maturity, custodian_id=custodian_id, owner_id=user)
+
+        return Response(response)
 
 
 class InvestmentType(APIView):

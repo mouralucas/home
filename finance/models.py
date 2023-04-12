@@ -109,25 +109,26 @@ class Investment(core.models.Log):
     quantity = models.DecimalField(max_digits=15, decimal_places=5, null=True)
     price = models.DecimalField(max_digits=15, decimal_places=5, null=True, help_text=_('Preço do título no momento da compra'))
     amount = models.DecimalField(max_digits=15, decimal_places=5)
+    cash_flow = models.CharField(max_length=100, choices=finance.choices.CashFlow.choices)
     interest_rate = models.CharField(max_length=100, choices=finance.choices.InterestRate.choices)
     interest_index = models.CharField(max_length=50)
     custodian = models.ForeignKey('finance.Bank', on_delete=models.DO_NOTHING)
-    parent_id = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
+    parent = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
 
     class Meta:
         db_table = 'finance"."investment'
 
 
-class InvestmentStatement(core.models.Log):
-    # adicionar coluna com o total anterior, total depositado e total de rendimento para cada investimento pai para cada periodo
-    period = models.SmallIntegerField(help_text=_('Período de referência'))
+# class InvestmentStatement(core.models.Log):
+#     # adicionar coluna com o total anterior, total depositado e total de rendimento para cada investimento pai para cada periodo
+#     period = models.SmallIntegerField(help_text=_('Período de referência'))
 
 
 class BankStatement(core.models.Log):
     account_old = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING, null=True)
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING, related_name='bank_statement_account')
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
-    period = models.SmallIntegerField(help_text=_('Período de referência'))
+    period = models.IntegerField(help_text=_('Período de referência'))
     currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING)
     amount = models.DecimalField(max_digits=14, decimal_places=2)
     amount_absolute = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('O mesmo do amount sem o sinal'))
