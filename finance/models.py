@@ -105,7 +105,7 @@ class Investment(core.models.Log):
     description = models.TextField(null=True)
     type = models.ForeignKey('finance.InvestmentType', on_delete=models.DO_NOTHING)
     date = models.DateField()
-    dat_maturity = models.DateField()
+    dat_maturity = models.DateField(null=True)
     quantity = models.DecimalField(max_digits=15, decimal_places=5, null=True)
     price = models.DecimalField(max_digits=15, decimal_places=5, null=True, help_text=_('Preço do título no momento da compra'))
     amount = models.DecimalField(max_digits=15, decimal_places=5)
