@@ -14,7 +14,7 @@ class Country(APIView):
 
 class Module(APIView):
     def get(self, *args, **kwargs):
-        selected_id = self.request.GET.get('selected_id')
+        selected_id = self.request.query_params.get('selected_id')
 
         response = BO.core.core.Misc().get_module(id_selected=selected_id)
 
@@ -26,8 +26,8 @@ class Module(APIView):
 
 class Category(APIView):
     def get(self, *args, **kwargs):
-        show_mode = self.request.GET.get('show_mode')
-        module = self.request.GET.get('module')
+        show_mode = self.request.query_params.get('show_mode')
+        module = self.request.query_params.get('module')
 
         response = BO.core.core.Misc().get_category(show_mode=show_mode, module_id=module)
 

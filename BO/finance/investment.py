@@ -28,7 +28,7 @@ class Investment:
 
         # TODO: veririficar possível forma de dividir o cadsatro em dois, no primeiro nível só contar informações do investimento, sem valores (parent), no segundo os detalhes mais o valor (child)
 
-        amount = self.amount * -1 if self.ash_flow == 'OUTGOING' else self.amount
+        amount = self.amount * -1 if self.cash_flow == 'OUTGOING' else self.amount
 
         investment = finance.models.Investment()
 
@@ -68,8 +68,17 @@ class Investment:
         }
         return response
 
-    def get_investment(self):
+    def get_investment(self, show_mode):
+        if show_mode not in ['all', 'father', 'child']:
+            return {
+                'status': False,
+                'description': _('Show mode dever ser uma das três opções: all, father ou child')
+            }
+
         filters = {}
+
+        if show_mode != 'all':
+            filters['parent_id__isnull'] = True if show_mode == 'father' else False
 
         if self.investment_id:
             filters['pk'] = self.investment_id

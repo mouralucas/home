@@ -6,9 +6,10 @@ import BO.finance.investment
 
 class Investment(APIView):
     def get(self, *args, **kwargs):
+        show_mode = self.request.query_params.get('show_mode')
         investment_id = self.request.query_params.get('investment_id')
 
-        response = BO.finance.investment.Investment(investment_id=investment_id).get_investment()
+        response = BO.finance.investment.Investment(investment_id=investment_id).get_investment(show_mode=show_mode)
 
         return Response(response)
 
@@ -27,10 +28,12 @@ class Investment(APIView):
         custodian_id = self.request.data.get('custodianId')
         user = self.request.user.id
 
-        response = BO.finance.investment.Investment().set_investment(parent_id=parent_id, name=name, date=date, quantity=quantity, price=price, amount=amount,
-                                                                     cash_flow=cash_flow, interest_rate=interest_rate, interest_index=interest_index,
-                                                                     investment_type_id=investment_type_id, dat_maturity=dat_maturity, custodian_id=custodian_id, owner_id=user)
+        response = BO.finance.investment.Investment(parent_id=parent_id, name=name, date=date, quantity=quantity, price=price, amount=amount,
+                                                    cash_flow=cash_flow, interest_rate=interest_rate, interest_index=interest_index,
+                                                    investment_type_id=investment_type_id, dat_maturity=dat_maturity, custodian_id=custodian_id,
+                                                    owner_id=user, request=self.request).set_investment()
 
+        response = {}
         return Response(response)
 
 

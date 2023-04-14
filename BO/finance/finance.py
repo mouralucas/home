@@ -113,58 +113,6 @@ class Finance:
         }
         return response
 
-    def set_bill(self, request=None):
-        if not self.dat_compra or not self.amount or not self.categoria_id or not self.credit_card_id:
-            response = {
-                'status': False,
-                'description': _('Todos os parâmetros são obrigatórios')
-            }
-            return response
-
-        if self.bill_id:
-            bill = finance.models.CreditCardBill.objects.filter(pk=self.bill_id).first()
-        else:
-            bill = finance.models.CreditCardBill()
-
-        # Não modificado
-        dat_pagamento_date = util.datetime.date_to_datetime(self.dat_pagamento, output_format='%Y-%m-%d')
-        referencia_ano = dat_pagamento_date.year
-        referencia_mes = dat_pagamento_date.month
-        self.period = referencia_ano * 100 + referencia_mes
-
-        bill.credit_card_id = self.credit_card_id
-        # Dates
-        bill.period = self.period
-        bill.dat_payment = dat_pagamento_date
-        bill.dat_purchase = util.datetime.date_to_datetime(self.dat_compra, output_format='%Y-%m-%d')
-
-        # Amounts
-        bill.amount = float(self.amount) * -1
-        bill.amount_absolute = float(self.amount)
-        bill.amount_total = self.amount  # TODO: modificar para adicionar o valor total de compras parceladas
-        bill.amount_currency = float(self.amount) * -1
-        bill.price_currency_dollar = self.price_currency_dollar
-        bill.price_dollar = 1
-
-        bill.currency_id = "BRL"
-        bill.category_id = self.categoria_id
-
-        bill.installment = 1
-        bill.tot_installment = self.tot_installment
-        bill.description = self.description
-
-        bill.is_validated = True
-
-        bill.cash_flow = 'OUTGOING'
-
-        bill.owner_id = self.owner
-
-        bill.save(request_=request)
-
-        response = self.get_bill()
-
-        return response
-
 
     def get_bill_statistic(self):
         bills = finance.models.CreditCardBill.objects.filter(owner_id=self.owner)
