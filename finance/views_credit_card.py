@@ -53,7 +53,7 @@ class CreditCardBill(APIView):
 
         response = BO.finance.credit_card.CreditCard(bill_id=bill_id, amount=amount, amount_currency=amount_currency,
                                                      price_currency_dollar=price_currency_dollar, price_dollar=price_dollar,
-                                                     dat_compra=dat_purchase, dat_pagamento=dat_payment, amount_tax=amount_tax,
+                                                     dat_purchase=dat_purchase, dat_payment=dat_payment, amount_tax=amount_tax,
                                                      installment=installment, tot_installment=tot_installment,
                                                      currency_id=currency_id, description=description,
                                                      category_id=category_id, credit_card_id=card_id, owner=user) \

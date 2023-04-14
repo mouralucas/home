@@ -6,7 +6,8 @@ import finance.models
 
 class CreditCard:
     def __init__(self, mes=None, ano=None, statement_id=None, bill_id=None, period=None, account_id=None, credit_card_id=None, amount=None,
-                 amount_currency=None, price_currency_dollar=None, vlr_moeda=None, amount_tax=None, installment=None, tot_installment=None, dat_compra=None, dat_pagamento=None,
+                 amount_currency=None, price_currency_dollar=None, vlr_moeda=None, amount_tax=None, installment=None, tot_installment=None,
+                 dat_purchase=None, dat_payment=None,
                  description=None, category_id=None, currency_id=None, price_dollar=None, owner=None):
         self.statement_id = statement_id
         self.bill_id = bill_id
@@ -18,10 +19,10 @@ class CreditCard:
         self.amount_tax = amount_tax
         self.instalment = installment
         self.tot_installment = tot_installment
-        self.dat_compra = dat_compra
-        self.dat_pagamento = dat_pagamento
+        self.dat_purchase = dat_purchase
+        self.dat_payment = dat_payment
         self.description = description
-        self.categoria_id = category_id
+        self.category_id = category_id
         self.account_id = account_id
         self.credit_card_id = credit_card_id
         self.currency_id = currency_id
@@ -92,7 +93,7 @@ class CreditCard:
         return response
 
     def set_bill(self, request=None):
-        if not self.dat_compra or not self.amount or not self.categoria_id or not self.credit_card_id:
+        if not self.dat_purchase or not self.amount or not self.category_id or not self.credit_card_id:
             response = {
                 'status': False,
                 'description': _('Todos os parâmetros são obrigatórios')
@@ -105,7 +106,7 @@ class CreditCard:
             bill = finance.models.CreditCardBill()
 
         # Não modificado
-        dat_pagamento_date = util.datetime.date_to_datetime(self.dat_pagamento, output_format='%Y-%m-%d')
+        dat_pagamento_date = util.datetime.date_to_datetime(self.dat_payment, output_format='%Y-%m-%d')
         referencia_ano = dat_pagamento_date.year
         referencia_mes = dat_pagamento_date.month
         self.period = referencia_ano * 100 + referencia_mes
@@ -114,7 +115,7 @@ class CreditCard:
         # Dates
         bill.period = self.period
         bill.dat_payment = dat_pagamento_date
-        bill.dat_purchase = util.datetime.date_to_datetime(self.dat_compra, output_format='%Y-%m-%d')
+        bill.dat_purchase = util.datetime.date_to_datetime(self.dat_purchase, output_format='%Y-%m-%d')
 
         # Amounts
         bill.amount = float(self.amount) * -1
@@ -125,7 +126,7 @@ class CreditCard:
         bill.price_dollar = 1
 
         bill.currency_id = self.currency_id
-        bill.category_id = self.categoria_id
+        bill.category_id = self.category_id
 
         bill.installment = 1
         bill.tot_installment = self.tot_installment
