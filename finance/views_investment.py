@@ -33,7 +33,6 @@ class Investment(APIView):
                                                     investment_type_id=investment_type_id, dat_maturity=dat_maturity, custodian_id=custodian_id,
                                                     owner_id=user, request=self.request).set_investment()
 
-        response = {}
         return Response(response)
 
 
