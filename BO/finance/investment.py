@@ -1,3 +1,5 @@
+import decimal
+
 from django.db.models import F, Sum
 from django.utils.translation import gettext_lazy as _
 
@@ -26,11 +28,7 @@ class Investment:
 
     def set_investment(self):
 
-        # TODO: veririficar possível forma de dividir o cadsatro em dois, no primeiro nível só contar informações do investimento, sem valores (parent), no segundo os detalhes mais o valor (child)
-
-        amount = self.amount * -1 if self.cash_flow == 'OUTGOING' else self.amount
-
-        investment = finance.models.Investment()
+        self.amount = decimal.Decimal(self.amount) * -1 if self.cash_flow == 'OUTGOING' else self.amount
 
         if not self.parent_id:
             # The first entry of the investment contains 2 rows, the first (without parent_id) is the total of the investment
@@ -45,23 +43,12 @@ class Investment:
 
         else:
             parent_investment = finance.models.Investment.objects.filter(pk=self.parent_id).first()
-            parent_investment.amount += amount
+            parent_investment.amount += decimal.Decimal(self.amount)
+            parent_investment.interest_index = 'Variable' if self.interest_index.strip() != parent_investment.interest_index else parent_investment.interest_index
             parent_investment.save(request_=self.request)
 
-            # child_investment = parent_investment
-            # child_investment.pk = None
-            # child_investment.name = name
-            # child_investment.date = date
-            # child_investment.quantity = quantity
-            # child_investment.price = price
-            # child_investment.amount = amount
-            # child_investment.cash_flow = cash_flow
-            # child_investment.interest_rate = interest_rate
-            # child_investment.interest_index = interest_index
-            # child_investment.type_id = investment_type_id
-            # child_investment.dat_maturity = dat_maturity
-            # child_investment.custodian_id = custodian_id
-            # child_investment.owner = owner_id
+            child_investment = self.__set_investment()
+            child_investment.save(request_=self.request)
 
         response = {
             'success': True,
@@ -153,8 +140,9 @@ class Investment:
         investment.interest_rate = self.interest_rate
         investment.interest_index = self.interest_index
         investment.type_id = self.type_id
-        investment.dat_maturity = self.dat_maturity
+        investment.dat_maturity = self.dat_maturity if self.dat_maturity not in ('', 'null') else None
         investment.custodian_id = self.custodian_id
+        investment.parent_id = self.parent_id
         investment.owner_id = self.owner_id
 
         return investment

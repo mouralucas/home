@@ -80,7 +80,7 @@ class Log(models.Model):
 
         Create the created_by/last_edited_by and corresponding dates logs
         """
-        if not self.id:
+        if not self.dat_created:
             self.created_by = request_.user if request_ else None
             self.dat_created = timezone.now()
         elif is_update:
