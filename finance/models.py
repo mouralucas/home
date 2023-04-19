@@ -118,6 +118,15 @@ class Investment(core.models.Log):
     class Meta:
         db_table = 'finance"."investment'
 
+    # class InvestmentPosition(core.models.Log):
+    #     investment = models.ForeignKey('finance.Investment', on_delete=models.DO_NOTHING)
+    #     period = models.IntegerField()
+    #     amount = models.DecimalField(max_digits=15, decimal_places=5, default=0)
+    #
+    #
+    #     class Meta:
+    #         db_table = 'finance"."investment_position'
+
 
 # class InvestmentStatement(core.models.Log):
 #     # adicionar coluna com o total anterior, total depositado e total de rendimento para cada investimento pai para cada periodo
@@ -160,7 +169,7 @@ class BankStatement(core.models.Log):
 
 
 class BankAccountMonthlyBalance(core.models.Log):
-    account = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING)
+    account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING)
     period = models.IntegerField(null=True, help_text=_('Período de referência'))
     amount = models.DecimalField(max_digits=14, decimal_places=2)
     earning = models.DecimalField(max_digits=14, decimal_places=2)
