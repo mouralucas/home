@@ -9,8 +9,8 @@ from django.utils import timezone
 class Balance(APIView):
     def get(self, *args, **kwargs):
         balance_list = []
-        start = 202101
-        end = 202113
+        start = 202201
+        end = 202213
         # accounts = finance.models.BankStatement.objects.values_list('account_id', flat=True).filter(period__range=(start, end)).distinct()
         accounts = ['32e542e7-bf2b-4408-b724-798591f11e09']
         for j in accounts:

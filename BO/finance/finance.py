@@ -113,7 +113,6 @@ class Finance:
         }
         return response
 
-
     def get_bill_statistic(self):
         bills = finance.models.CreditCardBill.objects.filter(owner_id=self.owner)
         qtd_total = bills.count()
@@ -289,11 +288,14 @@ class Finance:
         df = df[df.columns[df.columns.isin(list(new_columns.values()))]]
 
         # Clean data
+
         df['date'] = df['date'].apply(lambda x: x.replace('\r', ' ').replace('\n', ' '))
         df['datetime'] = df['date'].apply(lambda x: util.datetime.DateTime.str_to_datetime(x.split(' ')[0], '%d/%m/%Y'))
         df['amount'] = df['amount'].apply(lambda x: x.replace('R$ ', '').replace('.', '').replace(',', '.').replace(' ', ''))
         df['amount'] = df['amount'].apply(lambda x: float(x))
         df['period'] = df['date'].apply(lambda x: util.datetime.DateTime.get_period(x.split(' ')[0], is_date_str=True, input_format='%d/%m/%Y'))
+
+        newdf = df[df['description'].str.contains("Rendimento")]
 
         list_period = df.groupby("period")
         for i in list_period:
@@ -301,94 +303,103 @@ class Finance:
             aux['cumulated'] = aux['amount'].cumsum()
             print(aux)
 
-        # list_statement = []
-        # for idx, i in df.iterrows():
-        #     statement = finance.models.BankStatement()
-        #     statement.period = i['period']
-        #     statement.amount = i['amount']
-        #     statement.dat_purchase = i['datetime']
-        #     statement.description = i['description']
-        #     statement.is_validated = False
-        #     statement.origin = 'PDF_IMPORT'
-        #     statement.account_id = 'picpay'
-        #     list_statement.append(statement)
+        list_statement = []
+        for idx, i in newdf.iterrows():
+            statement = finance.models.BankStatement()
+            statement.period = i['period']
+            statement.amount = i['amount']
+            statement.amount_absolute = i['amount']
+            statement.dat_purchase = i['datetime']
+            statement.description = i['description']
+            statement.is_validated = False
+            statement.origin = 'PDF_IMPORT'
+            statement.account_id = '32e542e7-bf2b-4408-b724-798591f11e09'
+            statement.currency_id = 'BRL'
+            statement.owner_id = 'adf52a1e-7a19-11ed-a1eb-0242ac120002'
+            list_statement.append(statement)
 
-        # finance.models.BankStatement.objects.bulk_create(list_statement)
+        finance.models.BankStatement.objects.bulk_create(list_statement)
         # df['acumulado'] = df.groupby(['date']).cumsum()
 
-        df.to_excel('teste.xlsx', index=False)
+        newdf.to_excel('teste.xlsx', index=False)
         print('')
 
-    def import_picpay_bill(self, path, period):
-        df = read_pdf(path, pages="all", stream=False, pandas_options={'header': None})
-        df[0].columns = ["date", "description", "amount_dollar", "amount"]
-        df = df[0]
-        df['date'] = df['date'].fillna("")
-        df['day'] = df['date'].apply(lambda x: x.split(' ')[0] if x != np.nan else None)
-        df['month'] = period[4:]
-        df['year'] = period[:4]
-        df['date_form'] = df['day']
-        print(df.dtypes)
-        print('')
 
-    def import_pagbank_excel_statement(self, path, period):
-        statement = pd.read_excel(path, sheet_name='Sheet0')
+def import_picpay_bill(self, path, period):
+    df = read_pdf(path, pages="all", stream=False, pandas_options={'header': None})
+    df[0].columns = ["date", "description", "amount_dollar", "amount"]
+    df = df[0]
+    df['date'] = df['date'].fillna("")
+    df['day'] = df['date'].apply(lambda x: x.split(' ')[0] if x != np.nan else None)
+    df['month'] = period[4:]
+    df['year'] = period[:4]
+    df['date_form'] = df['day']
+    print(df.dtypes)
+    print('')
 
-        print('')
 
-    def __set_reference(self):
-        dat_purchase = util.datetime.date_to_datetime(self.dat_compra, output_format='%Y-%m-%d')
-        year = dat_purchase.year
-        month = dat_purchase.month
-        self.period = year * 100 + month
+def import_pagbank_excel_statement(self, path, period):
+    statement = pd.read_excel(path, sheet_name='Sheet0')
 
-    # Manter no BO Finance, pois é função geral de finance, todas as específicas serão migrados (account, investment, credit card, etc.)
-    def get_bank(self):
-        bank = finance.models.Bank.objects.values('id', 'name', 'code').active()
+    print('')
 
-        response = {
-            'success': True,
-            'bank': list(bank)
-        }
 
-        return response
+def __set_reference(self):
+    dat_purchase = util.datetime.date_to_datetime(self.dat_compra, output_format='%Y-%m-%d')
+    year = dat_purchase.year
+    month = dat_purchase.month
+    self.period = year * 100 + month
 
-    @staticmethod
-    def get_currency(is_shown=True):
-        filters = {}
 
-        if is_shown:
-            filters['is_shown'] = True
+# Manter no BO Finance, pois é função geral de finance, todas as específicas serão migrados (account, investment, credit card, etc.)
+def get_bank(self):
+    bank = finance.models.Bank.objects.values('id', 'name', 'code').active()
 
-        currency = finance.models.Currency.objects.values('id', 'name', 'symbol').filter(**filters)
+    response = {
+        'success': True,
+        'bank': list(bank)
+    }
 
-        response = {
-            'success': True,
-            'currency': list(currency)
-        }
+    return response
 
-        return response
 
-    def get_summary(self):
-        cat_not_expense = finance.models.CategoryGroup.objects.values_list('category_id', flat=True).filter(group='not_expense')
+@staticmethod
+def get_currency(is_shown=True):
+    filters = {}
 
-        credit_card_bill = finance.models.CreditCardBill.objects.values_list('amount', flat=True).filter(period=self.period, owner_id=self.owner)
-        bank_statement = finance.models.BankStatement.objects.filter(period=self.period, owner_id=self.owner)
+    if is_shown:
+        filters['is_shown'] = True
 
-        bank_statement_incoming = sum(list(bank_statement.values_list('amount', flat=True)
-                                           .filter(cash_flow='INCOMING').exclude(category_id__in=list(cat_not_expense))))
-        bank_statement_outgoing = sum(list(bank_statement.values_list('amount', flat=True)
-                                           .filter(cash_flow='OUTGOING').exclude(category_id__in=list(cat_not_expense))))
-        bank_statement_balance = bank_statement_incoming + bank_statement_outgoing
+    currency = finance.models.Currency.objects.values('id', 'name', 'symbol').filter(**filters)
 
-        response = {
-            'success': True,
-            'period': self.period,
-            'balance': bank_statement_balance,
-            'incoming': bank_statement_incoming,
-            'outgoing': bank_statement_outgoing,
-            'credit': sum(list(credit_card_bill)),
-            'credit_qtd': len(credit_card_bill),
-        }
+    response = {
+        'success': True,
+        'currency': list(currency)
+    }
 
-        return response
+    return response
+
+
+def get_summary(self):
+    cat_not_expense = finance.models.CategoryGroup.objects.values_list('category_id', flat=True).filter(group='not_expense')
+
+    credit_card_bill = finance.models.CreditCardBill.objects.values_list('amount', flat=True).filter(period=self.period, owner_id=self.owner)
+    bank_statement = finance.models.BankStatement.objects.filter(period=self.period, owner_id=self.owner)
+
+    bank_statement_incoming = sum(list(bank_statement.values_list('amount', flat=True)
+                                       .filter(cash_flow='INCOMING').exclude(category_id__in=list(cat_not_expense))))
+    bank_statement_outgoing = sum(list(bank_statement.values_list('amount', flat=True)
+                                       .filter(cash_flow='OUTGOING').exclude(category_id__in=list(cat_not_expense))))
+    bank_statement_balance = bank_statement_incoming + bank_statement_outgoing
+
+    response = {
+        'success': True,
+        'period': self.period,
+        'balance': bank_statement_balance,
+        'incoming': bank_statement_incoming,
+        'outgoing': bank_statement_outgoing,
+        'credit': sum(list(credit_card_bill)),
+        'credit_qtd': len(credit_card_bill),
+    }
+
+    return response

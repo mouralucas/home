@@ -49,10 +49,10 @@ class AccountStatement(APIView):
 
 
 class PdfImport(APIView):
-    def post(self, *args, **kwargs):
-        path = self.request.POST.get('path')
-        period = self.request.POST.get('period')
-        pdf_type = self.request.POST.get('pdf_origin')
+    def get(self, *args, **kwargs):
+        path = self.request.query_params.get('path')
+        period = self.request.query_params.get('period')
+        pdf_type = self.request.query_params.get('pdf_origin')
 
         if pdf_type == 'picpay_statement':
             response = BO.finance.finance.Finance().import_picpay_statement(path=path)
