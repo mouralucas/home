@@ -29,6 +29,7 @@ class CustomManager(models.Manager):
         tempo = 1
         try:
             if 0 < tempo < fim - ini:
+                # TODO: edit or remove this lines
                 query = apps.get_model('log', BANCO.capitalize() + 'Query')
                 query(
                     time=fim - ini,
@@ -314,4 +315,3 @@ class CurrencyTypes(models.TextChoices):
     EURO = ('EUR', _('€ - Euro'))
     DOLAR = ('USD', _('$ - Dólar'))
     CK_CROW = ('CZK', _('Kč - Coroa Tcheca'))
-
