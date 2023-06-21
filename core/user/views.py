@@ -9,10 +9,18 @@ import BO.user.login
 
 class Login(TokenObtainPairView):
     """
-    :Nome da classe/função: Login
-    :Descrição: View de login de usuário Venda+
-    :Criação: Lucas Penha de Moura - 01/02/2021
-    :Edições:
+    :Name: Login
+    :Description: View for user login
+    :Created by: Lucas Penha de Moura - 01/02/2021
+    :Edited by:
+
+    Explicit params:
+    None
+
+    Implicit params (passed in the class instance or set by other functions):
+    None
+
+        Implements TokenObtainPairView from simple jwt
     """
     serializer_class = BO.user.login.Login
 
