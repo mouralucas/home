@@ -5,12 +5,15 @@ from rest_framework.views import APIView
 import BO.finance.finance
 import BO.finance.credit_card
 import util.datetime
+from finance.serializers.credit_card import CreditCardBillGetSerializer
 
 
 class CreditCard(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
+        user = self.request.user
+
         response = BO.finance.credit_card.CreditCard().get_credit_card()
 
         return Response(response)
@@ -20,9 +23,13 @@ class CreditCardBill(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
-        bill_id = self.request.query_params.get('credit_card_bill_id', 0)
-        period = self.request.query_params.get('period', util.datetime.DateTime().current_period())
-        card_id = self.request.query_params.get('credit_card_id')
+        validator = CreditCardBillGetSerializer(data=self.request.query_params)
+        if not validator.is_valid():
+            return Response(validator.errors, status=400)
+
+        bill_id = validator.validated_data.get('credit_card_bill_id', 0)
+        period = validator.validated_data.get('period', util.datetime.DateTime().current_period())
+        card_id = validator.validated_data.get('credit_card_id')
         user = self.request.user.id
 
         if card_id in ['', '0']:
@@ -31,10 +38,11 @@ class CreditCardBill(APIView):
         response = BO.finance.credit_card.CreditCard(period=period, credit_card_id=card_id, owner=user) \
             .get_bill(credit_card_bill_id=bill_id)
 
-        return Response(response)
+        return Response(response, status=200)
 
     def post(self, *args, **kwargs):
-        bill_id = self.request.data.get('fatura_id')
+        # TODO: padronizar parâmetros como camel case recebidos do front
+        bill_id = self.request.data.get('billId')
         amount = self.request.data.get('amount')
         amount_currency = self.request.data.get('amount_currency')
         price_dollar = self.request.data.get('price_dollar')

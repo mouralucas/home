@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 import core.models
 import core.serializers
-
+from decouple import config
 
 class Misc:
     def __init__(self):
@@ -201,3 +201,10 @@ class Misc:
         }
 
         return response
+
+    def get_version(self):
+        return {
+            'status': True,
+            'version': '0.0.1',
+            'environment': config('ENV_NAME')
+        }

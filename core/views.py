@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import BO.core.core
@@ -71,3 +72,11 @@ class State(APIView):
         }
 
         return JsonResponse(response, safe=False)
+
+
+class Version(APIView):
+    def get(self, *args, **kwargs):
+
+        response = BO.core.core.Misc().get_version()
+
+        return Response(response, status=200)
