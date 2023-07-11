@@ -71,7 +71,7 @@ class State(APIView):
             'mensagem': 'O post deu boa, truta!, o nome é {}'.format(name)
         }
 
-        return JsonResponse(response, safe=False)
+        return Response(response, status=200)
 
 
 class Version(APIView):

@@ -26,7 +26,7 @@ class Finance:
 
         self.statement_id = statement_id
         self.bill_id = bill_id
-        self.period = period
+        self.reference = period
         self.amount = amount
         self.amount_currency = amount_currency
         self.price_currency_dollar = price_currency_dollar
@@ -34,7 +34,7 @@ class Finance:
         self.amount_tax = amount_tax
         self.instalment = installment
         self.tot_installment = tot_installment
-        self.dat_compra = dat_compra
+        self.purchased_at = dat_compra
         self.dat_pagamento = dat_pagamento
         self.description = description
         self.categoria_id = category_id
@@ -47,7 +47,7 @@ class Finance:
         self.response = {}  # Deprecated
 
     def set_statement(self, request=None):
-        if not self.dat_compra or not self.amount or not self.categoria_id or not self.account_id:
+        if not self.purchased_at or not self.amount or not self.categoria_id or not self.account_id:
             response = {
                 'status': False,
                 'description': _('Todos os parâmetros são obrigatórios')
@@ -67,11 +67,11 @@ class Finance:
             # If amount already lower than zero no need to change again
             multiplier = -1 if float(self.amount) > 0 else 1
 
-        statement.period = self.period
+        statement.period = self.reference
         statement.currency_id = self.currency_id
         statement.amount = float(self.amount) * multiplier
         statement.amount_absolute = float(self.amount)
-        statement.dat_purchase = self.dat_compra
+        statement.dat_purchase = self.purchased_at
         statement.description = self.description
         statement.category_id = self.categoria_id
         statement.account_id = self.account_id
@@ -116,7 +116,7 @@ class Finance:
     def get_bill_statistic(self):
         bills = finance.models.CreditCardBill.objects.filter(owner_id=self.owner)
         qtd_total = bills.count()
-        qtd_reference = bills.filter(reference=self.period).count()
+        qtd_reference = bills.filter(reference=self.reference).count()
 
         response = {
             'status': True,
@@ -173,7 +173,7 @@ class Finance:
 
     def get_expenses(self, expense_type):
         filters = {
-            'period': self.period,
+            'period': self.reference,
             'owner_id': self.owner
         }
 
@@ -210,7 +210,7 @@ class Finance:
         cat_not_expense = finance.models.CategoryGroup.objects.values_list('category_id', flat=True).filter(group='not_expense')
 
         filters = {
-            'period': self.period,
+            'period': self.reference,
             'cash_flow': 'OUTGOING',
             'owner_id': self.owner
         }
@@ -342,10 +342,10 @@ class Finance:
         print('')
 
     def __set_reference(self):
-        dat_purchase = util.datetime.date_to_datetime(self.dat_compra, output_format='%Y-%m-%d')
-        year = dat_purchase.year
-        month = dat_purchase.month
-        self.period = year * 100 + month
+        # dat_purchase = util.datetime.date_to_datetime(self.dat_compra, output_format='%Y-%m-%d')
+        year = self.purchased_at.year
+        month = self.purchased_at.month
+        self.reference = year * 100 + month
 
     # Manter no BO Finance, pois é função geral de finance, todas as específicas serão migrados (account, investment, credit card, etc.)
     def get_bank(self):
@@ -376,8 +376,8 @@ class Finance:
     def get_summary(self):
         cat_not_expense = finance.models.CategoryGroup.objects.values_list('category_id', flat=True).filter(group='not_expense')
 
-        credit_card_bill = finance.models.CreditCardBill.objects.values_list('amount', flat=True).filter(period=self.period, owner_id=self.owner)
-        bank_statement = finance.models.BankStatement.objects.filter(period=self.period, owner_id=self.owner)
+        credit_card_bill = finance.models.CreditCardBill.objects.values_list('amount', flat=True).filter(period=self.reference, owner_id=self.owner)
+        bank_statement = finance.models.BankStatement.objects.filter(period=self.reference, owner_id=self.owner)
 
         bank_statement_incoming = sum(list(bank_statement.values_list('amount', flat=True)
                                            .filter(cash_flow='INCOMING').exclude(category_id__in=list(cat_not_expense))))
@@ -387,7 +387,7 @@ class Finance:
 
         response = {
             'success': True,
-            'period': self.period,
+            'period': self.reference,
             'balance': bank_statement_balance,
             'incoming': bank_statement_incoming,
             'outgoing': bank_statement_outgoing,

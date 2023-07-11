@@ -13,39 +13,7 @@ import util.datetime
 from BO.security.security import IsAuthenticated
 
 
-class AccountStatement(APIView):
-    permission_classes = [IsAuthenticated]
 
-    def get(self, *args, **kwargs):
-        period = self.request.GET.get('reference')
-        account_id = self.request.GET.get('account_id')
-        user = self.request.user.id
-
-        if account_id in ['', '0']:
-            account_id = None
-
-        response = BO.finance.finance.Finance(period=period, account_id=account_id, owner=user).get_statement()
-
-        return JsonResponse(response, safe=False)
-
-    def post(self, *args, **kwargs):
-        statement_id = self.request.POST.get('statement_id')
-        amount = self.request.POST.get('amount')
-        dat_purchase = self.request.POST.get('dat_purchase')
-        description = self.request.POST.get('description')
-        category_id = self.request.POST.get('category_id')
-        account_id = self.request.POST.get('account_id')
-        currency_id = self.request.POST.get('currencyId')
-        cash_flow_id = self.request.POST.get('cashFlowId')
-        user = self.request.user.id
-
-        response = BO.finance.finance.Finance(statement_id=statement_id, amount=amount, dat_compra=dat_purchase,
-                                              description=description,
-                                              category_id=category_id, account_id=account_id, currency_id=currency_id,
-                                              cash_flow_id=cash_flow_id, owner=user) \
-            .set_statement(request=self.request)
-
-        return JsonResponse(response, safe=False)
 
 
 class PdfImport(APIView):

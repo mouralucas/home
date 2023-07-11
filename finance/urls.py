@@ -6,7 +6,7 @@ from finance.views import account, credit_card, investment, views_deprecated
 urlpatterns = [
     # Account
     re_path(r'^account$', account.Account().as_view()),
-    re_path(r'^account/statement$', views_deprecated.AccountStatement().as_view()),
+    re_path(r'^account/statement$', account.AccountStatement().as_view()),
 
     # Credit card
     re_path(r'^credit-card$', credit_card.CreditCard().as_view()),
