@@ -70,20 +70,23 @@ class Investment:
         if self.investment_id:
             filters['pk'] = self.investment_id
 
-        investments = finance.models.Investment.objects.values('pk', 'name', 'description', 'amount', 'price', 'quantity',
-                                                               'date', 'parent_id') \
-            .annotate(id=F('pk'),
+        investments = finance.models.Investment.objects.values('name', 'description', 'amount', 'price', 'quantity',
+                                                               'date') \
+            .annotate(investmentId=F('pk'),
                       maturityDate=F('dat_maturity'),
                       interestRate=F('interest_rate'),
                       interestIndex=F('interest_index'),
                       custodianName=F('custodian__name'),
                       custodianId=F('custodian_id'),
                       investmentTypeId=F('type_id'),
-                      investmentTypeName=F('type__name')).order_by('-date').active().filter(**filters)
+                      investmentTypeName=F('type__name'),
+                      parentId=F('parent_id')).order_by('-date').active().filter(**filters)
 
         response = {
             'success': True,
             'description': None,
+            'quantity': len(investments),
+            'isSingleResult': False if not self.investment_id else True,
             'investment': list(investments) if not self.investment_id else investments.first()
         }
 

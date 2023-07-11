@@ -2,12 +2,18 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import BO.finance.investment
+from finance.serializers.investment import InvestmentGetSerializer
 
 
 class Investment(APIView):
     def get(self, *args, **kwargs):
-        show_mode = self.request.query_params.get('show_mode')
-        investment_id = self.request.query_params.get('investment_id')
+        validator = InvestmentGetSerializer(data=self.request.query_params)
+        if not validator.is_valid():
+            return Response(validator.errors, status=400)
+
+        investment_id = validator.validated_data.get('investmentId')
+        show_mode = validator.validated_data.get('showMode')
+
 
         response = BO.finance.investment.Investment(investment_id=investment_id).get_investment(show_mode=show_mode)
 
