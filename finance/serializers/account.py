@@ -1,8 +1,10 @@
 from rest_framework import serializers
 
 
-class CreditCardGetSerializer(serializers.Serializer):
-    pass
+class AccountStatementGetSerializer(serializers.Serializer):
+    reference = serializers.IntegerField(required=True)
+    accountId = serializers.UUIDField(required=False)
+
 
 class AccountStatementPostSerializer(serializers.Serializer):
     statementId = serializers.IntegerField(required=False)

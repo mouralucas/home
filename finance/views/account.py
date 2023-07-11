@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 import BO.finance.account
 import BO.finance.finance
 from BO.security.security import IsAuthenticated
-from finance.serializers.account import AccountStatementPostSerializer
+from finance.serializers.account import AccountStatementPostSerializer, AccountStatementGetSerializer
 
 
 class Account(APIView):
@@ -22,14 +22,18 @@ class AccountStatement(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
-        period = self.request.GET.get('reference')
-        account_id = self.request.GET.get('account_id')
+        validators = AccountStatementGetSerializer(data=self.request.query_params)
+        if not validators.is_valid():
+            return Response(validators.errors, status=400)
+
+        reference = validators.validated_data.get('reference')
+        account_id = validators.validated_data.get('accountId')
         user = self.request.user.id
 
         if account_id in ['', '0']:
             account_id = None
 
-        response = BO.finance.finance.Finance(period=period, account_id=account_id, owner=user).get_statement()
+        response = BO.finance.finance.Finance(reference=reference, account_id=account_id, owner=user).get_statement()
 
         return Response(response, status=200)
 

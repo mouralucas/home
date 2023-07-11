@@ -1,11 +1,11 @@
+import datetime
 from collections import defaultdict
 from datetime import datetime
 
 import camelot
 import numpy as np
 import pandas as pd
-from dateutil.relativedelta import relativedelta
-from django.db.models import Sum, F, Case, When, CharField, Value
+from django.db.models import Sum, F
 from django.utils.translation import gettext_lazy as _
 from tabula import read_pdf
 
@@ -13,12 +13,10 @@ import finance.models
 import finance.serializers
 import util.datetime
 
-import datetime
-
 
 class Finance:
 
-    def __init__(self, mes=None, ano=None, statement_id=None, bill_id=None, period=None, account_id=None, credit_card_id=None, amount=None,
+    def __init__(self, mes=None, ano=None, statement_id=None, bill_id=None, reference=None, account_id=None, credit_card_id=None, amount=None,
                  amount_currency=None, price_currency_dollar=None, vlr_moeda=None, amount_tax=None, installment=None, tot_installment=None, dat_compra=None, dat_pagamento=None,
                  description=None, category_id=None, currency_id=None, price_dollar=None, cash_flow_id=None, owner=None):
         self.mes = mes
@@ -26,7 +24,7 @@ class Finance:
 
         self.statement_id = statement_id
         self.bill_id = bill_id
-        self.reference = period
+        self.reference = reference
         self.amount = amount
         self.amount_currency = amount_currency
         self.price_currency_dollar = price_currency_dollar
@@ -61,6 +59,7 @@ class Finance:
 
         self.__set_reference()
 
+        # TODO: Essa lógica de entrada e saída está muito ruim
         if self.cash_flow_id == 'INCOMING':
             multiplier = 1
         else:
@@ -92,18 +91,19 @@ class Finance:
         if self.account_id:
             filters['account_id'] = self.account_id
 
-        statement = finance.models.BankStatement.objects.values('id', 'period', 'dat_purchase', 'description') \
-            .filter(**filters).active().annotate(statement_id=F('id'),
+        statement = finance.models.BankStatement.objects.values('period', 'description') \
+            .filter(**filters).active().annotate(statementId=F('id'),
                                                  amount=F('amount'),
-                                                 nm_account=F('account__nickname'),
-                                                 account_id=F('account_id'),
-                                                 nm_category=F('category__description'),
-                                                 category_id=F('category_id'),
-                                                 datCreated=F('dat_created'),
-                                                 datLastEdited=F('dat_last_edited'),
+                                                 accountName=F('account__nickname'),
+                                                 accountId=F('account_id'),
+                                                 categoryName=F('category__description'),
+                                                 categoryId=F('category_id'),
+                                                 purchasedAt=F('dat_purchase'),
                                                  cashFlowId=F('cash_flow'),
                                                  currencyId=F('currency_id'),
-                                                 currencySymbol=F('currency__symbol')
+                                                 currencySymbol=F('currency__symbol'),
+                                                 createdAt=F('dat_created'),
+                                                 lastEditedAt=F('dat_last_edited'),
                                                  ) \
             .order_by('-dat_purchase', '-dat_created')
 
