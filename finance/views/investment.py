@@ -2,36 +2,39 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import BO.finance.investment
-from finance.serializers.investment import InvestmentGetSerializer
+from finance.serializers.investment import InvestmentGetSerializer, InvestmentPostSerializer
 
 
 class Investment(APIView):
     def get(self, *args, **kwargs):
-        validator = InvestmentGetSerializer(data=self.request.query_params)
-        if not validator.is_valid():
-            return Response(validator.errors, status=400)
+        validators = InvestmentGetSerializer(data=self.request.query_params)
+        if not validators.is_valid():
+            return Response(validators.errors, status=400)
 
-        investment_id = validator.validated_data.get('investmentId')
-        show_mode = validator.validated_data.get('showMode')
-
+        investment_id = validators.validated_data.get('investmentId')
+        show_mode = validators.validated_data.get('showMode')
 
         response = BO.finance.investment.Investment(investment_id=investment_id).get_investment(show_mode=show_mode)
 
         return Response(response)
 
     def post(self, *args, **kwargs):
-        parent_id = self.request.data.get('parentId')
-        name = self.request.data.get('name')
-        date = self.request.data.get('date')
-        quantity = self.request.data.get('quantity')
-        price = self.request.data.get('price')
-        amount = self.request.data.get('amount')
-        cash_flow = self.request.data.get('cashFlow')
-        interest_rate = self.request.data.get('interestRate')
-        interest_index = self.request.data.get('interestIndex')
-        investment_type_id = self.request.data.get('investmentTypeId')
-        dat_maturity = self.request.data.get('maturityDate')
-        custodian_id = self.request.data.get('custodianId')
+        validators = InvestmentPostSerializer(data=self.request.data)
+        if not validators.is_valid():
+            return Response(validators.errors, status=400)
+
+        parent_id = validators.validated_data.get('parentId')
+        name = validators.validated_data.get('name')
+        date = validators.validated_data.get('date')
+        quantity = validators.validated_data.get('quantity')
+        price = validators.validated_data.get('price')
+        amount = validators.validated_data.get('amount')
+        cash_flow = validators.validated_data.get('cashFlowId')
+        interest_rate = validators.validated_data.get('interestRate')
+        interest_index = validators.validated_data.get('interestIndex')
+        investment_type_id = validators.validated_data.get('investmentTypeId')
+        dat_maturity = validators.validated_data.get('maturityDate')
+        custodian_id = validators.validated_data.get('custodianId')
         user = self.request.user.id
 
         response = BO.finance.investment.Investment(parent_id=parent_id, name=name, date=date, quantity=quantity, price=price, amount=amount,
