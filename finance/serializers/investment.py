@@ -1,9 +1,15 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 
 class InvestmentGetSerializer(serializers.Serializer):
     investmentId = serializers.UUIDField(required=False)
     showMode = serializers.CharField(required=True)
+
+    def validate_showMode(self, value):
+        choices = ['all', 'father', 'child']
+        if value not in choices:
+            raise ValidationError(f"O valor '{value}' não é válido. Escolha uma das opções: {', '.join(choices)}.")
 
 
 class InvestmentPostSerializer(serializers.Serializer):

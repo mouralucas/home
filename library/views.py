@@ -9,6 +9,7 @@ import BO.author.author
 import BO.core.core
 import BO.library.library
 from BO.security.security import IsAuthenticated
+from library.serializers import ItemGeTSerializer
 
 
 class ItemAuthor(View):
@@ -32,9 +33,13 @@ class Item(APIView):
     """
 
     def get(self, *args, **kwargs):
-        item_id = self.request.GET.get('item_id')
-        item_type = self.request.GET.get('item_type')
-        is_unique = True if self.request.GET.get('is_unique') else False
+        validators = ItemGeTSerializer(data=self.request.query_params)
+        if not validators.is_valid():
+            return Response(validators.errors, status=400)
+
+        item_id = validators.validated_data.get('itemId')
+        item_type = validators.validated_data.get('itemType')
+        is_unique = validators.validated_data.get('isUnique')
         user = self.request.user.id
 
         response = BO.library.library.Library(owner=user, item_id=item_id, item_type=item_type).get_item(is_unique=is_unique)

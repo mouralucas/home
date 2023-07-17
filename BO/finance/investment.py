@@ -56,12 +56,6 @@ class Investment:
         return response
 
     def get_investment(self, show_mode):
-        if show_mode not in ['all', 'father', 'child']:
-            return {
-                'status': False,
-                'description': _('Show mode dever ser uma das três opções: all, father ou child')
-            }
-
         filters = {}
 
         if show_mode != 'all':

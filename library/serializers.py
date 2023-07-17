@@ -1,98 +1,39 @@
 from rest_framework import serializers
 
-import core.serializers
-import library.models
+
+class ItemGeTSerializer(serializers.Serializer):
+    itemId = serializers.IntegerField(required=False)
+    itemType = serializers.CharField(required=False)
+    isUnique = serializers.BooleanField(required=False, default=False)
 
 
-class AutorSerializer(core.serializers.DynamicFieldsModelSerializer):
-    nm_idioma = serializers.SerializerMethodField()
-    nm_pais = serializers.SerializerMethodField()
-
-    @staticmethod
-    def get_nm_idioma(instance):
-        idioma = instance.idioma.nm_descritivo if instance.idioma else '--'
-        return idioma
-
-    @staticmethod
-    def get_nm_pais(instance):
-        return instance.pais.nome if instance.pais else '--'
-
-    class Meta:
-        model = library.models.Author
-        fields = '__all__'
-
-
-class SerieSerializer(core.serializers.DynamicFieldsModelSerializer):
-    class Meta:
-        model = library.models.Serie
-        fields = '__all__'
-
-
-class EditoraSerializer(core.serializers.DynamicFieldsModelSerializer):
-    class Meta:
-        model = library.models.Publisher
-        fields = '__all__'
-
-
-class LivroSerializer(core.serializers.DynamicFieldsModelSerializer):
-    nm_autor_principal = serializers.SerializerMethodField()
-    id_autor_principal = serializers.SerializerMethodField()
-    nm_serie = serializers.SerializerMethodField()
-    nm_editora = serializers.SerializerMethodField()
-
-    @staticmethod
-    def get_nm_autor_principal(instance):
-        try:
-            autor = instance.autor_principal.nm_completo
-        except Exception as e:
-            print(e)
-            autor = None
-
-        return autor
-
-    @staticmethod
-    def get_id_autor_principal(instance):
-        try:
-            autor = instance.autor_principal_id
-        except Exception as e:
-            print(e)
-            autor = None
-
-        return autor
-
-    @staticmethod
-    def get_nm_serie(instance):
-        try:
-            serie = instance.serie.nm_descritivo
-        except Exception as e:
-            print(e)
-            serie = None
-
-        return serie
-
-    @staticmethod
-    def get_nm_editora(instance):
-        try:
-            editora = instance.editora.nome
-        except Exception as e:
-            print(e)
-            editora = None
-
-        return editora
-
-    @staticmethod
-    def get_nm_colecao(instance):
-        try:
-            nm_colecao = instance.colecao.nome
-        except Exception as e:
-            print(e)
-            nm_colecao = None
-
-        return nm_colecao
-
-    class Meta:
-        model = library.models.Item
-        fields = '__all__'
-        # read_only_fields = fields
-
-
+class ItemPostSerializer(serializers.Serializer):
+    itemId = serializers.IntegerField(required=False)
+    lastStatusId = serializers.CharField(required=True)
+    lastStatusDate = serializers.DateField(required=True)
+    mainAuthorId = serializers.IntegerField(required=True)
+    authorsId = serializers.IntegerField(required=False)
+    title = serializers.CharField(required=True)
+    subtitle = serializers.CharField(required=False)
+    title_original = serializers.CharField(required=False)
+    subtitle_original = serializers.CharField(required=False)
+    isbnFormatted = serializers.CharField(required=False)
+    isbn10Formatted = serializers.CharField(required=False)
+    itemType = serializers.CharField(required=True)
+    pages = serializers.IntegerField(required=False)
+    volume = serializers.IntegerField(required=False, default=1)
+    edition = serializers.IntegerField(required=False, default=1)
+    publishedAt = serializers.DateField(required=False)
+    publishedOriginalAt = serializers.DateField(required=False)
+    serieId = serializers.IntegerField(required=False)
+    collectionId = serializers.IntegerField(required=False)
+    publisherId = serializers.IntegerField(required=False)
+    itemFormat = serializers.CharField(required=False)
+    languageId = serializers.CharField(required=False)
+    coverPrice = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
+    payedPrice = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
+    dimensions = serializers.CharField(required=False)
+    height = serializers.IntegerField(required=False)
+    width = serializers.IntegerField(required=False)
+    thickness = serializers.IntegerField(required=False)
+    summary = serializers.CharField(required=False)
