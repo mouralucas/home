@@ -25,3 +25,12 @@ class InvestmentPostSerializer(serializers.Serializer):
     investmentTypeId = serializers.CharField(required=True)
     maturityDate = serializers.DateField(required=False)
     custodianId = serializers.UUIDField(required=True)
+
+
+class InvestmentTypeGetSerializer(serializers.Serializer):
+    showMode = serializers.CharField(required=True)
+
+    def validate_showMode(self, value):
+        choices = ['all', 'father', 'child']
+        if value not in choices:
+            raise ValidationError(f"O valor '{value}' não é válido. Escolha uma das opções: {', '.join(choices)}.")

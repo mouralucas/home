@@ -47,7 +47,11 @@ class Investment(APIView):
 
 class InvestmentType(APIView):
     def get(self, *args, **kwargs):
-        show_mode = self.request.GET.get('show_mode')
+        validators = InvestmentGetSerializer(data=self.request.query_params)
+        if not validators.is_valid():
+            return Response(validators.errors, status=400)
+
+        show_mode = validators.validated_data.get('show_mode')
 
         response = service.finance.investment.Investment().get_investment_type(show_mode=show_mode)
 
