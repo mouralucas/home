@@ -2,8 +2,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-import BO.finance.finance
-import BO.finance.credit_card
+import service.finance.finance
+import service.finance.credit_card
 import util.datetime
 from finance.serializers.credit_card import CreditCardBillGetSerializer
 
@@ -14,7 +14,7 @@ class CreditCard(APIView):
     def get(self, *args, **kwargs):
         user = self.request.user
 
-        response = BO.finance.credit_card.CreditCard().get_credit_card()
+        response = service.finance.credit_card.CreditCard().get_credit_card()
 
         return Response(response)
 
@@ -35,7 +35,7 @@ class CreditCardBill(APIView):
         if card_id in ['', '0']:
             card_id = None
 
-        response = BO.finance.credit_card.CreditCard(period=period, credit_card_id=card_id, owner=user) \
+        response = service.finance.credit_card.CreditCard(period=period, credit_card_id=card_id, owner=user) \
             .get_bill(credit_card_bill_id=bill_id)
 
         return Response(response, status=200)
@@ -59,11 +59,11 @@ class CreditCardBill(APIView):
         cash_flow_id = self.request.data.get('cashFlowId')
         user = self.request.user.id
 
-        response = BO.finance.credit_card.CreditCard(bill_id=bill_id, amount=amount, amount_currency=amount_currency,
-                                                     price_currency_dollar=price_currency_dollar, price_dollar=price_dollar,
-                                                     dat_purchase=dat_purchase, dat_payment=dat_payment, amount_tax=amount_tax,
-                                                     installment=installment, tot_installment=tot_installment,
-                                                     currency_id=currency_id, description=description,
-                                                     category_id=category_id, credit_card_id=card_id, owner=user) \
+        response = service.finance.credit_card.CreditCard(bill_id=bill_id, amount=amount, amount_currency=amount_currency,
+                                                          price_currency_dollar=price_currency_dollar, price_dollar=price_dollar,
+                                                          dat_purchase=dat_purchase, dat_payment=dat_payment, amount_tax=amount_tax,
+                                                          installment=installment, tot_installment=tot_installment,
+                                                          currency_id=currency_id, description=description,
+                                                          category_id=category_id, credit_card_id=card_id, owner=user) \
             .set_bill(request=self.request)
         return Response(response)

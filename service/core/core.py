@@ -53,7 +53,7 @@ class Misc:
         return response
 
     def get_currency(self):
-        warnings.warn("Use new function getCurrency in finance BO", DeprecationWarning, stacklevel=2)
+        warnings.warn("Use new function getCurrency in finance service", DeprecationWarning, stacklevel=2)
         currency = [{'value': i[0], 'text': i[1]} for i in core.models.CurrencyTypes.choices]
 
         response = {

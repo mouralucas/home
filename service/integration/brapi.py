@@ -1,7 +1,7 @@
-import BO.integration.integration
+import service.integration.integration
 
 
-class Brapi(BO.integration.integration.Integration):
+class Brapi(service.integration.integration.Integration):
     """
     :Name: Brpai
     :Description: Get information from stock market

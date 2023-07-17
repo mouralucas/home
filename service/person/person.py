@@ -7,7 +7,7 @@ class Person:
         :Created by: Lucas Penha de Moura - 16/06/2022
         :Edited by:
 
-            BO to handle information about a Person
+            service to handle information about a Person
         """
 
     def __init__(self, nm_full=None, person_id_formatted=None, id_type=None):

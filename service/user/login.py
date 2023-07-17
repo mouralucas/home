@@ -2,11 +2,11 @@ from django.contrib.auth import authenticate, login, logout
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
-import BO.user.account
+import service.user.account
 from datetime import datetime, timedelta
 
 
-class LoginDjango(BO.user.account.Account):
+class LoginDjango(service.user.account.Account):
     def __init__(self, username=None, raw_password=None, request=None):
         super(LoginDjango, self).__init__(username=username, raw_password=raw_password)
         self.request = request
@@ -133,7 +133,7 @@ class Login(LoginSerializer):
         token['user'] = user.username
         # token['matricula'] = user
 
-        # usr_info = BO.autenticacao.sessao.SessaoFuncionario().criar_sessao_funcionario(user=user)
+        # usr_info = service.autenticacao.sessao.SessaoFuncionario().criar_sessao_funcionario(user=user)
 
         # token['view_inicial'] = usr_info['view_inicial']
         # token['is_loja'] = True if usr_info['perfil_principal'] == 'loja' else False

@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from rest_framework.views import APIView
 
-import BO.file.file
+import service.file.file
 import file.models
 
 
@@ -35,6 +35,6 @@ class Extract(APIView):
         path = self.request.GET.get('path')
         pdf_origin = self.request.GET.get('pdf_origin')
 
-        response = BO.file.file.File().extract_table_pdf(path=path, pdf_origin=pdf_origin)
+        response = service.file.file.File().extract_table_pdf(path=path, pdf_origin=pdf_origin)
 
         return JsonResponse(response, safe=False)

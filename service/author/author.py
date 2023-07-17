@@ -1,11 +1,11 @@
 from django.db.models import F
 from django.utils.translation import gettext_lazy as _
 
-import BO.person.person
+import service.person.person
 import library.models
 
 
-class Author(BO.person.person.Person):
+class Author(service.person.person.Person):
     def __init__(self, author_id=None):
         super(Author, self).__init__()
         self.author_id = author_id if author_id != "null" else None

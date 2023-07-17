@@ -1,8 +1,8 @@
-import BO.finance.finance
+import service.finance.finance
 import finance.models
 
 
-class Account(BO.finance.finance.Finance):
+class Account(service.finance.finance.Finance):
     def __init__(self, owner=None):
         super().__init__(owner=owner)
         pass

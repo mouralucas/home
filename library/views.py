@@ -5,10 +5,10 @@ from django.views import View
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-import BO.author.author
-import BO.core.core
-import BO.library.library
-from BO.security.security import IsAuthenticated
+import service.author.author
+import service.core.core
+import service.library.library
+from service.security.security import IsAuthenticated
 from library.serializers import ItemGeTSerializer
 
 
@@ -16,7 +16,7 @@ class ItemAuthor(View):
     def get(self, *args, **kwargs):
         book_id = self.request.GET.get('item_id')
 
-        response = BO.library.library.Library(item_id=book_id).get_item_authors()
+        response = service.library.library.Library(item_id=book_id).get_item_authors()
 
         return JsonResponse(response, safe=False)
 
@@ -42,7 +42,7 @@ class Item(APIView):
         is_unique = validators.validated_data.get('isUnique')
         user = self.request.user.id
 
-        response = BO.library.library.Library(owner=user, item_id=item_id, item_type=item_type).get_item(is_unique=is_unique)
+        response = service.library.library.Library(owner=user, item_id=item_id, item_type=item_type).get_item(is_unique=is_unique)
 
         return Response(response)
 
@@ -79,13 +79,13 @@ class Item(APIView):
         summary = self.request.POST.get('summary')
         user = self.request.user.id
 
-        response = BO.library.library.Library(item_id=item_id, owner=user).set_item(main_author_id=main_author_id, authors_id=authors_id, title=title, subtitle=subtitle, title_original=title_original,
-                                                                        subtitle_original=subtitle_original, isbn_formatted=isbn_formatted, isbn_10_formatted=isbn_10_formatted, type=item_type,
-                                                                        pages=pages, volume=volume, edition=edition, dat_published=dat_published,
-                                                                        dat_published_original=dat_published_original, serie_id=serie_id, collection_id=collection_id, publisher=publisher_id,
-                                                                        item_format=item_format, language_id=language_id, cover_price=cover_price, payed_price=payed_price,
-                                                                        dimensions=dimensions, heigth=height, width=width, thickness=thickness,
-                                                                        status=status, dat_status=dat_last_status, summary=summary, request=self.request)
+        response = service.library.library.Library(item_id=item_id, owner=user).set_item(main_author_id=main_author_id, authors_id=authors_id, title=title, subtitle=subtitle, title_original=title_original,
+                                                                                         subtitle_original=subtitle_original, isbn_formatted=isbn_formatted, isbn_10_formatted=isbn_10_formatted, type=item_type,
+                                                                                         pages=pages, volume=volume, edition=edition, dat_published=dat_published,
+                                                                                         dat_published_original=dat_published_original, serie_id=serie_id, collection_id=collection_id, publisher=publisher_id,
+                                                                                         item_format=item_format, language_id=language_id, cover_price=cover_price, payed_price=payed_price,
+                                                                                         dimensions=dimensions, heigth=height, width=width, thickness=thickness,
+                                                                                         status=status, dat_status=dat_last_status, summary=summary, request=self.request)
 
         return JsonResponse(response, safe=False)
 
@@ -110,7 +110,7 @@ class Author(APIView):
         """
         is_tradutor = True if self.request.GET.get('is_tradutor') else False
 
-        response = BO.author.author.Author().get_author(is_translator=is_tradutor)
+        response = service.author.author.Author().get_author(is_translator=is_tradutor)
 
         return JsonResponse(response, safe=False)
 
@@ -123,10 +123,10 @@ class Author(APIView):
         language_id = self.request.POST.get('language_id')
         country_id = self.request.POST.get('country_id')
 
-        response = BO.author.author.Author(author_id=author_id).set_author(nm_full=nm_full, dat_birth=dat_birth,
-                                                                           description=description, is_translator=is_translator,
-                                                                           language_id=language_id, country_id=country_id,
-                                                                           request=self.request)
+        response = service.author.author.Author(author_id=author_id).set_author(nm_full=nm_full, dat_birth=dat_birth,
+                                                                                description=description, is_translator=is_translator,
+                                                                                language_id=language_id, country_id=country_id,
+                                                                                request=self.request)
 
         return JsonResponse(response, safe=False)
 
@@ -144,7 +144,7 @@ class Status(View):
     def get(self, *args, **kwargs):
         selected_id = self.request.GET.get('selected_id', '')
 
-        response = BO.library.library.Library().get_status(selected_id=selected_id)
+        response = service.library.library.Library().get_status(selected_id=selected_id)
 
         return JsonResponse(response, safe=False)
 
@@ -162,7 +162,7 @@ class Type(View):
     def get(self, *args, **kwargs):
         selected_id = self.request.GET.get('selected_id', '')
 
-        response = BO.library.library.Library().get_types(selected_id=selected_id)
+        response = service.library.library.Library().get_types(selected_id=selected_id)
 
         return JsonResponse(response, safe=False)
 
@@ -171,7 +171,7 @@ class Format(View):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
-        response = BO.library.library.Library().get_formats()
+        response = service.library.library.Library().get_formats()
 
         return JsonResponse(response, safe=False)
 
@@ -182,7 +182,7 @@ class Serie(APIView):
     def get(self, *args, **kwargs):
         selected_id = self.request.GET.get('selected_id') if self.request.GET.get('selected_id') != '' else None
 
-        response = BO.library.library.Library().get_serie()
+        response = service.library.library.Library().get_serie()
 
         return JsonResponse(response, safe=False)
 
@@ -193,8 +193,8 @@ class Serie(APIView):
         description = self.request.POST.get('description')
         country_id = self.request.POST.get('country_id')
 
-        response = BO.library.library.Library().set_serie(serie_id=serie_id, name=name, nm_original=nm_original,
-                                                          description=description, country_id=country_id, request=self.request)
+        response = service.library.library.Library().set_serie(serie_id=serie_id, name=name, nm_original=nm_original,
+                                                               description=description, country_id=country_id, request=self.request)
 
         return JsonResponse(response, safe=False)
 
@@ -203,7 +203,7 @@ class Collection(View):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
-        response = BO.library.library.Library().get_collection()
+        response = service.library.library.Library().get_collection()
 
         return JsonResponse(response, safe=False)
 
@@ -213,8 +213,8 @@ class Collection(View):
         descricao = self.request.POST.get('descricao')
         pais_id = self.request.POST.get('pais_id')
 
-        response = BO.library.library.Library().set_serie(name=nm_descritivo, nm_original=nm_original,
-                                                          description=descricao, country_id=pais_id, request=self.request)
+        response = service.library.library.Library().set_serie(name=nm_descritivo, nm_original=nm_original,
+                                                               description=descricao, country_id=pais_id, request=self.request)
 
         return JsonResponse(response, safe=False)
 
@@ -232,7 +232,7 @@ class Publisher(APIView):
     def get(self, *args, **kwargs):
         selected_id = self.request.GET.get('selected_id', 0)
 
-        response = BO.library.library.Library().get_publishers(selected_id=selected_id)
+        response = service.library.library.Library().get_publishers(selected_id=selected_id)
 
         return JsonResponse(response, safe=False)
 
@@ -243,8 +243,8 @@ class Publisher(APIView):
         country_id = self.request.POST.get('country_id')
         parent_id = self.request.POST.get('parent_id')
 
-        response = BO.library.library.Library().set_publisher(name=name, description=description, country_id=country_id, parent_id=parent_id,
-                                                              publisher_id=publisher_id, request=self.request)
+        response = service.library.library.Library().set_publisher(name=name, description=description, country_id=country_id, parent_id=parent_id,
+                                                                   publisher_id=publisher_id, request=self.request)
 
         return Response(response)
 
@@ -261,7 +261,7 @@ class Language(View):
     def get(self, *args, **kwargs):
         selected_id = self.request.GET.get('selected_id', '')
 
-        response = BO.core.core.Misc().get_language(selected_id=selected_id)
+        response = service.core.core.Misc().get_language(selected_id=selected_id)
 
         return JsonResponse(response, safe=False)
 
@@ -276,6 +276,6 @@ class Country(View):
     """
 
     def get(self, *args, **kwargs):
-        response = BO.core.core.Misc().get_country()
+        response = service.core.core.Misc().get_country()
 
         return JsonResponse(response, safe=False)

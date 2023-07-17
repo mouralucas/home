@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-import BO.finance.investment
+import service.finance.investment
 from finance.serializers.investment import InvestmentGetSerializer, InvestmentPostSerializer
 
 
@@ -14,7 +14,7 @@ class Investment(APIView):
         investment_id = validators.validated_data.get('investmentId')
         show_mode = validators.validated_data.get('showMode')
 
-        response = BO.finance.investment.Investment(investment_id=investment_id).get_investment(show_mode=show_mode)
+        response = service.finance.investment.Investment(investment_id=investment_id).get_investment(show_mode=show_mode)
 
         return Response(response)
 
@@ -37,10 +37,10 @@ class Investment(APIView):
         custodian_id = validators.validated_data.get('custodianId')
         user = self.request.user.id
 
-        response = BO.finance.investment.Investment(parent_id=parent_id, name=name, date=date, quantity=quantity, price=price, amount=amount,
-                                                    cash_flow=cash_flow, interest_rate=interest_rate, interest_index=interest_index,
-                                                    investment_type_id=investment_type_id, dat_maturity=dat_maturity, custodian_id=custodian_id,
-                                                    owner_id=user, request=self.request).set_investment()
+        response = service.finance.investment.Investment(parent_id=parent_id, name=name, date=date, quantity=quantity, price=price, amount=amount,
+                                                         cash_flow=cash_flow, interest_rate=interest_rate, interest_index=interest_index,
+                                                         investment_type_id=investment_type_id, dat_maturity=dat_maturity, custodian_id=custodian_id,
+                                                         owner_id=user, request=self.request).set_investment()
 
         return Response(response)
 
@@ -49,13 +49,13 @@ class InvestmentType(APIView):
     def get(self, *args, **kwargs):
         show_mode = self.request.GET.get('show_mode')
 
-        response = BO.finance.investment.Investment().get_investment_type(show_mode=show_mode)
+        response = service.finance.investment.Investment().get_investment_type(show_mode=show_mode)
 
         return Response(response)
 
 
 class Proportion(APIView):
     def get(self, *args, **kwargs):
-        response = BO.finance.investment.Investment().get_proportion()
+        response = service.finance.investment.Investment().get_proportion()
 
         return Response(response)

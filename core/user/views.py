@@ -3,8 +3,8 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-import BO.user.account
-import BO.user.login
+import service.user.account
+import service.user.login
 
 
 class Login(TokenObtainPairView):
@@ -22,7 +22,7 @@ class Login(TokenObtainPairView):
 
         Implements TokenObtainPairView from simple jwt
     """
-    serializer_class = BO.user.login.Login
+    serializer_class = service.user.login.Login
 
 
 class Account(APIView):
@@ -33,6 +33,6 @@ class Account(APIView):
         username = self.request.POST.get('username')
         raw_password = self.request.POST.get('raw_password')
 
-        response = BO.user.account.Account(username=username, raw_password=raw_password).create()
+        response = service.user.account.Account(username=username, raw_password=raw_password).create()
 
         return JsonResponse(response, safe=False)

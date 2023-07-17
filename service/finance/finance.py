@@ -347,7 +347,7 @@ class Finance:
         month = self.purchased_at.month
         self.reference = year * 100 + month
 
-    # Manter no BO Finance, pois é função geral de finance, todas as específicas serão migrados (account, investment, credit card, etc.)
+    # Manter no service Finance, pois é função geral de finance, todas as específicas serão migrados (account, investment, credit card, etc.)
     def get_bank(self):
         bank = finance.models.Bank.objects.values('id', 'name', 'code').active()
 

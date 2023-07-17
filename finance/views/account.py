@@ -1,9 +1,9 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-import BO.finance.account
-import BO.finance.finance
-from BO.security.security import IsAuthenticated
+import service.finance.account
+import service.finance.finance
+from service.security.security import IsAuthenticated
 from finance.serializers.account import AccountStatementPostSerializer, AccountStatementGetSerializer
 
 
@@ -13,7 +13,7 @@ class Account(APIView):
     def get(self, *args, **kwargs):
         user = self.request.user.id
 
-        response = BO.finance.account.Account(owner=user).get_accounts()
+        response = service.finance.account.Account(owner=user).get_accounts()
 
         return Response(response)
 
@@ -33,7 +33,7 @@ class AccountStatement(APIView):
         if account_id in ['', '0']:
             account_id = None
 
-        response = BO.finance.finance.Finance(reference=reference, account_id=account_id, owner=user).get_statement()
+        response = service.finance.finance.Finance(reference=reference, account_id=account_id, owner=user).get_statement()
 
         return Response(response, status=200)
 
@@ -52,10 +52,10 @@ class AccountStatement(APIView):
         cash_flow_id = validators.validated_data.get('cashFlowId')
         user = self.request.user.id
 
-        response = BO.finance.finance.Finance(statement_id=statement_id, amount=amount, dat_compra=dat_purchase,
-                                              description=description,
-                                              category_id=category_id, account_id=account_id, currency_id=currency_id,
-                                              cash_flow_id=cash_flow_id, owner=user) \
+        response = service.finance.finance.Finance(statement_id=statement_id, amount=amount, dat_compra=dat_purchase,
+                                                   description=description,
+                                                   category_id=category_id, account_id=account_id, currency_id=currency_id,
+                                                   cash_flow_id=cash_flow_id, owner=user) \
             .set_statement(request=self.request)
 
         return Response(response, status=200)

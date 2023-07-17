@@ -4,11 +4,11 @@ from datetime import datetime
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-import BO.integration.integration
+import service.integration.integration
 import finance.models
 
 
-class Vat(BO.integration.integration.Integration):
+class Vat(service.integration.integration.Integration):
     """
     :Name: VatRate
     :Description: Get the exchange rate from VAT Comply API
