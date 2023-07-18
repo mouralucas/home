@@ -1,7 +1,7 @@
 import time
 import uuid
 
-from compositefk.fields import CompositeForeignKey
+# from compositefk.fields import CompositeForeignKey
 from django.apps import apps
 from django.db import models
 from django.utils import timezone
@@ -209,14 +209,6 @@ class Status(Log):
     image = models.FileField(upload_to='core/status', default='core/status/padrao.png', null=True)
 
     type = models.CharField(max_length=50, choices=StatusTypes.choices, null=True)
-
-    # TODO: criar agrupamento e tirar relação com a tipo
-    grupo_codigo = models.CharField(null=True, max_length=200)
-    grupo_tipo = models.CharField(null=True, max_length=200, default='STATUS.GRUPO')
-    grupo = CompositeForeignKey('core.Tipo', on_delete=models.DO_NOTHING, null=True, related_name='status_grupo', to_fields={
-        "codigo": "grupo_codigo",
-        "tipo": "grupo_tipo"
-    })
 
     class Meta:
         db_table = 'public"."status'
