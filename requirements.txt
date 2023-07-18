@@ -5,6 +5,9 @@ django==4.2.3
 pyjwt==2.7.0
 djangorestframework-simplejwt==5.2.2
 
+# Django Rest Swagger
+drf-yasg==1.21.6
+
 # PDF table reader
 tabula-py
 
@@ -25,6 +28,3 @@ numpy~=1.23.1
 
 # PDF table readers
 camelot-py[base]
-
-# Deprecated
-django-composite-foreignkey==1.1.0
