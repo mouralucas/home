@@ -1,14 +1,15 @@
-import warnings
-
 from rest_framework import serializers
 
-import core.models
 
-
-class DynamicFieldsModelSerializer(serializers.ModelSerializer):
+class CustomModelSerializer(serializers.ModelSerializer):
     """
+    :Name: CustomSerializer
+    :Created by: Lucas Penha de Moura - 09/03/2021
+    :Edited by:
+
     A ModelSerializer that takes an additional `fields` argument that
     controls which fields should be displayed.
+    If fields are None, all model fields are returned
     """
 
     def __init__(self, *args, **kwargs):
@@ -16,7 +17,7 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
         fields = kwargs.pop('fields', None)
 
         # Instantiate the superclass normally
-        super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
+        super(CustomModelSerializer, self).__init__(*args, **kwargs)
 
         self.campos_bla = None
 
@@ -28,39 +29,28 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
                 self.fields.pop(field_name)
 
 
-class TipoSerializer(DynamicFieldsModelSerializer):
-    class Meta:
-        model = core.models.Tipo
-        fields = '__all__'
+class CustomSerializer(serializers.Serializer):
+    """
+    :Name: CustomSerializer
+    :Created by: Lucas Penha de Moura - 19/07/2023
+    :Edited by:
 
+    Create a customized version of the return json when validation fails
+    """
+    def to_internal_value(self, data):
+        try:
+            return super().to_internal_value(data)
+        except serializers.ValidationError as exc:
 
-class IdiomaSerializer(DynamicFieldsModelSerializer):
-    warnings.warn('All serializers deprecated!!', DeprecationWarning, stacklevel=2)
+            custom_error_dict = {
+                'success': False,
+                'statusCode': exc.status_code,
+                'errors': exc.detail,
+            }
 
-    class Meta:
-        model = core.models.Language
-        fields = '__all__'
+            for key, value in exc.detail.items():
+                # Extract the string value using str() for each error message
+                error_string = str(value[0])
+                custom_error_dict['errors'][key] = error_string
 
-
-class CategoriaSerializer(DynamicFieldsModelSerializer):
-    warnings.warn('All serializers deprecated!!', DeprecationWarning, stacklevel=2)
-
-    class Meta:
-        model = core.models.Category
-        fields = '__all__'
-
-
-class StatusSerializer(DynamicFieldsModelSerializer):
-    warnings.warn('All serializers deprecated!!', DeprecationWarning, stacklevel=2)
-
-    class Meta:
-        model = core.models.Status
-        fields = '__all__'
-
-
-class PaisSerializer(DynamicFieldsModelSerializer):
-    warnings.warn('All serializers deprecated!!', DeprecationWarning, stacklevel=2)
-
-    class Meta:
-        model = core.models.Country
-        fields = '__all__'
+            raise serializers.ValidationError(custom_error_dict)

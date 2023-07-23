@@ -1,8 +1,9 @@
 from rest_framework import serializers
+
+import core.serializers
 from rest_framework.exceptions import ValidationError
 
-
-class InvestmentGetSerializer(serializers.Serializer):
+class InvestmentGetSerializer(core.serializers.CustomSerializer):
     investmentId = serializers.UUIDField(required=False)
     showMode = serializers.CharField(required=True)
 
@@ -12,7 +13,7 @@ class InvestmentGetSerializer(serializers.Serializer):
             raise ValidationError(f"O valor '{value}' não é válido. Escolha uma das opções: {', '.join(choices)}.")
 
 
-class InvestmentPostSerializer(serializers.Serializer):
+class InvestmentPostSerializer(core.serializers.CustomSerializer):
     parentId = serializers.UUIDField(required=False)
     name = serializers.CharField(required=True)
     date = serializers.DateField(required=True)

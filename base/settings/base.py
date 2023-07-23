@@ -1,6 +1,7 @@
 import os
-from decouple import config
 from datetime import timedelta
+
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 

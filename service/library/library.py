@@ -18,7 +18,7 @@ class Library:
 
     def set_item(self, main_author_id=None, authors_id=None, title=None, subtitle=None, title_original=None, subtitle_original=None, isbn_formatted=None, isbn_10_formatted=None, type=None,
                  pages=None, volume=None, edition=None, dat_published=None, dat_published_original=None, serie_id=None, collection_id=None, publisher=None,
-                 item_format=None, language_id=None, cover_price=None, payed_price=None, dimensions=None, heigth=None, width=None, thickness=None,
+                 item_format=None, language_id=None, cover_price=None, paid_price=None, dimensions=None, height=None, width=None, thickness=None,
                  summary=None, status=None, dat_status=None, request=None):
         """
         :Name: set_item
@@ -29,12 +29,12 @@ class Library:
         Explicit params:
         :param dat_status: The date of the current status of the item
         :param status: The current status of the item
-        :param summary: The
+        :param summary: The summary of the item
         :param thickness: The thickness of the item
         :param width: the width of the item
-        :param heigth: The height of the item
-        :param dimensions: The dimentsons of the item
-        :param payed_price: The payed price for the item
+        :param height: The height of the item
+        :param dimensions: The dimensions of the item
+        :param paid_price: The paid price for the item
         :param cover_price: The cover price of the item
         :param language_id: The language that the item was published
         :param item_format: The format of the item
@@ -49,7 +49,7 @@ class Library:
         :param isbn_10_formatted: the isbn 10 of the title
         :param isbn_formatted: The isbn of te title
         :param subtitle_original: The original subtitle of the item
-        :param title_original: The otriginal title of the item
+        :param title_original: The original title of the item
         :param subtitle: The subtitle of the item
         :param title: The title of the item
         :param authors_id: The list of authors id
@@ -84,21 +84,21 @@ class Library:
         item.pages = pages if pages and pages != '0' else None
         item.volume = volume if volume else 0
         item.edition = edition if edition else 1
-        item.dat_published = dat_published if dat_published not in (None, '', 'null') else None
-        item.dat_published_original = dat_published_original if dat_published_original not in (None, '', 'null') else None
+        item.published_at = dat_published if dat_published not in (None, '', 'null') else None
+        item.published_original_at = dat_published_original if dat_published_original not in (None, '', 'null') else None
         item.serie_id = serie_id
         item.collection_id = collection_id
         item.publisher_id = publisher if publisher and int(publisher) else 0
         item.format = item_format
         item.language_id = language_id
         item.cover_price = cover_price if cover_price else 0
-        item.payed_price = payed_price if payed_price else 0
+        item.paid_price = paid_price if paid_price else 0
         item.dimensions = dimensions if dimensions else None
-        item.height = heigth if heigth else None
+        item.height = height if height else None
         item.width = width if width else None
         item.thickness = thickness if thickness else None
         item.summary = summary if summary else None
-        item.dat_last_status = dat_status
+        item.last_status_at = dat_status
         item.owner_id = self.owner
         item.save(request_=request)
 
@@ -138,28 +138,36 @@ class Library:
         if self.item_id:
             filters['id'] = self.item_id
 
-        item = library.models.Item.objects.values('id', 'title', 'subtitle', 'pages', 'volume', 'cover_price',
-                                                  'payed_price', 'isbn', 'isbn_formatted', 'isbn10', 'isbn10_formatted', 'dat_published',
-                                                  'dat_published_original', 'title_original', 'subtitle_original',
-                                                  'edition', 'dimensions', 'height', 'width', 'thickness', 'summary').filter(**filters) \
-            .annotate(item_id=F('id'),
-                      nm_main_author=F('main_author__nm_full'),
-                      main_author_id=F('main_author_id'),
-                      nm_serie=F('serie__name'),
-                      serie_id=F('serie_id'),
-                      nm_collection=F('collection__name'),
-                      collection_id=F('collection_id'),
-                      nm_publisher=F('publisher__name'),
-                      publisher_id=F('publisher_id'),
-                      nm_last_status=F('last_status__name'),
-                      last_status_id=F('last_status_id'),
-                      dat_last_status=F('dat_last_status'),
+        item = library.models.Item.objects.values('title', 'subtitle', 'pages', 'volume', 'edition', 'dimensions', 'height', 'width',
+                                                  'thickness', 'summary').filter(**filters) \
+            .annotate(itemId=F('id'),
+                      titleOriginal=F('title_original'),
+                      subtitleOriginal=F('subtitle_original'),
+                      mainAuthorName=F('main_author__nm_full'),
+                      mainAuthotId=F('main_author_id'),
+                      isbn=F('isbn'),
+                      isbnFormatted=F('isbn_formatted'),
+                      isbn10=F('isbn10'),
+                      isbnFormatted10=F('isbn10_formatted'),
+                      serieName=F('serie__name'),
+                      serieId=F('serie_id'),
+                      collectionName=F('collection__name'),
+                      collectionId=F('collection_id'),
+                      publisherName=F('publisher__name'),
+                      publisherId=F('publisher_id'),
+                      publishedAt=F('published_at'),
+                      originalPublishedAt=F('published_original_at'),
+                      lastStatusName=F('last_status__name'),
+                      lastStatusId=F('last_status_id'),
+                      lastStatusAt=F('last_status_at'),
                       itemType=F('type'),
                       itemFormatId=F('format'),
-                      nm_language=F('language__name'),
-                      language_id=F('language_id'),
-                      datCreated=F('dat_created'),
-                      datLastEdited=F('dat_last_edited')
+                      languageName=F('language__name'),
+                      languageId=F('language_id'),
+                      coverPrice=F('cover_price'),
+                      paidPrice=F('paid_price'),
+                      createdAt=F('dat_created'),
+                      lastEditedAt=F('dat_last_edited')
                       ).order_by('title', 'volume')
 
         if is_unique:

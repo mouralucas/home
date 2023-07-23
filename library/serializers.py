@@ -1,10 +1,10 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+import core.serializers
 
-
-class ItemGeTSerializer(serializers.Serializer):
+class ItemGeTSerializer(core.serializers.CustomSerializer):
     itemId = serializers.IntegerField(required=False)
-    itemType = serializers.CharField(required=False)
+    itemType = serializers.CharField(required=True)
     isUnique = serializers.BooleanField(required=False, default=False)
 
     def validate_itemType(self, value):
@@ -13,7 +13,7 @@ class ItemGeTSerializer(serializers.Serializer):
             raise ValidationError(f"O valor '{value}' não é válido. Escolha uma das opções: {', '.join(choices)}.")
 
 
-class ItemPostSerializer(serializers.Serializer):
+class ItemPostSerializer(core.serializers.CustomSerializer):
     itemId = serializers.IntegerField(required=False)
     lastStatusId = serializers.CharField(required=True)
     lastStatusDate = serializers.DateField(required=True)

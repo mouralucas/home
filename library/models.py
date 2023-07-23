@@ -74,8 +74,8 @@ class Item(core.models.Log):
     subtitle = models.CharField(max_length=500, null=True)
     subtitle_original = models.CharField(max_length=500, null=True)
     pages = models.IntegerField(null=True)
-    dat_published = models.DateField(null=True)
-    dat_published_original = models.DateField(null=True)
+    published_at = models.DateField(null=True)
+    published_original_at = models.DateField(null=True)
     edition = models.IntegerField(null=True)
     serie = models.ForeignKey('library.Serie', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_serie')
     language = models.ForeignKey('core.Language', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_language')
@@ -91,10 +91,10 @@ class Item(core.models.Log):
     type = models.CharField(max_length=30, choices=ItemType.choices)
 
     last_status = models.ForeignKey('core.Status', on_delete=models.DO_NOTHING, null=True)
-    dat_last_status = models.DateField(null=True)
+    last_status_at = models.DateField(null=True)
     log_status = models.ManyToManyField('core.Status', through='library.ItemStatus', through_fields=('item', 'log_status'), related_name='%(app_label)s_%(class)s_logstatus')
     cover_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-    payed_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    paid_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
 
     dimensions = models.CharField(max_length=50, null=True, help_text=_('Dimensões formatado em texto'))
     height = models.DecimalField(max_digits=7, decimal_places=2, null=True, help_text=_('Em centímetros'))
