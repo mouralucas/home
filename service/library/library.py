@@ -1,12 +1,14 @@
+from collections import OrderedDict
+
 from django.db.models import F, Case, When, BooleanField
 from django.utils.translation import gettext_lazy as _
 
-import library.models
-import library.serializers
 import core.models
 import core.serializers
+import library.models
 import util.Format
 import util.datetime
+from library.serializers import ItemPostSerializer
 
 
 class Library:
@@ -16,10 +18,7 @@ class Library:
         self.item_type = item_type
         self.owner = owner
 
-    def set_item(self, main_author_id=None, authors_id=None, title=None, subtitle=None, title_original=None, subtitle_original=None, isbn_formatted=None, isbn_10_formatted=None, type=None,
-                 pages=None, volume=None, edition=None, dat_published=None, dat_published_original=None, serie_id=None, collection_id=None, publisher=None,
-                 item_format=None, language_id=None, cover_price=None, paid_price=None, dimensions=None, height=None, width=None, thickness=None,
-                 summary=None, status=None, dat_status=None, request=None):
+    def set_item(self, data: ItemPostSerializer = None, request=None):
         """
         :Name: set_item
         :descrição: Atualiza o status do item
@@ -27,33 +26,7 @@ class Library:
         :Edited by:
 
         Explicit params:
-        :param dat_status: The date of the current status of the item
-        :param status: The current status of the item
-        :param summary: The summary of the item
-        :param thickness: The thickness of the item
-        :param width: the width of the item
-        :param height: The height of the item
-        :param dimensions: The dimensions of the item
-        :param paid_price: The paid price for the item
-        :param cover_price: The cover price of the item
-        :param language_id: The language that the item was published
-        :param item_format: The format of the item
-        :param publisher: The publisher id of the item
-        :param collection_id: The collection id of the item
-        :param serie_id: The series id of the item
-        :param dat_published_original: Date of original release of the item
-        :param dat_published: Date when the edition was published
-        :param edition: The edition of the title
-        :param volume: The volume of the title
-        :param pages: The pages of the title
-        :param isbn_10_formatted: the isbn 10 of the title
-        :param isbn_formatted: The isbn of te title
-        :param subtitle_original: The original subtitle of the item
-        :param title_original: The original title of the item
-        :param subtitle: The subtitle of the item
-        :param title: The title of the item
-        :param authors_id: The list of authors id
-        :param main_author_id: The main author id
+        :param data: The request data, describe in ItemPostSerializer
         :param request: Request
 
         Implicit params (passed in the class instance or set by other functions):
@@ -71,40 +44,40 @@ class Library:
         dat_lancamento_original_form = util.datetime.format_data(dat_published_original, mask='____-__-__')
         dat_status_form = util.datetime.format_data(dat_status, mask='____-__-__')
 
-        item.main_author_id = main_author_id
-        item.title = title
-        item.subtitle = subtitle if subtitle else None
-        item.title_original = title_original
-        item.subtitle_original = subtitle_original if subtitle_original else None
-        item.isbn = util.Format.clean_numeric(isbn_formatted)
-        item.isbn_formatted = isbn_formatted
-        item.isbn10 = util.Format.clean_numeric(isbn_10_formatted)
-        item.isbn10_formatted = isbn_10_formatted
-        item.type = type
-        item.pages = pages if pages and pages != '0' else None
-        item.volume = volume if volume else 0
-        item.edition = edition if edition else 1
-        item.published_at = dat_published if dat_published not in (None, '', 'null') else None
-        item.published_original_at = dat_published_original if dat_published_original not in (None, '', 'null') else None
-        item.serie_id = serie_id
-        item.collection_id = collection_id
-        item.publisher_id = publisher if publisher and int(publisher) else 0
-        item.format = item_format
-        item.language_id = language_id
-        item.cover_price = cover_price if cover_price else 0
-        item.paid_price = paid_price if paid_price else 0
-        item.dimensions = dimensions if dimensions else None
-        item.height = height if height else None
-        item.width = width if width else None
-        item.thickness = thickness if thickness else None
-        item.summary = summary if summary else None
-        item.last_status_at = dat_status
+        item.main_author_id = data.validated_data.get('mainAuthorId')
+        item.title = data.validated_data.get('title')
+        item.subtitle = data.validated_data.get('subtitle')
+        item.title_original = data.validated_data.get('titleOriginal')
+        item.subtitle_original = data.validated_data.get('subtitleOriginal')
+        item.isbn = util.Format.clean_numeric(data.validated_data.get('isbnFormatted'))
+        item.isbn_formatted = data.validated_data.get('isbnFormatted')
+        item.isbn10 = util.Format.clean_numeric(data.validated_data.get('isbn10Formatted'))
+        item.isbn10_formatted = data.validated_data.get('isbn10Formatted')
+        item.type = data.validated_data.get('itemType')
+        item.pages = data.validated_data.get('pages')
+        item.volume = data.validated_data.get('volume')
+        item.edition = data.validated_data.get('edition')
+        item.published_at = data.validated_data.get('publishedAt')
+        item.published_original_at = data.validated_data.get('publishedOriginalAt')
+        item.serie_id = data.validated_data.get('serieId')
+        item.collection_id = data.validated_data.get('collectionId')
+        item.publisher_id = data.validated_data.get('publisherId')
+        item.format = data.validated_data.get('itemFormat')
+        item.language_id = data.validated_data.get('languageId')
+        item.cover_price = data.validated_data.get('coverPrice')
+        item.paid_price = data.validated_data.get('paidPrice')
+        item.dimensions = data.validated_data.get('dimensions')
+        item.height = data.validated_data.get('height')
+        item.width = data.validated_data.get('width')
+        item.thickness = data.validated_data.get('thickness')
+        item.summary = data.validated_data.get('summary')
+        item.last_status_at = data.validated_data.get('lastStatusDate')
         item.owner_id = self.owner
-        item.save(request_=request)
+        # item.save(request_=request)
 
-        self.update_status(item=item, status=status, date=dat_status, is_update=False, request=request)
+        # self.update_status(item=item, status=status, date=dat_status, is_update=False, request=request)
 
-        self._set_author(item=item, author_list=main_author_id, is_main=True)
+        # self._set_author(item=item, author_list=main_author_id, is_main=True)
         # self._set_author(item=item, author_list=authors_id)
 
         response = {
@@ -187,7 +160,7 @@ class Library:
         :Criação: Lucas Penha de Moura - 03/09/2021
         :Edições:
             Motivo:
-        :param is_selected: When true return all registered authors and set the flag selected for mais author and others
+        :param is_selected: When true return all registered authors and set the flag selected for main author and others
         :param is_translator
         :return:
         """

@@ -12,7 +12,7 @@ import service.author.author
 import service.core.core
 import service.library.library
 from service.security.security import IsAuthenticated
-from library.serializers import ItemGeTSerializer
+from library.serializers import ItemGetSerializer, ItemPostSerializer
 from django.utils.translation import gettext_lazy as _
 
 
@@ -114,7 +114,7 @@ class Item(APIView):
         },
     )
     def get(self, *args, **kwargs):
-        validators = ItemGeTSerializer(data=self.request.query_params)
+        validators = ItemGetSerializer(data=self.request.query_params)
         if not validators.is_valid():
             return Response(validators.errors, status=400)
 
@@ -128,7 +128,10 @@ class Item(APIView):
         return Response(response)
 
     def post(self, *args, **kwargs):
-        # Change to json.stringfy
+        data = ItemPostSerializer(data=self.request.data)
+        if not data.is_valid():
+            return Response(data.errors, status=400)
+
         item_id = self.request.POST.get('item_id') if self.request.POST.get('item_id') != 'null' else None
         status = self.request.POST.get('last_status_id')
         dat_last_status = self.request.POST.get('dat_last_status')
@@ -160,13 +163,9 @@ class Item(APIView):
         summary = self.request.POST.get('summary')
         user = self.request.user.id
 
-        response = service.library.library.Library(item_id=item_id, owner=user).set_item(main_author_id=main_author_id, authors_id=authors_id, title=title, subtitle=subtitle, title_original=title_original,
-                                                                                         subtitle_original=subtitle_original, isbn_formatted=isbn_formatted, isbn_10_formatted=isbn_10_formatted, type=item_type,
-                                                                                         pages=pages, volume=volume, edition=edition, dat_published=dat_published,
-                                                                                         dat_published_original=dat_published_original, serie_id=serie_id, collection_id=collection_id, publisher=publisher_id,
-                                                                                         item_format=item_format, language_id=language_id, cover_price=cover_price, paid_price=payed_price,
-                                                                                         dimensions=dimensions, height=height, width=width, thickness=thickness,
-                                                                                         status=status, dat_status=dat_last_status, summary=summary, request=self.request)
+        response = service.library.library.Library(item_id=item_id, owner=user).set_item(data=data, request=self.request)
+
+        response = {}
 
         return JsonResponse(response, safe=False)
 
