@@ -114,13 +114,13 @@ class Item(APIView):
         },
     )
     def get(self, *args, **kwargs):
-        validators = ItemGetSerializer(data=self.request.query_params)
-        if not validators.is_valid():
-            return Response(validators.errors, status=400)
+        data = ItemGetSerializer(data=self.request.query_params)
+        if not data.is_valid():
+            return Response(data.errors, status=400)
 
-        item_id = validators.validated_data.get('itemId')
-        item_type = validators.validated_data.get('itemType')
-        is_unique = validators.validated_data.get('isUnique')
+        item_id = data.validated_data.get('itemId')
+        item_type = data.validated_data.get('itemType')
+        is_unique = data.validated_data.get('isUnique')
         user = self.request.user.id
 
         response = service.library.library.Library(owner=user, item_id=item_id, item_type=item_type).get_item(is_unique=is_unique)
@@ -132,40 +132,9 @@ class Item(APIView):
         if not data.is_valid():
             return Response(data.errors, status=400)
 
-        item_id = self.request.POST.get('item_id') if self.request.POST.get('item_id') != 'null' else None
-        status = self.request.POST.get('last_status_id')
-        dat_last_status = self.request.POST.get('dat_last_status')
-        main_author_id = self.request.POST.get('main_author_id') if self.request.POST.get('main_author') != '0' else None
-        authors_id = json.loads(self.request.POST.get('authors_id')) if self.request.POST.get('authors_id') else None
-        title = self.request.POST.get('title') if self.request.POST.get('title') not in ('null', None, '', '0') else None
-        subtitle = self.request.POST.get('subtitle') if self.request.POST.get('subtitle') not in ('null', None, '', '0') else None
-        title_original = self.request.POST.get('title_original') if self.request.POST.get('title_original') not in ('null', None, '', '0') else None
-        subtitle_original = self.request.POST.get('subtitle_original') if self.request.POST.get('subtitle_original') not in ('null', None, '', '0') else None
-        isbn_formatted = self.request.POST.get('isbn_formatted')
-        isbn_10_formatted = self.request.POST.get('isbn10_formatted')
-        item_type = self.request.POST.get('itemType')
-        pages = self.request.POST.get('pages')
-        volume = self.request.POST.get('volume')
-        edition = self.request.POST.get('edition')
-        dat_published = self.request.POST.get('dat_published')
-        dat_published_original = self.request.POST.get('dat_published_original')
-        serie_id = self.request.POST.get('serie_id')
-        collection_id = self.request.POST.get('collection_id')
-        publisher_id = self.request.POST.get('publisher_id')
-        item_format = self.request.POST.get('itemFormatId')
-        language_id = self.request.POST.get('language_id')
-        cover_price = self.request.POST.get('cover_price')
-        payed_price = self.request.POST.get('payed_price')
-        dimensions = self.request.POST.get('dimensions')
-        height = self.request.POST.get('height') if self.request.POST.get('height') not in ('null', None, '', '0') else None
-        width = self.request.POST.get('width') if self.request.POST.get('width') not in ('null', None, '', '0') else None
-        thickness = self.request.POST.get('thickness') if self.request.POST.get('thickness') not in ('null', None, '', '0') else None
-        summary = self.request.POST.get('summary')
         user = self.request.user.id
 
-        response = service.library.library.Library(item_id=item_id, owner=user).set_item(data=data, request=self.request)
-
-        response = {}
+        response = service.library.library.Library(item_id=data.validated_data.get('itemId'), owner=user).set_item(data=data, request=self.request)
 
         return JsonResponse(response, safe=False)
 

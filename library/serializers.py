@@ -9,8 +9,10 @@ class ItemGetSerializer(core.serializers.CustomSerializer):
 
     def validate_itemType(self, value):
         choices = ['all', 'book', 'manga']
-        if value not in choices:
+        if value not in choices or not value:
             raise ValidationError(f"O valor '{value}' não é válido. Escolha uma das opções: {', '.join(choices)}.")
+
+        return value
 
 
 class ItemPostSerializer(core.serializers.CustomSerializer):
