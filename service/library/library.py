@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 from django.db.models import F, Case, When, BooleanField
 from django.utils.translation import gettext_lazy as _
 
@@ -73,12 +71,12 @@ class Library:
         item.summary = data.validated_data.get('summary')
         item.last_status_at = data.validated_data.get('lastStatusDate')
         item.owner_id = self.owner
-        # item.save(request_=request)
+        item.save(request_=request)
 
-        # self.update_status(item=item, status=status, date=dat_status, is_update=False, request=request)
+        self.__update_status(item=item, status=data.validated_data.get('lastStatusId'), date=data.validated_data.get('lastStatusDate'), is_update=False, request=request)
 
-        # self._set_author(item=item, author_list=main_author_id, is_main=True)
-        # self._set_author(item=item, author_list=authors_id)
+        self.__set_author(item=item, author_list=data.validated_data.get('mainAuthorId'), is_main=True)
+        self.__set_author(item=item, author_list=[])
 
         response = {
             'success': True,
@@ -402,10 +400,10 @@ class Library:
         return response
 
     @staticmethod
-    def update_status(item, status, date, is_update=True, request=None):
+    def __update_status(item, status, date, is_update=True, request=None):
         """
-        :Name: update_status
-        :descrição: Atualiza o status do item
+        :Name: __update_status
+        :Description: Update item status and add new register in itemStatus
         :Created by: Lucas Penha de Moura - 08/09/2021
         :Edited by:
 
@@ -440,14 +438,23 @@ class Library:
             print(e)
             return False
 
-    def _set_author(self, item=None, author_list=None, is_main=False):
+    @staticmethod
+    def __set_author(self, item=None, author_list=None, is_main=False):
         """
-        :Nome da classe/função: _cadastra_autor
-        :descrição: Cadastra a relação de item com autor;
-        :Criação: Lucas Penha de Moura — 10/09/2021
-        :Edições:
-            Motivo:
-        :return: True se o cadastro for bem-sucedido, False caso contrário
+        :Name: __set_author
+        :Description: Create the relation between item and author
+        :Created by: Lucas Penha de Moura - 10/09/2021
+        :Edited by:
+
+        Explicit params:
+        :param item: Item object
+        :param author_list: List of authors
+        :param is_main: Indicates if is the main author of the item
+
+        Implicit params (passed in the class instance or set by other functions):
+        None
+
+        :return: True if all operation succeeds, False otherwise
         """
         if not isinstance(author_list, list):
             author_list = [author_list]
