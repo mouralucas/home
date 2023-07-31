@@ -12,6 +12,8 @@ class InvestmentGetSerializer(core.serializers.CustomSerializer):
         if value not in choices:
             raise ValidationError(f"O valor '{value}' não é válido. Escolha uma das opções: {', '.join(choices)}.")
 
+        return value
+
 
 class InvestmentPostSerializer(core.serializers.CustomSerializer):
     parentId = serializers.UUIDField(required=False)
@@ -35,3 +37,5 @@ class InvestmentTypeGetSerializer(serializers.Serializer):
         choices = ['all', 'father', 'child']
         if value not in choices:
             raise ValidationError(f"O valor '{value}' não é válido. Escolha uma das opções: {', '.join(choices)}.")
+
+        return value
