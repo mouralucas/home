@@ -105,7 +105,7 @@ class Investment:
         response = {
             'success': True,
             'description': None,
-            'investment_type': list(investment_type)
+            'investmentType': list(investment_type)
         }
 
         return response
@@ -115,7 +115,7 @@ class Investment:
 
         response = {
             'success': True,
-            'investment_proportion': list(proportion)
+            'investmentProportion': list(proportion)
         }
 
         return response
