@@ -76,7 +76,6 @@ class State(APIView):
 
 class Version(APIView):
     def get(self, *args, **kwargs):
-
         response = service.core.core.Misc().get_version()
 
         return Response(response, status=200)
