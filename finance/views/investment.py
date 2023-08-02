@@ -20,7 +20,7 @@ class Investment(APIView):
 
     def post(self, *args, **kwargs):
         validators = InvestmentPostSerializer(data=self.request.data)
-        if not validators.is_valid(raise_exception=True):
+        if not validators.is_valid():
             return Response(validators.errors, status=400)
 
         parent_id = validators.validated_data.get('parentId')
