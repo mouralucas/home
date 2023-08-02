@@ -50,7 +50,7 @@ class CreditCard:
             'status': True,
             'description': None,
             'quantity': len(credit_cards),
-            'credit_cards': list(credit_cards),
+            'creditCards': list(credit_cards),
         }
 
         return response
