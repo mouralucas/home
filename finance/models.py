@@ -1,9 +1,7 @@
 import uuid
-import warnings
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from numpy import number
 
 import core.models
 import finance.choices
@@ -118,20 +116,19 @@ class Investment(core.models.Log):
     class Meta:
         db_table = 'finance"."investment'
 
-    # class InvestmentPosition(core.models.Log):
-    #     investment = models.ForeignKey('finance.Investment', on_delete=models.DO_NOTHING)
-    #     period = models.IntegerField()
-    #     amount = models.DecimalField(max_digits=15, decimal_places=5, default=0)
-    #
-    #
-    #     class Meta:
-    #         db_table = 'finance"."investment_position'
-
-
 # class InvestmentStatement(core.models.Log):
 #     # adicionar coluna com o total anterior, total depositado e total de rendimento para cada investimento pai para cada periodo
+#     investment = models.ForeignKey('finance.Investment', on_delete=models.DO_NOTHING)
 #     period = models.SmallIntegerField(help_text=_('Período de referência'))
-
+#     amount_gross = models.DecimalField(max_digits=14, decimal_places=5)
+#     income_tax_perc = models.DecimalField(max_digits=7, decimal_places=3)
+#     income_tax = models.DecimalField(max_digits=14, decimal_places=5)
+#     tax_perc = models.DecimalField(max_digits=7, decimal_places=3)
+#     tax = models.DecimalField(max_digits=14, decimal_places=5)
+#     amount_net = models.DecimalField(max_digits=14, decimal_places=5)
+#
+#     class Meta:
+#         db_table = 'finance"."investment_statement'
 
 class BankStatement(core.models.Log):
     account_old = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING, null=True)

@@ -18,7 +18,7 @@ class ItemGetSerializer(core.serializers.CustomSerializer):
 class ItemPostSerializer(core.serializers.CustomSerializer):
     itemId = serializers.IntegerField(required=False)
     lastStatusId = serializers.CharField(required=True)
-    lastStatusDate = serializers.DateField(required=True)
+    lastStatusAt = serializers.DateField(required=True)
     mainAuthorId = serializers.IntegerField(required=True)
     authorsId = serializers.IntegerField(required=False)
     title = serializers.CharField(required=True)

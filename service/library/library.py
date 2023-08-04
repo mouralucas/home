@@ -38,9 +38,9 @@ class Library:
                 item = library.models.Item()
 
         # Define as datas usadas
-        dat_lancamento_form = util.datetime.format_data(dat_published, mask='____-__-__')
-        dat_lancamento_original_form = util.datetime.format_data(dat_published_original, mask='____-__-__')
-        dat_status_form = util.datetime.format_data(dat_status, mask='____-__-__')
+        # dat_lancamento_form = util.datetime.format_data(dat_published, mask='____-__-__')
+        # dat_lancamento_original_form = util.datetime.format_data(data.validated_data('publishedOriginalAt'), mask='____-__-__')
+        # dat_status_form = util.datetime.format_data(dat_status, mask='____-__-__')
 
         item.main_author_id = data.validated_data.get('mainAuthorId')
         item.title = data.validated_data.get('title')
@@ -115,7 +115,7 @@ class Library:
                       titleOriginal=F('title_original'),
                       subtitleOriginal=F('subtitle_original'),
                       mainAuthorName=F('main_author__nm_full'),
-                      mainAuthotId=F('main_author_id'),
+                      mainAuthorId=F('main_author_id'),
                       isbn=F('isbn'),
                       isbnFormatted=F('isbn_formatted'),
                       isbn10=F('isbn10'),
@@ -439,7 +439,7 @@ class Library:
             return False
 
     @staticmethod
-    def __set_author(self, item=None, author_list=None, is_main=False):
+    def __set_author(item=None, author_list=None, is_main=False):
         """
         :Name: __set_author
         :Description: Create the relation between item and author
