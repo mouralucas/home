@@ -36,12 +36,10 @@ foobar.pluralize('goose')
 foobar.singularize('phenomena')
 ```
 
-## Contributing
+## Used APIs
+For finances many APIs are used, but primarily it is used the [Portal de Dados Abertos do Banco Central do Brasil](https://dadosabertos.bcb.gov.br/).
 
-Pull requests are welcome. For major changes, please open an issue first
-to discuss what you would like to change.
-
-Please make sure to update tests as appropriate.
+The API uses values from [SGS - Sistema Gerenciador de Séries Temporais](https://www3.bcb.gov.br/sgspub/localizarseries/localizarSeries.do?method=prepararTelaLocalizarSeries) as references to params.
 
 ## License
 

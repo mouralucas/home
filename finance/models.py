@@ -116,6 +116,7 @@ class Investment(core.models.Log):
     class Meta:
         db_table = 'finance"."investment'
 
+
 # class InvestmentStatement(core.models.Log):
 #     # adicionar coluna com o total anterior, total depositado e total de rendimento para cada investimento pai para cada periodo
 #     investment = models.ForeignKey('finance.Investment', on_delete=models.DO_NOTHING)
@@ -239,6 +240,7 @@ class CurrencyRate(core.models.Log):
     class Meta:
         db_table = 'finance"."currency_rate'
 
+
 ##### STOCK MARKET TABLES ######
 # class Ticker(core.models.Log):
 #     id = models.CharField(max_length=10, primary_key=True)
@@ -263,10 +265,10 @@ class CurrencyRate(core.models.Log):
 #         db_table = 'finance"."ticker_historical_price'
 #
 #
-# class PrimeRate(core.models.Log):
-#     country = models.ForeignKey('core.Country', on_delete=models.DO_NOTHING)
-#     date = models.DateField()
-#     value = models.DecimalField(max_digits=15, decimal_places=5)
-#
-#     class Meta:
-#         db_table = 'finance"."prime_rate'
+class BrazilInterestRate(core.models.Log):
+    date = models.DateField()
+    selic = models.DecimalField(max_digits=20, decimal_places=6)
+    cdi = models.DecimalField(max_digits=20, decimal_places=6)
+
+    class Meta:
+        db_table = 'finance"."brazil_interest_rate_beta'
