@@ -19,20 +19,31 @@ class BancoCentralAPI(Integration):
 
     Integration with the Banco Central do Brasil open data API
     """
+
     def __init__(self, service=None):
         super().__init__(service)
         self.url_bcdata = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.{0}/dados?{1}'
 
-    def historical_data_selic_integration(self):
-        cdi_interest = pd.read_json(self.url_bcdata.format('12', 'dataInicial=01/08/2023&dataFinal=31/08/2023'))
-        cdi_interest['data'] = pd.to_datetime(cdi_interest['data'], dayfirst=True)
+    def historical_data_cdi(self):
+        # TODO: add all periodicity
 
-        historical_data = finance.models.FinanceData.objects.filter(name='cdi', periodicity='% a.d.')
+        cdi_interest_ad = pd.read_json(self.url_bcdata.format('12', 'dataInicial=01/08/2023&dataFinal=31/08/2023'))
+        cdi_interest_ad['data'] = pd.to_datetime(cdi_interest_ad['data'], dayfirst=True)
 
-        for idx, value in cdi_interest.iterrows():
+        historical_cdi_ad_data = finance.models.FinanceData.objects.filter(name='cdi', periodicity='% a.d.')
+
+        for idx, value in cdi_interest_ad.iterrows():
             print(value)
 
-        print(cdi_interest)
+        print(cdi_interest_ad)
 
-    def daily_selic_update(self):
-        pass
+    def historical_data_selic(self):
+        selic_interest_ad = pd.read_json(self.url_bcdata.format('11', 'dataInicial=01/08/2023&dataFinal=31/08/2023'))
+        selic_interest_ad['data'] = pd.to_datetime(selic_interest_ad['data'], dayfirst=True)
+
+        historical_selic_ad_data = finance.models.FinanceData.objects.filter(name='selic', periodicity='% a.d.')
+
+        for idx, value in selic_interest_ad.iterrows():
+            print(value)
+
+        print(selic_interest_ad)

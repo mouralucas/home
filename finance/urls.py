@@ -35,7 +35,7 @@ urlpatterns = [
     re_path(r'^payment/date$', views_deprecated.PaymentDate.as_view()),
 
     # Integration
-    re_path('integration/cdi/historical', integration.CdiHistorical.as_view()),
+    re_path('integration/historical', integration.Historical.as_view()),
 
     # File content uploads for some banks
     re_path('file/upload/excel/pagbank', views_deprecated.ImportExcelPagBank.as_view())
