@@ -265,10 +265,12 @@ class CurrencyRate(core.models.Log):
 #         db_table = 'finance"."ticker_historical_price'
 #
 #
-class BrazilInterestRate(core.models.Log):
+class FinanceData(core.models.Log):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    name = models.CharField(max_length=100)
     date = models.DateField()
-    selic = models.DecimalField(max_digits=20, decimal_places=6)
-    cdi = models.DecimalField(max_digits=20, decimal_places=6)
+    periodicity = models.CharField(max_length=10)
+    unit = models.CharField(max_length=10, null=True)
 
     class Meta:
-        db_table = 'finance"."brazil_interest_rate_beta'
+        db_table = 'finance"."finance_data'

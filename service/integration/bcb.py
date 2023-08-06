@@ -1,3 +1,4 @@
+import finance.models
 from service.integration.integration import Integration
 import pandas as pd
 
@@ -18,12 +19,20 @@ class BancoCentralAPI(Integration):
 
     Integration with the Banco Central do Brasil open data API
     """
-    def __init__(self, service):
+    def __init__(self, service=None):
         super().__init__(service)
-        self.url_bcdata = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.4389/dados?formato=json&dataInicial=01/01/2023&dataFinal=31/12/2023'
+        self.url_bcdata = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.{0}/dados?{1}'
 
     def historical_data_selic_integration(self):
-        juros_cdi = pd.read_json(self.url_bcdata)
+        cdi_interest = pd.read_json(self.url_bcdata.format('12', 'dataInicial=01/08/2023&dataFinal=31/08/2023'))
+        cdi_interest['data'] = pd.to_datetime(cdi_interest['data'], dayfirst=True)
+
+        historical_data = finance.models.FinanceData.objects.filter(name='cdi', periodicity='% a.d.')
+
+        for idx, value in cdi_interest.iterrows():
+            print(value)
+
+        print(cdi_interest)
 
     def daily_selic_update(self):
         pass

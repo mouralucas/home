@@ -1,7 +1,7 @@
 from django.urls import re_path
 
 from finance import views
-from finance.views import account, credit_card, investment, views_deprecated
+from finance.views import account, credit_card, investment, views_deprecated, integration
 
 urlpatterns = [
     # Account
@@ -33,6 +33,9 @@ urlpatterns = [
     re_path(r'^expense/category$', views_deprecated.ExpenseCategory.as_view()),
     re_path(r'^expenses/history$', views_deprecated.ExpensesHistory.as_view()),
     re_path(r'^payment/date$', views_deprecated.PaymentDate.as_view()),
+
+    # Integration
+    re_path('integration/cdi/historical', integration.CdiHistorical.as_view()),
 
     # File content uploads for some banks
     re_path('file/upload/excel/pagbank', views_deprecated.ImportExcelPagBank.as_view())

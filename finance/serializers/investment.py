@@ -3,6 +3,7 @@ from rest_framework import serializers
 import core.serializers
 from rest_framework.exceptions import ValidationError
 
+
 class InvestmentGetSerializer(core.serializers.CustomSerializer):
     investmentId = serializers.UUIDField(required=False)
     showMode = serializers.CharField(required=True)
