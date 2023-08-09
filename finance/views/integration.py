@@ -6,7 +6,7 @@ import service.integration.bcb
 
 class Historical(APIView):
     def get(self, *args, **kwargs):
-        # response = service.integration.bcb.BancoCentralAPI().historical_data_cdi()
-        response = service.integration.bcb.BancoCentralAPI().historical_data_selic()
+        response = service.integration.bcb.BancoCentralAPI().historical_data_cdi()
+        # response = service.integration.bcb.BancoCentralAPI().historical_data_selic()
 
         return Response(response, status=200)

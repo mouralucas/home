@@ -269,7 +269,8 @@ class FinanceData(core.models.Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=100)
     date = models.DateField()
-    periodicity = models.CharField(max_length=10)
+    value = models.DecimalField(max_digits=17, decimal_places=6)
+    periodicity = models.ForeignKey('core.Type', on_delete=models.DO_NOTHING, null=True)
     unit = models.CharField(max_length=10, null=True)
 
     class Meta:

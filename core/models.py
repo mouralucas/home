@@ -294,6 +294,21 @@ class DynamicTextTranslation(Log):
         db_table = 'public"."dynamic_text_translate'
 
 
+class Type(Log):
+    """
+        Model para salvar os tipos que não possem registros suficientes para justificar uma tabela
+        A categoria deve ser um registro da tabela Category com o módulo "type" que é um módulo de sistema usado para esse fim
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    name = models.CharField(max_length=150)
+    category = models.ForeignKey('core.Category', on_delete=models.DO_NOTHING)
+    order = models.SmallIntegerField(null=True)
+    description = models.TextField(null=True)
+
+    class Meta:
+        db_table = 'public"."type'
+
+
 # Choices available throughout the project
 class GenderTypes(models.TextChoices):
     MALE = ('male', _('Masculino'))
