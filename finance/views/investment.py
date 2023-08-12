@@ -63,3 +63,10 @@ class Proportion(APIView):
         response = service.finance.investment.Investment().get_proportion()
 
         return Response(response)
+
+
+class Interest(APIView):
+    def get(self, *args, **kwargs):
+        response = service.finance.investment.Investment().get_interest()
+
+        return Response(response, status=200)

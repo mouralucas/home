@@ -34,6 +34,8 @@ urlpatterns = [
     re_path(r'^expenses/history$', views_deprecated.ExpensesHistory.as_view()),
     re_path(r'^payment/date$', views_deprecated.PaymentDate.as_view()),
 
+    re_path(r'^interest$', investment.Interest.as_view()),
+
     # Integration
     re_path('integration/historical', integration.Historical.as_view()),
 

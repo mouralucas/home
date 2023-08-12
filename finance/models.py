@@ -156,7 +156,7 @@ class BankStatement(core.models.Log):
     perc_bank_fee = models.DecimalField(max_digits=7, decimal_places=2, default=0, help_text=_('Percentagem de spread do banco'))
     effective_rate = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('VET: valor efetivo total. valor total do câmbio com as taxas e impostos'))
     # Add compos de porcentagem dos impostos e taxas e no front colocar apenas campo aberto pras porcentagem e calcular na mão
-    # Procurar forma de apresentar os valores em reais quando for relacionado a transferência para a conta em dolares, mas manter só o valor quando transação normal e dolar
+    # Procurar forma de apresentar os valores em reais quando for relacionado a transferência para a conta em dólares, mas manter só o valor quando transação normal e dólar
 
     # Campos de controle
     origin = models.CharField(max_length=50, default='SYSTEM')
@@ -181,22 +181,22 @@ class CreditCardBill(core.models.Log):
     credit_card = models.ForeignKey('finance.CreditCard', on_delete=models.DO_NOTHING, null=True)
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     period = models.IntegerField(null=True, help_text=_('Período de referência'))
-    dat_payment = models.DateField(null=True)
-    dat_purchase = models.DateField(null=True)
+    dat_payment = models.DateField(null=True)  # TODO: change to payment_at
+    dat_purchase = models.DateField(null=True)  # TODO: change to purchased_at
     amount = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Sempre em reais, valor final na fatura'))
     amount_absolute = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('O mesmo do amount sem o sinal'))
     amount_total = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Total da compra, quando existe parcelas'))
     category = models.ForeignKey('core.Category', on_delete=models.DO_NOTHING, null=True)
 
-    currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING)
-    amount_currency = models.DecimalField(max_digits=14, decimal_places=2, null=True, help_text=_('Sempre real da compra, na moeda original'))
-    price_dollar = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Usado em compra em outra moeda, em relação ao real'))
-    price_currency_dollar = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Valor da moeda em relação ao dólar, usado na conversão'))
+    currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING)  # Change to currency_reference
+    amount_currency = models.DecimalField(max_digits=14, decimal_places=2, null=True, help_text=_('Sempre real da compra, na moeda original'))  # Change to amount_reference
+    price_dollar = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Usado em compra em outra moeda, em relação ao real'))  # TODO: change to dollar_quote
+    price_currency_dollar = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Valor da moeda em relação ao dólar, usado na conversão'))  # TODO: change to
     tax = models.DecimalField(max_digits=7, decimal_places=2, default=0, help_text=_('Iof total da compra, quando aplicável'))
     installment = models.SmallIntegerField(default=1)
     tot_installment = models.SmallIntegerField(default=1)
     is_installment = models.BooleanField(default=False)
-    father = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
+    father = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)  # TODO: change to parent
     description = models.TextField(null=True)
     cash_flow = models.CharField(max_length=100, choices=finance.choices.CashFlow.choices)
 
@@ -268,9 +268,10 @@ class CurrencyRate(core.models.Log):
 class FinanceData(core.models.Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=100)
+    type = models.ForeignKey('core.Type', on_delete=models.DO_NOTHING, related_name='finance_data_type', help_text=_('O tipo da informação (cdi, selic, ipca, etc)'))
     date = models.DateField()
     value = models.DecimalField(max_digits=17, decimal_places=6)
-    periodicity = models.ForeignKey('core.Type', on_delete=models.DO_NOTHING, null=True)
+    periodicity = models.ForeignKey('core.Type', on_delete=models.DO_NOTHING, null=True, related_name='finance_data_periodicity')
     unit = models.CharField(max_length=10, null=True)
 
     class Meta:
