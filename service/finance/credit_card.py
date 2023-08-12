@@ -70,7 +70,7 @@ class CreditCard:
                 filters['credit_card_id'] = self.credit_card_id
 
         bills = finance.models.CreditCardBill.objects \
-            .values('id', 'period', 'dat_purchase', 'dat_payment',
+            .values('id', 'period', 'purchase_at', 'payment_at',
                     'installment', 'tot_installment', 'description') \
             .filter(**filters) \
             .annotate(amount=F('amount'),
@@ -111,16 +111,16 @@ class CreditCard:
         bill.credit_card_id = self.credit_card_id
         # Dates
         bill.period = self.period
-        bill.dat_payment = dat_pagamento_date
-        bill.dat_purchase = util.datetime.date_to_datetime(self.dat_purchase, output_format='%Y-%m-%d')
+        bill.payment_at = dat_pagamento_date
+        bill.purchase_at = util.datetime.date_to_datetime(self.dat_purchase, output_format='%Y-%m-%d')
 
         # Amounts
         bill.amount = float(self.amount) * -1
         bill.amount_absolute = float(self.amount)
         bill.amount_total = self.amount  # TODO: modificar para adicionar o valor total de compras parceladas
-        bill.amount_currency = float(self.amount) * -1
-        bill.price_currency_dollar = self.price_currency_dollar
-        bill.price_dollar = 1
+        bill.amount_reference = float(self.amount) * -1
+        bill.dollar_currency_quote = self.price_currency_dollar
+        bill.dollar_quote = 1
 
         bill.currency_id = self.currency_id
         bill.category_id = self.category_id
