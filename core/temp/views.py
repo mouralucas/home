@@ -1,3 +1,4 @@
+import pandas
 from django.db.models import Sum
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -59,3 +60,20 @@ class Balance(APIView):
 
         finance.models.BankAccountMonthlyBalance.objects.bulk_create(balance_list_model)
         return Response(balance_list)
+
+
+class Statement(APIView):
+    def get(self, *args, **kwargs):
+        accounts = finance.models.Account.objects.values_list('id', flat=True).filter(owner_id='adf52a1e-7a19-11ed-a1eb-0242ac120002')
+        accounts = ['a7b2cb0c-c64e-4623-9673-72c6205ad2e1']
+
+        statement_dict = {}
+        total_anterior = 0
+        for idx, account in enumerate(accounts):
+            period_totals = pandas.DataFrame(finance.models.BankStatement.objects.values('period').annotate(tot=Sum('amount'))
+                             .filter(account_id=account, status=True, period__lte=202312).order_by('period'))
+
+            period_totals['statement'] = period_totals['tot'].cumsum()
+
+            return Response(period_totals.to_json, status=200)
+
