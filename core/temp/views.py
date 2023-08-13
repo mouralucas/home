@@ -70,10 +70,17 @@ class Statement(APIView):
         statement_dict = {}
         total_anterior = 0
         for idx, account in enumerate(accounts):
-            period_totals = pandas.DataFrame(finance.models.BankStatement.objects.values('period').annotate(tot=Sum('amount'))
-                             .filter(account_id=account, status=True, period__lte=202312).order_by('period'))
+            period_totals = pandas.DataFrame(finance.models.BankStatement.objects.values('period').annotate(transaction=Sum('amount'))
+                                             .filter(account_id=account, status=True, period__lte=202312)
+                                             .exclude(category__in=['rendimento']).order_by('period'))
 
-            period_totals['statement'] = period_totals['tot'].cumsum()
+            earnings = pandas.DataFrame(finance.models.BankStatement.objects.values('period').annotate(earning=Sum('amount'))
+                                        .filter(account_id=account, status=True, period__lte=202312, category_id='rendimento')
+                                        .order_by('period'))
 
-            return Response(period_totals.to_json, status=200)
+            merged_df = pandas.merge(period_totals, earnings, on='period', how='outer')
+            merged_df = merged_df.sort_values(by='period')
 
+            period_totals['statement'] = period_totals['transaction'].cumsum()
+
+            return Response(period_totals.to_dict(), status=200)
