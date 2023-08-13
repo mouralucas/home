@@ -132,7 +132,6 @@ class Investment(core.models.Log):
 #         db_table = 'finance"."investment_statement'
 
 class BankStatement(core.models.Log):
-    account_old = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING, null=True)
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING, related_name='bank_statement_account')
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     period = models.IntegerField(help_text=_('Período de referência'))

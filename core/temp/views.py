@@ -80,6 +80,7 @@ class Statement(APIView):
 
             merged_df = pandas.merge(period_totals, earnings, on='period', how='outer')
             merged_df = merged_df.sort_values(by='period')
+            merged_df = merged_df.fillna(0)
 
             period_totals['statement'] = period_totals['transaction'].cumsum()
 
