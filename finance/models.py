@@ -131,7 +131,7 @@ class Investment(core.models.Log):
 #     class Meta:
 #         db_table = 'finance"."investment_statement'
 
-class BankStatement(core.models.Log):
+class AccountStatement(core.models.Log):
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING, related_name='bank_statement_account')
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     period = models.IntegerField(help_text=_('Período de referência'))
@@ -165,15 +165,16 @@ class BankStatement(core.models.Log):
         db_table = 'finance"."bank_statement'
 
 
-class BankAccountMonthlyBalance(core.models.Log):
-    account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING)
-    period = models.IntegerField(null=True, help_text=_('Período de referência'))
-    amount = models.DecimalField(max_digits=14, decimal_places=2)
-    earning = models.DecimalField(max_digits=14, decimal_places=2)
-    total_amount = models.DecimalField(max_digits=14, decimal_places=2)
+class AccountBalance(core.models.Log):
+    account = models.ForeignKey(to='finance.AccountStatement', on_delete=models.DO_NOTHING)
+    period = models.IntegerField(help_text=_('Período de referência'))
+    transactions = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Soma de todas as transações realizadas na conta no período'))
+    earnings = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Soma de todos os rendimentos da conta no período'))
+    transactions_balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo da movimentação da conta no período'))
+    balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo da conta no período'))
 
     class Meta:
-        db_table = 'finance"."bank_account_monthly_balance'
+        db_table = 'finance"."account_balance'
 
 
 class CreditCardBill(core.models.Log):

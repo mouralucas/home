@@ -12,6 +12,7 @@ from tabula import read_pdf
 import finance.models
 import finance.serializers
 import util.datetime
+import pdfplumber
 
 
 class Finance:
@@ -53,9 +54,9 @@ class Finance:
             return response
 
         if self.statement_id:
-            statement = finance.models.BankStatement.objects.filter(pk=self.statement_id).first()
+            statement = finance.models.AccountStatement.objects.filter(pk=self.statement_id).first()
         else:
-            statement = finance.models.BankStatement()
+            statement = finance.models.AccountStatement()
 
         self.__set_reference()
 
@@ -91,7 +92,7 @@ class Finance:
         if self.account_id:
             filters['account_id'] = self.account_id
 
-        statement = finance.models.BankStatement.objects.values('period', 'description') \
+        statement = finance.models.AccountStatement.objects.values('period', 'description') \
             .filter(**filters).active().annotate(statementId=F('id'),
                                                  amount=F('amount'),
                                                  accountName=F('account__nickname'),
@@ -154,7 +155,7 @@ class Finance:
         bills = finance.models.CreditCardBill.objects.values('period', 'category__description') \
             .filter(**filters).annotate(total=Sum('amount')).order_by('period')
 
-        statements = finance.models.BankStatement.objects.values('period', 'category__description') \
+        statements = finance.models.AccountStatement.objects.values('period', 'category__description') \
             .filter(**filters).annotate(total=Sum('amount')).order_by('period')
 
         evolucao = statements.union(bills)
@@ -187,7 +188,7 @@ class Finance:
             excluders['total__gt'] = 0.0
             filters['total__lt'] = 0
 
-        statement = finance.models.BankStatement.objects.values('category__description').annotate(total=Sum('amount')).filter(**filters).exclude(**excluders)
+        statement = finance.models.AccountStatement.objects.values('category__description').annotate(total=Sum('amount')).filter(**filters).exclude(**excluders)
         bill = finance.models.CreditCardBill.objects.values('category__description').annotate(total=Sum('amount')).filter(**filters).exclude(**excluders)
 
         expenses = statement.union(bill)
@@ -215,7 +216,7 @@ class Finance:
             'owner_id': self.owner
         }
 
-        statement = finance.models.BankStatement.objects \
+        statement = finance.models.AccountStatement.objects \
             .values('category__parent__description') \
             .annotate(category=F('category__parent__description'),
                       total=Sum('amount_absolute')) \
@@ -280,8 +281,23 @@ class Finance:
             'Valor': 'amount',
         }
 
-        tables = camelot.read_pdf(path, pages='1-end')
-        df = pd.concat([table.df.rename(columns=table.df.iloc[0]).drop(table.df.index[0]) for table in tables])
+        tables = []
+
+        with pdfplumber.open(path) as pdf:
+            for page in pdf.pages:
+                table = page.extract_table()
+                print(table)
+                if table:
+                    tables.append(table)
+
+        df = pd.DataFrame()
+        if tables:
+            df = pd.DataFrame(columns=tables[0][0])
+            for table in tables:
+                df_novas_linhas = pd.DataFrame(table[1:], columns=df.columns)
+                df = df.append(df_novas_linhas, ignore_index=True)
+
+        # df = pd.concat([table.df.rename(columns=table.df.iloc[0]).drop(table.df.index[0]) for table in tables])
         df = df.rename(columns=new_columns)
 
         # Remove unnecessary columns
@@ -304,24 +320,24 @@ class Finance:
             print(aux)
 
         list_statement = []
-        for idx, i in newdf.iterrows():
-            statement = finance.models.BankStatement()
-            statement.period = i['period']
-            statement.amount = i['amount']
-            statement.amount_absolute = i['amount']
-            statement.dat_purchase = i['datetime']
-            statement.description = i['description']
-            statement.is_validated = False
-            statement.origin = 'PDF_IMPORT'
-            statement.account_id = '32e542e7-bf2b-4408-b724-798591f11e09'
-            statement.currency_id = 'BRL'
-            statement.owner_id = 'adf52a1e-7a19-11ed-a1eb-0242ac120002'
-            list_statement.append(statement)
-
-        finance.models.BankStatement.objects.bulk_create(list_statement)
+        # for idx, i in newdf.iterrows():
+        #     statement = finance.models.AccountStatement()
+        #     statement.period = i['period']
+        #     statement.amount = i['amount']
+        #     statement.amount_absolute = i['amount']
+        #     statement.dat_purchase = i['datetime']
+        #     statement.description = i['description']
+        #     statement.is_validated = False
+        #     statement.origin = 'PDF_IMPORT'
+        #     statement.account_id = '32e542e7-bf2b-4408-b724-798591f11e09'
+        #     statement.currency_id = 'BRL'
+        #     statement.owner_id = 'adf52a1e-7a19-11ed-a1eb-0242ac120002'
+        #     list_statement.append(statement)
+        #
+        # finance.models.AccountStatement.objects.bulk_create(list_statement)
         # df['acumulado'] = df.groupby(['date']).cumsum()
 
-        newdf.to_excel('teste.xlsx', index=False)
+        df.to_excel('teste.xlsx', index=False)
         print('')
 
     def import_picpay_bill(self, path, period):
@@ -377,7 +393,7 @@ class Finance:
         cat_not_expense = finance.models.CategoryGroup.objects.values_list('category_id', flat=True).filter(group='not_expense')
 
         credit_card_bill = finance.models.CreditCardBill.objects.values_list('amount', flat=True).filter(period=self.reference, owner_id=self.owner)
-        bank_statement = finance.models.BankStatement.objects.filter(period=self.reference, owner_id=self.owner)
+        bank_statement = finance.models.AccountStatement.objects.filter(period=self.reference, owner_id=self.owner)
 
         bank_statement_incoming = sum(list(bank_statement.values_list('amount', flat=True)
                                            .filter(cash_flow='INCOMING').exclude(category_id__in=list(cat_not_expense))))

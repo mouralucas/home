@@ -26,17 +26,16 @@ class PdfImport(APIView):
             response = service.finance.finance.Finance().import_picpay_statement(path=path)
         elif pdf_type == 'picpay_bill':
             response = service.finance.finance.Finance().import_picpay_bill(path=path, period=period)
-
         else:
             response = {
                 'status': False,
                 'descriptions': _('Não implementado')
             }
 
+
+        response = {}
+
         return JsonResponse(response, safe=False)
-
-
-
 
 
 class ExpensesHistory(View):
