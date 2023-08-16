@@ -2,9 +2,9 @@ import datetime
 from collections import defaultdict
 from datetime import datetime
 
-import camelot
 import numpy as np
 import pandas as pd
+import pdfplumber
 from django.db.models import Sum, F
 from django.utils.translation import gettext_lazy as _
 from tabula import read_pdf
@@ -12,7 +12,6 @@ from tabula import read_pdf
 import finance.models
 import finance.serializers
 import util.datetime
-import pdfplumber
 
 
 class Finance:
@@ -46,6 +45,8 @@ class Finance:
         self.response = {}  # Deprecated
 
     def set_statement(self, request=None):
+        # TODO: adicionar uma lógica que verifica a data da transação e se não for período anterior adicionar um uma tabela a informação pra reprocessar
+        #   todo o extrato a partir do mês da transação
         if not self.purchased_at or not self.amount or not self.categoria_id or not self.account_id:
             response = {
                 'status': False,
@@ -357,11 +358,7 @@ class Finance:
 
         print('')
 
-    def __set_reference(self):
-        # dat_purchase = util.datetime.date_to_datetime(self.dat_compra, output_format='%Y-%m-%d')
-        year = self.purchased_at.year
-        month = self.purchased_at.month
-        self.reference = year * 100 + month
+
 
     # Manter no service Finance, pois é função geral de finance, todas as específicas serão migrados (account, investment, credit card, etc.)
     def get_bank(self):
@@ -412,3 +409,9 @@ class Finance:
         }
 
         return response
+
+    def __set_reference(self):
+        # dat_purchase = util.datetime.date_to_datetime(self.dat_compra, output_format='%Y-%m-%d')
+        year = self.purchased_at.year
+        month = self.purchased_at.month
+        self.reference = year * 100 + month

@@ -68,20 +68,18 @@ class Statement(APIView):
         accounts = finance.models.Account.objects.values_list('id', flat=True).filter(owner_id='adf52a1e-7a19-11ed-a1eb-0242ac120002')
         accounts = ['32e542e7-bf2b-4408-b724-798591f11e09']
 
-        statement_dict = {}
-        total_anterior = 0
-        for idx, account in enumerate(accounts):
-            account_registers = finance.models.AccountStatement.objects.values('period') \
-                .filter(account_id=account, status=True).order_by('period')
+        # for idx, account in enumerate(accounts):
+        #     account_registers = finance.models.AccountStatement.objects.values('period') \
+        #         .filter(account_id=account, status=True).order_by('period')
+        #
+        #     transactions = pandas.DataFrame(account_registers.exclude(category_id__in=['rendimento']).annotate(transaction=Sum('amount')))
+        #     earnings = pandas.DataFrame(account_registers.filter(category_id='rendimento').annotate(earning=Sum('amount')))
+        #
+        #     merged_df = pandas.merge(transactions, earnings, on='period', how='outer')
+        #     merged_df = merged_df.sort_values(by='period')
+        #     merged_df = merged_df.fillna(0)
+        #     merged_df['transaction_balance'] = merged_df['transaction'] + merged_df['earning']
+        #
+        #     merged_df['account_balance'] = merged_df['transaction_balance'].cumsum()
 
-            transactions = pandas.DataFrame(account_registers.exclude(category_id__in=['rendimento']).annotate(transaction=Sum('amount')))
-            earnings = pandas.DataFrame(account_registers.filter(category_id='rendimento').annotate(earning=Sum('amount')))
 
-            merged_df = pandas.merge(transactions, earnings, on='period', how='outer')
-            merged_df = merged_df.sort_values(by='period')
-            merged_df = merged_df.fillna(0)
-            merged_df['transaction_balance'] = merged_df['transaction'] + merged_df['earning']
-
-            merged_df['account_balance'] = merged_df['transaction_balance'].cumsum()
-
-            return Response(period_totals.to_dict(), status=200)

@@ -13,11 +13,9 @@ def custom_exception_handler(exception: Exception, context: dict):
 
     # Only alter the response when it's a validation error
     if not isinstance(exception, exceptions.ValidationError):
-        print('caralho')
         return response
 
     # It's a validation error, there should be a Serializer
-    print('caralhinho')
     view = context.get("view", None)
     serializer = view.get_serializer_class()()
 

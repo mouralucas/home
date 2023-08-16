@@ -166,7 +166,8 @@ class AccountStatement(core.models.Log):
 
 
 class AccountBalance(core.models.Log):
-    account = models.ForeignKey(to='finance.AccountStatement', on_delete=models.DO_NOTHING)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING)
     period = models.IntegerField(help_text=_('Período de referência'))
     transactions = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Soma de todas as transações realizadas na conta no período'))
     earnings = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Soma de todos os rendimentos da conta no período'))
@@ -192,7 +193,7 @@ class CreditCardBill(core.models.Log):
     amount_reference = models.DecimalField(max_digits=14, decimal_places=2, null=True, help_text=_('O valor da compra'))
     dollar_quote = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Valor do dólar em relação a moeda do cartão'))
     dollar_currency_quote = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Valor do dólar em relação a moeda original, em caso de compra em uma terceira moeda'))  # TODO: change to
-    tax = models.DecimalField(max_digits=7, decimal_places=2, default=0, help_text=_('Iof total da compra, quando aplicável'))
+    tax = models.DecimalField(max_digits=14, decimal_places=2, default=0, help_text=_('Iof total da compra, quando aplicável'))
     installment = models.SmallIntegerField(default=1)
     tot_installment = models.SmallIntegerField(default=1)
     is_installment = models.BooleanField(default=False)

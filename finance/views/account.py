@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 import service.finance.account
 import service.finance.finance
 from service.security.security import IsAuthenticated
-from finance.serializers.account import AccountStatementPostSerializer, AccountStatementGetSerializer
+from finance.serializers.account import StatementPostSerializer, StatementGetSerializer, BalancePostSerializer
 
 
 class Account(APIView):
@@ -18,11 +18,11 @@ class Account(APIView):
         return Response(response)
 
 
-class AccountStatement(APIView):
+class Statement(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
-        validators = AccountStatementGetSerializer(data=self.request.query_params)
+        validators = StatementGetSerializer(data=self.request.query_params)
         if not validators.is_valid():
             return Response(validators.errors, status=400)
 
@@ -38,7 +38,7 @@ class AccountStatement(APIView):
         return Response(response, status=200)
 
     def post(self, *args, **kwargs):
-        validators = AccountStatementPostSerializer(data=self.request.data)
+        validators = StatementPostSerializer(data=self.request.data)
         if not validators.is_valid():
             return Response(validators.errors, status=400)
 
@@ -57,5 +57,21 @@ class AccountStatement(APIView):
                                                    category_id=category_id, account_id=account_id, currency_id=currency_id,
                                                    cash_flow_id=cash_flow_id, owner=user) \
             .set_statement(request=self.request)
+
+        return Response(response, status=200)
+
+
+class Balance(APIView):
+    def get(self, *args, **kwargs):
+        pass
+
+    def post(self, *args, **kwargs):
+        data = BalancePostSerializer(data=self.request.data)
+        if not data.is_valid():
+            return Response(data.errors, status=400)
+
+        account_id = data.validated_data.get('accountId')
+
+        response = service.finance.account.Account(account_id=account_id).get_balance()
 
         return Response(response, status=200)
