@@ -62,9 +62,10 @@ class Account(service.finance.finance.Finance):
 
         merged_df['balance'] = merged_df['transaction_balance'].cumsum()
 
-        # Identifica períodos sem transação e cria a linha com zeros
+        account = finance.models.Account.objects.filter(pk=self.account_id).first()
         min_period = merged_df['period'].min()
-        all_periods = list(range(min_period, util.datetime.DateTime().current_period() + 1))
+        max_period = util.datetime.DateTime().get_period(account.dat_close) if account.dat_close else util.datetime.DateTime().current_period()
+        all_periods = list(range(min_period, max_period + 1))
         missing_periods = [p for p in all_periods if p not in merged_df['period'].tolist() and 12 >= p % 100 > 1]
 
         # Criar novas linhas com valores zero para os períodos ausentes
@@ -84,8 +85,8 @@ class Account(service.finance.finance.Finance):
 
         # Concatenar os DataFrames do período ausente ao DataFrame original
         merged_df = pd.concat([merged_df] + new_rows, ignore_index=True)
-
         merged_df = merged_df.sort_values(by='period')
+        merged_df['balance'] = merged_df['transaction_balance'].cumsum()
 
         balance_list = []
         for idx, balance in merged_df.iterrows():
