@@ -358,8 +358,6 @@ class Finance:
 
         print('')
 
-
-
     # Manter no service Finance, pois é função geral de finance, todas as específicas serão migrados (account, investment, credit card, etc.)
     def get_bank(self):
         bank = finance.models.Bank.objects.values('id', 'name', 'code').active()
@@ -387,6 +385,7 @@ class Finance:
         return response
 
     def get_summary(self):
+        # TODO: update with new balance model
         cat_not_expense = finance.models.CategoryGroup.objects.values_list('category_id', flat=True).filter(group='not_expense')
 
         credit_card_bill = finance.models.CreditCardBill.objects.values_list('amount', flat=True).filter(period=self.reference, owner_id=self.owner)

@@ -70,3 +70,10 @@ class Interest(APIView):
         response = service.finance.investment.Investment().get_interest()
 
         return Response(response, status=200)
+
+
+class InterestAccumulated(APIView):
+    def get(self, *args, **kwargs):
+        response = service.finance.investment.Investment().get_period_interest_accumulated()
+
+        return Response(response, status=200)

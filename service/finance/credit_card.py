@@ -64,23 +64,27 @@ class CreditCard:
             filters['id'] = credit_card_bill_id
 
         else:
-            filters['period'] = self.period
+            pass
+            filters['period__gte'] = 202306
 
             if self.credit_card_id:
                 filters['credit_card_id'] = self.credit_card_id
 
         bills = finance.models.CreditCardBill.objects \
-            .values('id', 'period', 'purchase_at', 'payment_at',
-                    'installment', 'tot_installment', 'description') \
+            .values('id', 'period',
+                    'installment', 'description') \
             .filter(**filters) \
             .annotate(amount=F('amount'),
-                      credit_card_id=F('credit_card_id'),
-                      nm_credit_card=F('credit_card__name'),
-                      category_id=F('category_id'),
-                      nm_category=F('category__description'),
-                      datCreated=F('dat_created'),
-                      datLastEdited=F('dat_last_edited')
-                      ).order_by('-dat_purchase', '-dat_created')
+                      purchaseAt=F('purchase_at'),
+                      paymentAt=F('payment_at'),
+                      creditCardId=F('credit_card_id'),
+                      creditCardName=F('credit_card__name'),
+                      categoryId=F('category_id'),
+                      categoryName=F('category__description'),
+                      createdAt=F('dat_created'),
+                      lastEditedAt=F('dat_last_edited'),
+                      totalInstallment=F('tot_installment')
+                      ).order_by('-purchase_at', '-dat_created')
 
         response = {
             'status': True,
@@ -118,20 +122,22 @@ class CreditCard:
         bill.amount = float(self.amount) * -1
         bill.amount_absolute = float(self.amount)
         bill.amount_total = self.amount  # TODO: modificar para adicionar o valor total de compras parceladas
-        bill.amount_reference = float(self.amount) * -1
-        bill.dollar_currency_quote = self.price_currency_dollar
-        bill.dollar_quote = 1
+        bill.amount_reference = float(self.amount) * -1  # vai vir da tela
+        bill.dollar_currency_quote = self.price_currency_dollar  # vai vir da tela
+        bill.dollar_quote = 1  # vai vir da tela
 
         bill.currency_id = self.currency_id
         bill.category_id = self.category_id
 
-        bill.installment = 1
-        bill.tot_installment = self.tot_installment
+        bill.installment = 1  # vai vir da tela
+        bill.tot_installment = self.tot_installment  # vai vir da tela
         bill.description = self.description
 
         bill.is_validated = True
 
-        bill.cash_flow = 'OUTGOING'
+        bill.cash_flow = 'OUTGOING'  # vai vir da tela
+
+        bill.currency_reference_id = 'BRL'  # Vai vir da tela
 
         bill.owner_id = self.owner
 

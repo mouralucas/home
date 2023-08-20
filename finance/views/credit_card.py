@@ -48,10 +48,10 @@ class CreditCardBill(APIView):
         price_dollar = self.request.data.get('price_dollar')
         amount_tax = self.request.data.get('amount_tax')
         price_currency_dollar = self.request.data.get('price_currency_dollar')
-        dat_purchase = self.request.data.get('dat_purchase')
-        dat_payment = self.request.data.get('dat_payment')
+        dat_purchase = self.request.data.get('purchaseAt')
+        dat_payment = self.request.data.get('paymentAt')
         installment = self.request.data.get('installment', 1)  # TODO: vira como forma de lista
-        tot_installment = self.request.data.get('tot_installment', 1)
+        tot_installment = self.request.data.get('installmentTotal', 1)
         currency_id = self.request.data.get('currency_id', 'BRL')
         description = self.request.data.get('description')
         category_id = self.request.data.get('category_id')

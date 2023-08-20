@@ -1,5 +1,7 @@
 import decimal
+import json
 
+import pandas as pd
 from django.db.models import F, Sum
 
 import finance.models
@@ -159,22 +161,48 @@ class Investment:
 
         return response
 
+    def get_period_interest_accumulated(self):
+        data = pd.DataFrame(finance.models.FinanceData.objects.values('date', 'value').filter(type_id='2a2b100f-17d9-4c61-b3b4-f06662113953',
+                                                                                              periodicity='b9f83ad5-7701-4098-bdaf-ee092f3247eb',
+                                                                                              date__gte='2023-08-01'))
 
-def __set_investment(self):
-    investment = finance.models.Investment()
+        # Certificar-se de que a coluna 'data' está em formato de data
+        data['date'] = pd.to_datetime(data['date'])
 
-    investment.name = self.name
-    investment.date = self.date
-    investment.quantity = self.quantity
-    investment.price = self.price
-    investment.amount = self.amount
-    investment.cash_flow = self.cash_flow
-    investment.interest_rate = self.interest_rate
-    investment.interest_index = self.interest_index
-    investment.type_id = self.type_id
-    investment.dat_maturity = self.dat_maturity if self.dat_maturity not in ('', 'null') else None
-    investment.custodian_id = self.custodian_id
-    investment.parent_id = self.parent_id
-    investment.owner_id = self.owner_id
+        # Ordenar o dataset por data
+        data = data.sort_values(by='date')
+        data['value'] = data['value'].astype(float)
+        # Inicializar a taxa de juros acumulada
+        taxa_acumulada = 1.0
+        taxas_acumuladas = []
 
-    return investment
+        # Iterar sobre as linhas do dataset
+        for index, row in data.iterrows():
+            taxa_diaria = 1 + row['value'] / 100  # Convertendo a taxa para decimal
+            taxa_acumulada *= taxa_diaria
+            taxas_acumuladas.append((taxa_acumulada - 1) * 100)
+
+        data['taxa_acumulada'] = taxas_acumuladas
+
+        response = json.loads(data.to_json(orient='records', date_format='iso'))
+
+        return response
+
+    def __set_investment(self):
+        investment = finance.models.Investment()
+
+        investment.name = self.name
+        investment.date = self.date
+        investment.quantity = self.quantity
+        investment.price = self.price
+        investment.amount = self.amount
+        investment.cash_flow = self.cash_flow
+        investment.interest_rate = self.interest_rate
+        investment.interest_index = self.interest_index
+        investment.type_id = self.type_id
+        investment.dat_maturity = self.dat_maturity if self.dat_maturity not in ('', 'null') else None
+        investment.custodian_id = self.custodian_id
+        investment.parent_id = self.parent_id
+        investment.owner_id = self.owner_id
+
+        return investment

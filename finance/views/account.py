@@ -72,6 +72,6 @@ class Balance(APIView):
 
         account_id = data.validated_data.get('accountId')
 
-        response = service.finance.account.Account(account_id=account_id).get_balance()
+        response = service.finance.account.Account(account_id=account_id).set_balance()
 
         return Response(response, status=200)
