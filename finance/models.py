@@ -117,19 +117,19 @@ class Investment(core.models.Log):
         db_table = 'finance"."investment'
 
 
-# class InvestmentStatement(core.models.Log):
-#     # adicionar coluna com o total anterior, total depositado e total de rendimento para cada investimento pai para cada periodo
-#     investment = models.ForeignKey('finance.Investment', on_delete=models.DO_NOTHING)
-#     period = models.SmallIntegerField(help_text=_('Período de referência'))
-#     amount_gross = models.DecimalField(max_digits=14, decimal_places=5)
-#     income_tax_perc = models.DecimalField(max_digits=7, decimal_places=3)
-#     income_tax = models.DecimalField(max_digits=14, decimal_places=5)
-#     tax_perc = models.DecimalField(max_digits=7, decimal_places=3)
-#     tax = models.DecimalField(max_digits=14, decimal_places=5)
-#     amount_net = models.DecimalField(max_digits=14, decimal_places=5)
-#
-#     class Meta:
-#         db_table = 'finance"."investment_statement'
+class InvestmentStatement(core.models.Log):
+    # adicionar coluna com o total anterior, total depositado e total de rendimento para cada investimento pai para cada periodo
+    # Nesta tabela não tem valor líquido, criar tabelas com os tipos de impostos e taxas que incidem sobre cada investimento
+    # e assim calcular quando necessário (?)
+    investment = models.ForeignKey('finance.Investment', on_delete=models.DO_NOTHING)
+    reference = models.SmallIntegerField()
+    currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING)
+    gross_amount = models.DecimalField(max_digits=15, decimal_places=2)
+    earnings = models.DecimalField(max_digits=15, decimal_places=2)
+
+    class Meta:
+        db_table = 'finance"."investment_statement'
+
 
 class AccountStatement(core.models.Log):
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING, related_name='bank_statement_account')

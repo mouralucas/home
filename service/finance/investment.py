@@ -1,23 +1,26 @@
 import decimal
 import json
+import warnings
 
 import pandas as pd
 from django.db.models import F, Sum
 
 import finance.models
+from service.finance.finance import Finance
 
 
-class Investment:
-    def __init__(self, investment_id=None, parent_id=None, name=None, date=None, quantity=None, price=None, amount=None,
-                 cash_flow=None, interest_rate=None, interest_index=None, investment_type_id=None, dat_maturity=None,
-                 custodian_id=None, owner_id=None, request=None):
+class Investment(Finance):
+    def __init__(self, investment_id=None, parent_id=None, name=None, date=None, quantity=None, price=None, amount=None, cash_flow=None, interest_rate=None, interest_index=None, investment_type_id=None, dat_maturity=None, custodian_id=None,
+                 owner_id=None, reference=None, request=None):
+        super().__init__(reference=reference, amount=amount)
+
+        # TODO: clean code with parent class
         self.investment_id = investment_id
         self.parent_id = parent_id
         self.name = name
         self.date = date
         self.quantity = quantity
         self.price = price
-        self.amount = amount
         self.cash_flow = cash_flow
         self.interest_rate = interest_rate
         self.interest_index = interest_index
@@ -88,6 +91,7 @@ class Investment:
         return response
 
     def get_investment_statement(self):
+        statement = finance.models.AccountStatement.objects.all()
 
         response = {
             'success': True,
@@ -122,8 +126,10 @@ class Investment:
         return response
 
     def get_interest(self):
-        interest = finance.models.FinanceData.objects.values('id') \
-            .filter(periodicity='dc5b3bf8-2b84-423a-9a90-e7e194e355fa', type_id='2a2b100f-17d9-4c61-b3b4-f06662113953', date__gte='2023-01-01') \
+        interest = finance.models.FinanceData.objects \
+            .filter(periodicity='dc5b3bf8-2b84-423a-9a90-e7e194e355fa', type_id='2a2b100f-17d9-4c61-b3b4-f06662113953', date__gte='2023-01-01')
+
+        interest_list = interest.values('id') \
             .annotate(date=F('date'),
                       value=F('value'),
                       typeId=F('type_id'),
@@ -131,17 +137,10 @@ class Investment:
                       unit=F('unit')).order_by('date')
 
         result = []
-
-        acumulated = 0
-        for data_point in list(interest):
+        for data_point in list(interest_list):
             date = data_point['date']
-            value = data_point['value']
+            value = float(data_point['value'])
             type_name = str(data_point['typeId'])
-
-            # if acumulated != 0:
-            #     acumulated *= (1+value)
-            # else:
-            #     acumulated = value
 
             found_entry = next((entry for entry in result if entry['date'] == date), None)
             if found_entry:
@@ -150,9 +149,16 @@ class Investment:
                 new_entry = {'date': date, type_name: value}
                 result.append(new_entry)
 
-        types = finance.models.FinanceData.objects.values('id') \
-            .filter(periodicity='b9f83ad5-7701-4098-bdaf-ee092f3247eb', date__gte='2023-07-01').distinct('type_id') \
-            .annotate(value=F('type_id'), name=F('type__name'))
+        accumulated_values = {}
+        for data_entry in result:
+            date = data_entry["date"]
+            for key, value in data_entry.items():
+                if key != "date":
+                    accumulated_values.setdefault(key, 1.0)  # Inicializa o acumulado com 1.0 (sem acumulação) se não existir
+                    accumulated_values[key] *= (1 + value / 100)
+
+        types = interest.values('id') \
+            .annotate(value=F('type_id'), name=F('type__name')).distinct('type_id')
 
         response = {
             'data': result,
@@ -162,6 +168,7 @@ class Investment:
         return response
 
     def get_period_interest_accumulated(self):
+        warnings.warn('Função depreciada.', DeprecationWarning, stacklevel=2)
         data = pd.DataFrame(finance.models.FinanceData.objects.values('date', 'value').filter(type_id='2a2b100f-17d9-4c61-b3b4-f06662113953',
                                                                                               periodicity='b9f83ad5-7701-4098-bdaf-ee092f3247eb',
                                                                                               date__gte='2023-08-01'))

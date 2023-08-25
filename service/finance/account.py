@@ -3,11 +3,11 @@ from django.db.models import Sum
 from django.utils import timezone
 
 import finance.models
-import service.finance.finance
 import util.datetime
+from service.finance.finance import Finance
 
 
-class Account(service.finance.finance.Finance):
+class Account(Finance):
     def __init__(self, owner=None, account_id=None):
         super().__init__(owner=owner)
         self.account_id = account_id

@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 
 import service.finance.investment
 from finance.serializers.investment import InvestmentGetSerializer, InvestmentPostSerializer
+from service.security.security import IsAuthenticated
 
 
 class Investment(APIView):
@@ -45,6 +46,21 @@ class Investment(APIView):
         return Response(response)
 
 
+class Statement(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, *args, **kwargs):
+        period = self.request.GET.get('period')
+
+        response = service.finance.investment.Investment(reference=period).get_investment_statement()
+
+        return Response(response, status=200)
+
+    def post(self, *args, **kwargs):
+        period = self.request.query_params.get('period')
+
+        return Response({}, status=200)
+
 class InvestmentType(APIView):
     def get(self, *args, **kwargs):
         validators = InvestmentGetSerializer(data=self.request.query_params)
@@ -70,6 +86,11 @@ class Interest(APIView):
         response = service.finance.investment.Investment().get_interest()
 
         return Response(response, status=200)
+
+
+class Profit(APIView):
+    def get(self, *args, **kwargs):
+        Response({}, status=False)
 
 
 class InterestAccumulated(APIView):
