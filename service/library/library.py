@@ -69,11 +69,11 @@ class Library:
         item.width = data.validated_data.get('width')
         item.thickness = data.validated_data.get('thickness')
         item.summary = data.validated_data.get('summary')
-        item.last_status_at = data.validated_data.get('lastStatusDate')
+        item.last_status_at = data.validated_data.get('lastStatusAt')
         item.owner_id = self.owner
         item.save(request_=request)
 
-        self.__update_status(item=item, status=data.validated_data.get('lastStatusId'), date=data.validated_data.get('lastStatusDate'), is_update=False, request=request)
+        self.__update_status(item=item, status=data.validated_data.get('lastStatusId'), date=data.validated_data.get('lastStatusAt'), is_update=False, request=request)
 
         self.__set_author(item=item, author_list=data.validated_data.get('mainAuthorId'), is_main=True)
         self.__set_author(item=item, author_list=[])
