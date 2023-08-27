@@ -61,6 +61,7 @@ class Statement(APIView):
 
         return Response({}, status=200)
 
+
 class InvestmentType(APIView):
     def get(self, *args, **kwargs):
         validators = InvestmentGetSerializer(data=self.request.query_params)

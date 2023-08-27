@@ -7,6 +7,7 @@ import core.models
 import core.serializers
 from decouple import config
 
+
 class Misc:
     def __init__(self):
         pass
@@ -96,7 +97,7 @@ class Misc:
             filters['father_id__isnull'] = True if show_mode == 'father' else False
 
         categories = core.models.Category.objects.values('id', 'name', 'description', 'comments').active() \
-            .filter(parent__status=True)\
+            .filter(parent__status=True) \
             .annotate(id_father=F('parent_id'),
                       nm_father=F('parent__name')).filter(**filters).order_by('order')
 
@@ -185,13 +186,15 @@ class Misc:
         Implicit params (passed in the class instance or set by other functions):
         None
         """
-        status = core.models.Status.objects.values('id', 'name', 'description', 'order', 'image', 'type') \
-            .filter(type=status_type).order_by('order')
+        status = core.models.Status.objects.values('description', 'order', 'image', 'type') \
+            .annotate(statusId=F('id'),
+                      statusName=F('name')) \
+            .filter(type=status_type).active().order_by('order')
 
         if not status:
             response = {
                 'status': False,
-                'descricao': _('Nenhum status encontrado')
+                'message': _('Nenhum status encontrado')
             }
             return response
 
