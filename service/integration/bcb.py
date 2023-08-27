@@ -29,7 +29,7 @@ class BancoCentralAPI(Integration):
         self.url_bcdata = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.{0}/dados?{1}'
 
     def historical_data_cdi(self):
-        # Daily data
+        ########################## CDI Daily ##########################
         cdi_interest_daily = pd.read_json(self.url_bcdata.format('12', ''))
         cdi_interest_daily['data'] = pd.to_datetime(cdi_interest_daily['data'], dayfirst=True)
 
@@ -42,6 +42,7 @@ class BancoCentralAPI(Integration):
                 name='CDI',
                 type_id='2a2b100f-17d9-4c61-b3b4-f06662113953',
                 date=item['data'],
+                reference=self.__set_reference(item['data']),
                 value=item['valor'],
                 periodicity_id='b9f83ad5-7701-4098-bdaf-ee092f3247eb',
                 unit='% a.d.'
@@ -49,7 +50,7 @@ class BancoCentralAPI(Integration):
             list_cdi_historical.append(aux)
         finance.models.FinanceData.objects.bulk_create(list_cdi_historical)
 
-        ########################## CDI Acumulado mensal ##########################
+        ########################## CDI Monthly ##########################
         cdi_interest_monthly = pd.read_json(self.url_bcdata.format('4391', ''))
         cdi_interest_monthly['data'] = pd.to_datetime(cdi_interest_monthly['data'], dayfirst=True)
 
@@ -62,6 +63,7 @@ class BancoCentralAPI(Integration):
                 name='CDI',
                 type_id='2a2b100f-17d9-4c61-b3b4-f06662113953',
                 date=item['data'],
+                reference=self.__set_reference(item['data']),
                 value=item['valor'],
                 periodicity_id='dc5b3bf8-2b84-423a-9a90-e7e194e355fa',
                 unit='% a.m.'
@@ -92,6 +94,7 @@ class BancoCentralAPI(Integration):
                 name='SELIC',
                 type_id='b7e5c4a0-3b65-4b1f-86d8-3797ef1a91a0',
                 date=item['data'],
+                reference=self.__set_reference(item['data']),
                 value=item['valor'],
                 periodicity_id='b9f83ad5-7701-4098-bdaf-ee092f3247eb',
                 unit='% a.d.'
@@ -113,6 +116,7 @@ class BancoCentralAPI(Integration):
                 name='IPCA',
                 type_id='ef07cbb0-9b29-43c6-a060-bef73f1cc000',
                 date=item['data'],
+                reference=self.__set_reference(item['data']),
                 value=item['valor'],
                 periodicity_id='dc5b3bf8-2b84-423a-9a90-e7e194e355fa',
                 unit='% a.m.'
@@ -125,3 +129,9 @@ class BancoCentralAPI(Integration):
         }
 
         return
+
+
+    def __set_reference(self, date):
+        year = date.year
+        month = date.month
+        return year * 100 + month

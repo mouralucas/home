@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import service.finance.investment
-from finance.serializers.investment import InvestmentGetSerializer, InvestmentPostSerializer
+from finance.serializers.investment import InvestmentGetSerializer, TypeGetSerializer, ProfitGetSerializer
 from service.security.security import IsAuthenticated
 
 
@@ -64,11 +64,11 @@ class Statement(APIView):
 
 class InvestmentType(APIView):
     def get(self, *args, **kwargs):
-        validators = InvestmentGetSerializer(data=self.request.query_params)
-        if not validators.is_valid():
-            return Response(validators.errors, status=400)
+        data = TypeGetSerializer(data=self.request.query_params)
+        if not data.is_valid():
+            return Response(data.errors, status=400)
 
-        show_mode = validators.validated_data.get('show_mode')
+        show_mode = data.validated_data.get('show_mode')
 
         response = service.finance.investment.Investment().get_investment_type(show_mode=show_mode)
 
@@ -91,7 +91,18 @@ class Interest(APIView):
 
 class Profit(APIView):
     def get(self, *args, **kwargs):
-        Response({}, status=False)
+        data = ProfitGetSerializer(data=self.request.query_params)
+        if not data.is_valid():
+            return Response(data.errors, status=400)
+
+        start_at = data.validated_data.get('startAt')
+        investment_id = data.validated_data.get('investmentId')
+        reference_id = data.validated_data.get('referenceId')
+
+        response = service.finance.investment.Investment(investment_id=investment_id) \
+            .get_profit(start_at=start_at, reference_id=reference_id)
+
+        return Response(response, status=200)
 
 
 class InterestAccumulated(APIView):

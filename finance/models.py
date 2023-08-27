@@ -118,11 +118,9 @@ class Investment(core.models.Log):
 
 
 class InvestmentStatement(core.models.Log):
-    # adicionar coluna com o total anterior, total depositado e total de rendimento para cada investimento pai para cada periodo
-    # Nesta tabela não tem valor líquido, criar tabelas com os tipos de impostos e taxas que incidem sobre cada investimento
-    # e assim calcular quando necessário (?)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     investment = models.ForeignKey('finance.Investment', on_delete=models.DO_NOTHING)
-    reference = models.SmallIntegerField()
+    reference = models.IntegerField()
     currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING)
     gross_amount = models.DecimalField(max_digits=15, decimal_places=2)
     earnings = models.DecimalField(max_digits=15, decimal_places=2)
@@ -169,6 +167,7 @@ class AccountBalance(core.models.Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING)
     period = models.IntegerField(help_text=_('Período de referência'))
+    previous_balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo da conta antes do período'))
     incoming = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Todas as entradas no período'))
     outgoing = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Todas as saídas no período'))
     transactions = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo de entradas e saídas'))
@@ -266,15 +265,17 @@ class CurrencyRate(core.models.Log):
 #
 #     class Meta:
 #         db_table = 'finance"."ticker_historical_price'
-#
-#
+
 class FinanceData(core.models.Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=100)
     type = models.ForeignKey('core.Type', on_delete=models.DO_NOTHING, related_name='finance_data_type', help_text=_('O tipo da informação (cdi, selic, ipca, etc)'))
+    type_name = models.CharField(max_length=100, null=True)
     date = models.DateField()
+    reference = models.IntegerField()
     value = models.DecimalField(max_digits=17, decimal_places=6)
     periodicity = models.ForeignKey('core.Type', on_delete=models.DO_NOTHING, null=True, related_name='finance_data_periodicity')
+    periodicity_name = models.CharField(max_length=100, null=True)
     unit = models.CharField(max_length=10, null=True)
 
     class Meta:

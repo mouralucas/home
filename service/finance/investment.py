@@ -195,6 +195,26 @@ class Investment(Finance):
 
         return response
 
+    def get_profit(self, start_at, reference_id=None):
+        statement_filters = {'reference__gte': start_at}
+        reference_filters = {'type_id': '2a2b100f-17d9-4c61-b3b4-f06662113953'}  # CDI is default
+
+        if self.investment_id:
+            statement_filters['investment_id'] = self.investment_id
+
+        if reference_id:
+            reference_filters['type_id'] = reference_id
+
+        statement = pd.DataFrame(finance.models.InvestmentStatement.objects.values('reference').annotate(total=Sum('gross_amount'))
+                                 .filter(**statement_filters).order_by('reference'))
+        statement['variation_percentage'] = statement['total'].pct_change()
+        statement = statement.fillna(0)
+        statement['cumulative_percentage'] = ((1 + statement['variation_percentage']).cumprod() - 1) * 100
+
+        referente = finance.models.FinanceData.objects.filter(**reference_filters)
+
+        return {}
+
     def __set_investment(self):
         investment = finance.models.Investment()
 

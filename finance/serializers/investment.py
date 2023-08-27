@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 import core.serializers
 from rest_framework.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 
 class InvestmentGetSerializer(core.serializers.CustomSerializer):
@@ -31,7 +32,7 @@ class InvestmentPostSerializer(core.serializers.CustomSerializer):
     custodianId = serializers.UUIDField(required=True)
 
 
-class InvestmentTypeGetSerializer(serializers.Serializer):
+class TypeGetSerializer(serializers.Serializer):
     showMode = serializers.CharField(required=True)
 
     def validate_showMode(self, value):
@@ -40,3 +41,9 @@ class InvestmentTypeGetSerializer(serializers.Serializer):
             raise ValidationError(f"O valor '{value}' não é válido. Escolha uma das opções: {', '.join(choices)}.")
 
         return value
+
+
+class ProfitGetSerializer(core.serializers.CustomSerializer):
+    startAt = serializers.IntegerField(required=True)
+    investmentId = serializers.UUIDField(required=False)
+    referenceId = serializers.UUIDField(required=False, help_text=_('A qual indexador a rentabilidade será comparada'))
