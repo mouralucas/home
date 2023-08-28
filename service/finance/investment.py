@@ -213,7 +213,24 @@ class Investment(Finance):
 
         referente = finance.models.FinanceData.objects.filter(**reference_filters)
 
-        return {}
+        response_list = []
+        for idx, i in statement.iterrows():
+            aux = {
+                'reference': str(i['reference']),
+                'investment': i['cumulative_percentage']
+            }
+            response_list.append(aux)
+
+        response = {
+            'success': True,
+            'data': response_list,
+            'series': [{
+                'value': 'investment',
+                'name': 'Selic 2025'
+            }]
+        }
+
+        return response
 
     def __set_investment(self):
         investment = finance.models.Investment()
