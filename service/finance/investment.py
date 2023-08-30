@@ -197,7 +197,11 @@ class Investment(Finance):
 
     def get_profit(self, start_at, reference_id=None):
         statement_filters = {'reference__gte': start_at}
-        reference_filters = {'type_id': '2a2b100f-17d9-4c61-b3b4-f06662113953'}  # CDI is default
+        reference_filters = {
+            'type_id': '2a2b100f-17d9-4c61-b3b4-f06662113953',
+            'periodicity_id': 'dc5b3bf8-2b84-423a-9a90-e7e194e355fa',
+            'reference__gte': start_at
+        }  # CDI is default
 
         if self.investment_id:
             statement_filters['investment_id'] = self.investment_id
@@ -209,25 +213,40 @@ class Investment(Finance):
                                  .filter(**statement_filters).order_by('reference'))
         statement['variation_percentage'] = statement['total'].pct_change()
         statement = statement.fillna(0)
-        statement['cumulative_percentage'] = ((1 + statement['variation_percentage']).cumprod() - 1) * 100
+        statement['investment'] = ((1 + statement['variation_percentage']).cumprod() - 1) * 100
 
-        referente = finance.models.FinanceData.objects.filter(**reference_filters)
+        reference_index = pd.DataFrame(finance.models.FinanceData.objects.values('reference', 'value').filter(**reference_filters))
+        reference_index["value"] = reference_index["value"].astype(float)
+        # Clean first month, so begins at zero
+        if not reference_index.empty:
+            reference_index.at[0, "value"] = 0
+        reference_index['index'] = ((1 + reference_index['value'] / 100).cumprod() - 1) * 100
+
+        merged_ = statement.merge(reference_index, on='reference', how='outer')
+        merged_ = merged_.fillna(0)
 
         response_list = []
-        for idx, i in statement.iterrows():
+        for idx, i in merged_.iterrows():
             aux = {
                 'reference': str(i['reference']),
-                'investment': i['cumulative_percentage']
+                'investment': i['investment'],
+                'index': i['index']
             }
             response_list.append(aux)
 
         response = {
             'success': True,
             'data': response_list,
-            'series': [{
-                'value': 'investment',
-                'name': 'Selic 2025'
-            }]
+            'series': [
+                {
+                    'value': 'investment',
+                    'name': 'Selic 2025'
+                },
+                {
+                    'value': 'index',
+                    'name': 'IPCA'
+                }
+            ]
         }
 
         return response
