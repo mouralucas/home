@@ -211,11 +211,15 @@ class Investment(Finance):
 
         statement = pd.DataFrame(finance.models.InvestmentStatement.objects.values('reference').annotate(total=Sum('gross_amount'))
                                  .filter(**statement_filters).order_by('reference'))
+        if statement.empty:
+            statement = pd.DataFrame(columns=['reference', 'total'])
         statement['variation_percentage'] = statement['total'].pct_change()
         statement = statement.fillna(0)
         statement['investment'] = ((1 + statement['variation_percentage']).cumprod() - 1) * 100
 
         reference_index = pd.DataFrame(finance.models.FinanceData.objects.values('reference', 'value').filter(**reference_filters))
+        if reference_index.empty:
+            reference_index = pd.DataFrame(columns=['reference', 'value'])
         reference_index["value"] = reference_index["value"].astype(float)
         # Clean first month, so begins at zero
         if not reference_index.empty:
