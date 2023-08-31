@@ -115,12 +115,12 @@ class Investment(Finance):
 
         return response
 
-    def get_proportion(self):
-        proportion = finance.models.Investment.objects.values('type__name').annotate(total=Sum('amount'))
+    def get_allocation(self):
+        allocation = finance.models.Investment.objects.values('type__name').annotate(total=Sum('amount'))
 
         response = {
             'success': True,
-            'investmentProportion': list(proportion)
+            'investmentProportion': list(allocation)
         }
 
         return response

@@ -77,7 +77,7 @@ class InvestmentType(APIView):
 
 class Proportion(APIView):
     def get(self, *args, **kwargs):
-        response = service.finance.investment.Investment().get_proportion()
+        response = service.finance.investment.Investment().get_allocation()
 
         return Response(response)
 

@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 import service.finance.finance
 import service.finance.credit_card
 import util.datetime
-from finance.serializers.credit_card import CreditCardBillGetSerializer
+from finance.serializers.credit_card import CreditCardBillGetSerializer, BillHistorySerializer
 
 
 class CreditCard(APIView):
@@ -19,7 +19,7 @@ class CreditCard(APIView):
         return Response(response)
 
 
-class CreditCardBill(APIView):
+class Bill(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
@@ -67,3 +67,20 @@ class CreditCardBill(APIView):
                                                           category_id=category_id, credit_card_id=card_id, owner=user) \
             .set_bill(request=self.request)
         return Response(response)
+
+
+class BillHistory(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, *args, **kwargs):
+        data = BillHistorySerializer(data=self.request.query_params)
+        if not data.is_valid():
+            return Response(data.errors, status=400)
+
+        start_at = data.validated_data.get('startAt')
+        end_at = data.validated_data.get('endAt')
+        user = self.request.user.id
+
+        response = service.finance.finance.Finance(owner=user).get_bill_history(start_at=start_at, end_at=end_at)
+
+        return Response(response, status=200)

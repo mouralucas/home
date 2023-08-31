@@ -72,20 +72,6 @@ class ExpenseCategory(APIView):
         return Response(response)
 
 
-class BillHistory(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, *args, **kwargs):
-        period_start = self.request.query_params.get('periodStart')
-        period_end = self.request.query_params.get('periodEnd')
-        months = self.request.query_params.get('months')
-        user = self.request.user.id
-
-        response = service.finance.finance.Finance(owner=user).get_bill_history(period_start=period_start, period_end=period_end)
-
-        return JsonResponse(response, safe=False)
-
-
 class InvestmentStatement(APIView):
     permission_classes = [IsAuthenticated]
 

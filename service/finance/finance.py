@@ -128,11 +128,11 @@ class Finance:
 
         return response
 
-    def get_bill_history(self, period_start=201801, period_end=202302, months=13):
+    def get_bill_history(self, start_at=201801, end_at=202302, months=13):
         history = finance.models.CreditCardBill.objects.values('period') \
             .annotate(total_amount=Sum('amount'),
                       total_amount_absolute=Sum('amount_absolute')) \
-            .filter(period__range=(period_start, period_end), owner_id=self.owner).order_by('period')
+            .filter(period__range=(start_at, end_at), owner_id=self.owner).order_by('period')
 
         average = sum(item['total_amount_absolute'] for item in history) / len(history) if history else 0
 
