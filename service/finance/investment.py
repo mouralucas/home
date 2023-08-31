@@ -1,6 +1,7 @@
 import decimal
 import json
 import warnings
+from django.utils.translation import gettext_lazy as _
 
 import pandas as pd
 from django.db.models import F, Sum
@@ -116,11 +117,15 @@ class Investment(Finance):
         return response
 
     def get_allocation(self):
-        allocation = finance.models.Investment.objects.values('type__name').annotate(total=Sum('amount'))
+        allocation = finance.models.Investment.objects.values('id', 'amount').annotate(incomeType=F('type__parent__name'),
+                                                                                       investmentType=F('type__name'))
+        income = allocation.values('incomeType').annotate(total=Sum('amount'))
+        investment = allocation.values('investmentType').annotate(total=Sum('amount'))
 
         response = {
             'success': True,
-            'investmentProportion': list(allocation)
+            'allocationIncome': list(income),
+            'allocationInvestment': list(investment)
         }
 
         return response

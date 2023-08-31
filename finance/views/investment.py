@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import service.finance.investment
-from finance.serializers.investment import InvestmentGetSerializer, TypeGetSerializer, ProfitGetSerializer, InvestmentPostSerializer
+from finance.serializers.investment import InvestmentGetSerializer, TypeGetSerializer, ProfitGetSerializer, InvestmentPostSerializer, AllocationSerializer
 from service.security.security import IsAuthenticated
 
 
@@ -75,7 +75,7 @@ class InvestmentType(APIView):
         return Response(response)
 
 
-class Proportion(APIView):
+class Allocation(APIView):
     def get(self, *args, **kwargs):
         response = service.finance.investment.Investment().get_allocation()
 

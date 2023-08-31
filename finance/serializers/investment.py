@@ -47,3 +47,14 @@ class ProfitGetSerializer(core.serializers.CustomSerializer):
     startAt = serializers.IntegerField(required=True)
     investmentId = serializers.UUIDField(required=False)
     referenceId = serializers.UUIDField(required=False, help_text=_('A qual indexador a rentabilidade será comparada'))
+
+
+class AllocationSerializer(core.serializers.CustomSerializer):
+    showMode = serializers.CharField()
+
+    def validate_showMode(self, value):
+        choices = ['father', 'child']
+        if value not in choices:
+            raise ValidationError(f"O valor '{value}' não é válido. Escolha uma das opções: {', '.join(choices)}.")
+
+        return value
