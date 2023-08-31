@@ -109,6 +109,7 @@ class Investment(core.models.Log):
     amount = models.DecimalField(max_digits=15, decimal_places=5)
     cash_flow = models.CharField(max_length=100, choices=finance.choices.CashFlow.choices)
     interest_rate = models.CharField(max_length=100, choices=finance.choices.InterestRate.choices)
+    index = models.ForeignKey('finance.Index', on_delete=models.DO_NOTHING)
     interest_index = models.CharField(max_length=50)
     custodian = models.ForeignKey('finance.Bank', on_delete=models.DO_NOTHING)
     parent = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
@@ -269,14 +270,23 @@ class CurrencyRate(core.models.Log):
 class FinanceData(core.models.Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=100)
-    type = models.ForeignKey('core.Type', on_delete=models.DO_NOTHING, related_name='finance_data_type', help_text=_('O tipo da informação (cdi, selic, ipca, etc)'))
-    type_name = models.CharField(max_length=100, null=True)
+    index = models.ForeignKey('finance.Index', on_delete=models.DO_NOTHING)
+    index_name = models.CharField(max_length=100, null=True, help_text=_('Nome na tabela index, para auxiliar na validação diretamente na tabela'))
     date = models.DateField()
     reference = models.IntegerField()
     value = models.DecimalField(max_digits=17, decimal_places=6)
-    periodicity = models.ForeignKey('core.Type', on_delete=models.DO_NOTHING, null=True, related_name='finance_data_periodicity')
-    periodicity_name = models.CharField(max_length=100, null=True)
+    periodicity = models.ForeignKey('core.Periodicity', on_delete=models.DO_NOTHING, null=True, related_name='finance_data_periodicity')
+    periodicity_name = models.CharField(max_length=100, null=True, help_text=_('Nome na tabela periodicity, para auxiliar na validação diretamente na tabela'))
     unit = models.CharField(max_length=10, null=True)
 
     class Meta:
         db_table = 'finance"."finance_data'
+
+
+class Index(core.models.Log):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=250, null=True)
+
+    class Meta:
+        db_table = 'finance"."index'

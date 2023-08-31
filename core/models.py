@@ -309,6 +309,16 @@ class Type(Log):
         db_table = 'public"."type'
 
 
+class Periodicity(Log):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=250, null=True)
+    show_order = models.SmallIntegerField(null=True, help_text=_('Ordem de apresentação dos dados'))
+
+    class Meta:
+        db_table = 'public"."periodicity'
+
+
 # Choices available throughout the project
 class GenderTypes(models.TextChoices):
     MALE = ('male', _('Masculino'))
