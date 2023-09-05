@@ -61,7 +61,9 @@ class Investment(Finance):
         return response
 
     def get_investment(self, show_mode):
-        filters = {}
+        filters = {
+            'owner_id': self.owner_id
+        }
 
         if show_mode != 'all':
             filters['parent_id__isnull'] = True if show_mode == 'father' else False
@@ -117,8 +119,9 @@ class Investment(Finance):
         return response
 
     def get_allocation(self):
-        allocation = finance.models.Investment.objects.values('id', 'amount').annotate(incomeType=F('type__parent__name'),
+        allocation = (finance.models.Investment.objects.values('id', 'amount').annotate(incomeType=F('type__parent__name'),
                                                                                        investmentType=F('type__name'))
+                      .filter(owner_id=self.owner_id).exclude(parent__id__isnull=False))
         income = allocation.values('incomeType').annotate(total=Sum('amount'))
         investment = allocation.values('investmentType').annotate(total=Sum('amount'))
 
@@ -201,9 +204,12 @@ class Investment(Finance):
         return response
 
     def get_profit(self, start_at, reference_id=None):
-        statement_filters = {'reference__gte': start_at}
+        statement_filters = {
+            'investment__owner_id': self.owner,
+            'reference__gte': start_at
+        }
         reference_filters = {
-            'type_id': '2a2b100f-17d9-4c61-b3b4-f06662113953',
+            'index_id': 'ef07cbb0-9b29-43c6-a060-bef73f1cc000',
             'periodicity_id': 'dc5b3bf8-2b84-423a-9a90-e7e194e355fa',
             'reference__gte': start_at
         }  # CDI is default
@@ -275,6 +281,7 @@ class Investment(Finance):
         investment.dat_maturity = self.dat_maturity if self.dat_maturity not in ('', 'null') else None
         investment.custodian_id = self.custodian_id
         investment.parent_id = self.parent_id
+        investment.index_id = '2a2b100f-17d9-4c61-b3b4-f06662113953' # TODO: adjust to get from request
         investment.owner_id = self.owner_id
 
         return investment

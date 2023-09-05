@@ -2,11 +2,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import service.finance.investment
-from finance.serializers.investment import InvestmentGetSerializer, TypeGetSerializer, ProfitGetSerializer, InvestmentPostSerializer, AllocationSerializer
+from finance.serializers.investment import InvestmentGetSerializer, TypeGetSerializer, ProfitGetSerializer, InvestmentPostSerializer
 from service.security.security import IsAuthenticated
 
 
 class Investment(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args, **kwargs):
         validators = InvestmentGetSerializer(data=self.request.query_params)
         if not validators.is_valid():
@@ -14,8 +16,9 @@ class Investment(APIView):
 
         investment_id = validators.validated_data.get('investmentId')
         show_mode = validators.validated_data.get('showMode')
+        user = self.request.user.id
 
-        response = service.finance.investment.Investment(investment_id=investment_id).get_investment(show_mode=show_mode)
+        response = service.finance.investment.Investment(investment_id=investment_id, owner_id=user).get_investment(show_mode=show_mode)
 
         return Response(response)
 
@@ -76,8 +79,12 @@ class InvestmentType(APIView):
 
 
 class Allocation(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args, **kwargs):
-        response = service.finance.investment.Investment().get_allocation()
+        user = self.request.user.id
+
+        response = service.finance.investment.Investment(owner_id=user).get_allocation()
 
         return Response(response)
 
@@ -98,8 +105,9 @@ class Profit(APIView):
         start_at = data.validated_data.get('startAt')
         investment_id = data.validated_data.get('investmentId')
         reference_id = data.validated_data.get('referenceId')
+        user = self.request.user.id
 
-        response = service.finance.investment.Investment(investment_id=investment_id) \
+        response = service.finance.investment.Investment(investment_id=investment_id, owner_id=user) \
             .get_profit(start_at=start_at, reference_id=reference_id)
 
         return Response(response, status=200)

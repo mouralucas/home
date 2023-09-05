@@ -121,13 +121,7 @@ class Csv(APIView):
         return JsonResponse(response, safe=False)
 
 
-class Currency(APIView):
-    def get(self, *args, **kwargs):
-        # response = service.core.core.Misc().get_currency()
-        response = service.finance.finance.Finance().get_currency()
-        # response = service.integration.vat_rate.Vat().get_currency()
 
-        return JsonResponse(response, safe=False)
 
 
 class PaymentDate(View):
