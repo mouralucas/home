@@ -46,7 +46,7 @@ class TypeGetSerializer(serializers.Serializer):
 class ProfitGetSerializer(core.serializers.CustomSerializer):
     startAt = serializers.IntegerField(required=True)
     investmentId = serializers.UUIDField(required=False)
-    referenceId = serializers.UUIDField(required=False, help_text=_('A qual indexador a rentabilidade será comparada'))
+    indexId = serializers.UUIDField(required=False, help_text=_('A qual indexador a rentabilidade será comparada'))
 
 
 class AllocationSerializer(core.serializers.CustomSerializer):

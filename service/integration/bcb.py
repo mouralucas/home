@@ -33,14 +33,14 @@ class BancoCentralAPI(Integration):
         cdi_interest_daily = pd.read_json(self.url_bcdata.format('12', ''))
         cdi_interest_daily['data'] = pd.to_datetime(cdi_interest_daily['data'], dayfirst=True)
 
-        historical_cdi_ad_data = finance.models.FinanceData.objects.filter(type_id='2a2b100f-17d9-4c61-b3b4-f06662113953',
+        historical_cdi_ad_data = finance.models.FinanceData.objects.filter(index_id='2a2b100f-17d9-4c61-b3b4-f06662113953',
                                                                            periodicity='b9f83ad5-7701-4098-bdaf-ee092f3247eb')
         historical_cdi_ad_data.delete()
         list_cdi_historical = []
         for idx, item in cdi_interest_daily.iterrows():
             aux = finance.models.FinanceData(
                 name='CDI',
-                type_id='2a2b100f-17d9-4c61-b3b4-f06662113953',
+                index_id='2a2b100f-17d9-4c61-b3b4-f06662113953',
                 date=item['data'],
                 reference=self.__set_reference(item['data']),
                 value=item['valor'],
@@ -54,14 +54,14 @@ class BancoCentralAPI(Integration):
         cdi_interest_monthly = pd.read_json(self.url_bcdata.format('4391', ''))
         cdi_interest_monthly['data'] = pd.to_datetime(cdi_interest_monthly['data'], dayfirst=True)
 
-        historical_cdi_monthly_data = finance.models.FinanceData.objects.filter(type_id='2a2b100f-17d9-4c61-b3b4-f06662113953',
+        historical_cdi_monthly_data = finance.models.FinanceData.objects.filter(index_id='2a2b100f-17d9-4c61-b3b4-f06662113953',
                                                                                 periodicity='dc5b3bf8-2b84-423a-9a90-e7e194e355fa')
         historical_cdi_monthly_data.delete()
         list_cdi_historical_monthly = []
         for idx, item in cdi_interest_monthly.iterrows():
             aux = finance.models.FinanceData(
                 name='CDI',
-                type_id='2a2b100f-17d9-4c61-b3b4-f06662113953',
+                index_id='2a2b100f-17d9-4c61-b3b4-f06662113953',
                 date=item['data'],
                 reference=self.__set_reference(item['data']),
                 value=item['valor'],
@@ -84,7 +84,7 @@ class BancoCentralAPI(Integration):
         selic_interest_ad = pd.read_json(self.url_bcdata.format('11', ''))
         selic_interest_ad['data'] = pd.to_datetime(selic_interest_ad['data'], dayfirst=True)
 
-        historical_selic_ad_data = finance.models.FinanceData.objects.filter(type_id='b7e5c4a0-3b65-4b1f-86d8-3797ef1a91a0',
+        historical_selic_ad_data = finance.models.FinanceData.objects.filter(index_id='b7e5c4a0-3b65-4b1f-86d8-3797ef1a91a0',
                                                                              periodicity='b9f83ad5-7701-4098-bdaf-ee092f3247eb')
         historical_selic_ad_data.delete()
 
@@ -92,7 +92,7 @@ class BancoCentralAPI(Integration):
         for idx, item in selic_interest_ad.iterrows():
             aux = finance.models.FinanceData(
                 name='SELIC',
-                type_id='b7e5c4a0-3b65-4b1f-86d8-3797ef1a91a0',
+                index_id='b7e5c4a0-3b65-4b1f-86d8-3797ef1a91a0',
                 date=item['data'],
                 reference=self.__set_reference(item['data']),
                 value=item['valor'],
@@ -106,7 +106,7 @@ class BancoCentralAPI(Integration):
         ipca_am = pd.read_json(self.url_bcdata.format('433', ''))
         ipca_am['data'] = pd.to_datetime(ipca_am['data'], dayfirst=True)
 
-        historical_ipca_am_data = finance.models.FinanceData.objects.filter(type_id='ef07cbb0-9b29-43c6-a060-bef73f1cc000',
+        historical_ipca_am_data = finance.models.FinanceData.objects.filter(index_id='ef07cbb0-9b29-43c6-a060-bef73f1cc000',
                                                                             periodicity_id='dc5b3bf8-2b84-423a-9a90-e7e194e355fa')
         historical_ipca_am_data.delete()
 
@@ -114,7 +114,7 @@ class BancoCentralAPI(Integration):
         for idx, item in ipca_am.iterrows():
             aux = finance.models.FinanceData(
                 name='IPCA',
-                type_id='ef07cbb0-9b29-43c6-a060-bef73f1cc000',
+                index_id='ef07cbb0-9b29-43c6-a060-bef73f1cc000',
                 date=item['data'],
                 reference=self.__set_reference(item['data']),
                 value=item['valor'],

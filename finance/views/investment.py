@@ -104,11 +104,11 @@ class Profit(APIView):
 
         start_at = data.validated_data.get('startAt')
         investment_id = data.validated_data.get('investmentId')
-        reference_id = data.validated_data.get('referenceId')
+        index_id = data.validated_data.get('indexId')
         user = self.request.user.id
 
         response = service.finance.investment.Investment(investment_id=investment_id, owner_id=user) \
-            .get_profit(start_at=start_at, reference_id=reference_id)
+            .get_profit(start_at=start_at, index_id=index_id)
 
         return Response(response, status=200)
 

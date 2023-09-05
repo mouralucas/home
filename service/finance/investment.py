@@ -203,22 +203,30 @@ class Investment(Finance):
 
         return response
 
-    def get_profit(self, start_at, reference_id=None):
+    def get_profit(self, start_at, index_id=None):
+        if index_id:
+            index = finance.models.Index.objects.filter(pk=index_id).first()
+        else:
+            index = finance.models.Index.objects.filter(pk='2a2b100f-17d9-4c61-b3b4-f06662113953').first()
+
         statement_filters = {
-            'investment__owner_id': self.owner,
+            'investment__owner_id': self.owner_id,
             'reference__gte': start_at
         }
-        reference_filters = {
-            'index_id': 'ef07cbb0-9b29-43c6-a060-bef73f1cc000',
+
+        index_filters = {
+            'index': index,
             'periodicity_id': 'dc5b3bf8-2b84-423a-9a90-e7e194e355fa',
             'reference__gte': start_at
-        }  # CDI is default
+        }
 
+        investment_name = 'Total'
         if self.investment_id:
+            investment_name = finance.models.Investment.objects.values_list('name', flat=True).filter(pk=self.investment_id).first()
             statement_filters['investment_id'] = self.investment_id
 
-        if reference_id:
-            reference_filters['type_id'] = reference_id
+        if index_id:
+            index_filters['index_id'] = index_id
 
         statement = pd.DataFrame(finance.models.InvestmentStatement.objects.values('reference').annotate(total=Sum('gross_amount'))
                                  .filter(**statement_filters).order_by('reference'))
@@ -228,7 +236,7 @@ class Investment(Finance):
         statement = statement.fillna(0)
         statement['investment'] = ((1 + statement['variation_percentage']).cumprod() - 1) * 100
 
-        reference_index = pd.DataFrame(finance.models.FinanceData.objects.values('reference', 'value').filter(**reference_filters))
+        reference_index = pd.DataFrame(finance.models.FinanceData.objects.values('reference', 'value').filter(**index_filters).order_by('reference'))
         if reference_index.empty:
             reference_index = pd.DataFrame(columns=['reference', 'value'])
         reference_index["value"] = reference_index["value"].astype(float)
@@ -255,11 +263,11 @@ class Investment(Finance):
             'series': [
                 {
                     'value': 'investment',
-                    'name': 'Selic 2025'
+                    'name': investment_name
                 },
                 {
                     'value': 'index',
-                    'name': 'IPCA'
+                    'name': index.name
                 }
             ]
         }
