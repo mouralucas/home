@@ -8,7 +8,7 @@ from django.db.models import F, Sum
 
 import finance.models
 from service.finance.finance import Finance
-
+from django.utils import timezone
 
 class Investment(Finance):
     def __init__(self, investment_id=None, parent_id=None, name=None, date=None, quantity=None, price=None, amount=None, cash_flow=None, interest_rate=None, interest_index=None, investment_type_id=None, dat_maturity=None, custodian_id=None,
@@ -62,7 +62,8 @@ class Investment(Finance):
 
     def get_investment(self, show_mode):
         filters = {
-            'owner_id': self.owner_id
+            'owner_id': self.owner_id,
+            'maturity_at__gte': timezone.now()
         }
 
         if show_mode != 'all':
@@ -71,10 +72,10 @@ class Investment(Finance):
         if self.investment_id:
             filters['pk'] = self.investment_id
 
-        investments = finance.models.Investment.objects.values('name', 'description', 'amount', 'price', 'quantity',
-                                                               'date') \
+        investments = finance.models.Investment.objects.values('name', 'description', 'amount',
+                                                               'price', 'quantity', 'date') \
             .annotate(investmentId=F('pk'),
-                      maturityDate=F('dat_maturity'),
+                      maturityAt=F('maturity_at'),
                       interestRate=F('interest_rate'),
                       interestIndex=F('interest_index'),
                       custodianName=F('custodian__name'),
@@ -228,13 +229,14 @@ class Investment(Finance):
         if index_id:
             index_filters['index_id'] = index_id
 
+        # O valor de ganhos no mês devem ser somados ao investido, pra não distorcer a % de ganho
         statement = pd.DataFrame(finance.models.InvestmentStatement.objects.values('reference').annotate(total=Sum('gross_amount'))
                                  .filter(**statement_filters).order_by('reference'))
         if statement.empty:
             statement = pd.DataFrame(columns=['reference', 'total'])
         statement['variation_percentage'] = statement['total'].pct_change()
         statement = statement.fillna(0)
-        statement['investment'] = ((1 + statement['variation_percentage']).cumprod() - 1) * 100
+        statement['investment'] = (((1 + statement['variation_percentage']).cumprod()) - 1) * 100
 
         reference_index = pd.DataFrame(finance.models.FinanceData.objects.values('reference', 'value').filter(**index_filters).order_by('reference'))
         if reference_index.empty:
@@ -247,6 +249,7 @@ class Investment(Finance):
 
         merged_ = statement.merge(reference_index, on='reference', how='outer')
         merged_ = merged_.fillna(0)
+        merged_ = merged_.sort_values(by='reference')
 
         response_list = []
         for idx, i in merged_.iterrows():
@@ -286,7 +289,7 @@ class Investment(Finance):
         investment.interest_rate = self.interest_rate
         investment.interest_index = self.interest_index
         investment.type_id = self.type_id
-        investment.dat_maturity = self.dat_maturity if self.dat_maturity not in ('', 'null') else None
+        investment.maturity_at = self.dat_maturity if self.dat_maturity not in ('', 'null') else None
         investment.custodian_id = self.custodian_id
         investment.parent_id = self.parent_id
         investment.index_id = '2a2b100f-17d9-4c61-b3b4-f06662113953' # TODO: adjust to get from request

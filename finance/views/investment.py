@@ -97,6 +97,8 @@ class Interest(APIView):
 
 
 class Profit(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args, **kwargs):
         data = ProfitGetSerializer(data=self.request.query_params)
         if not data.is_valid():

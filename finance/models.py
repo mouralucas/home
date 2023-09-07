@@ -103,7 +103,7 @@ class Investment(core.models.Log):
     description = models.TextField(null=True)
     type = models.ForeignKey('finance.InvestmentType', on_delete=models.DO_NOTHING)
     date = models.DateField()
-    dat_maturity = models.DateField(null=True)
+    maturity_at = models.DateField(null=True)
     quantity = models.DecimalField(max_digits=15, decimal_places=5, null=True)
     price = models.DecimalField(max_digits=15, decimal_places=5, null=True, help_text=_('Preço do título no momento da compra'))
     amount = models.DecimalField(max_digits=15, decimal_places=5)
@@ -113,6 +113,9 @@ class Investment(core.models.Log):
     interest_index = models.CharField(max_length=50)
     custodian = models.ForeignKey('finance.Bank', on_delete=models.DO_NOTHING)
     parent = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
+    liquidity = models.ForeignKey('finance.Liquidity', on_delete=models.DO_NOTHING)
+    is_liquidated = models.BooleanField(default=False)
+    liquidated_at = models.DateField(null=True)
 
     class Meta:
         db_table = 'finance"."investment'
@@ -128,6 +131,21 @@ class InvestmentStatement(core.models.Log):
 
     class Meta:
         db_table = 'finance"."investment_statement'
+
+
+class InvestmentBalance(core.models.Log):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    investment = models.ForeignKey('finance.Investment', on_delete=models.DO_NOTHING)
+    period = models.IntegerField(help_text=_('Período de referência'))
+    previous_balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo dos investimentos no período anterior'))
+    incoming = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Todas as entradas no período'))
+    outgoing = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Todas as saídas no período'))
+    transactions = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo de entradas e saídas'))
+    earnings = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Soma de todos os rendimentos investimentos no período'))
+    transactions_balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Soma das entradas e saídas mais os rendimentos'))
+    balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo do investimento no período'))
+    class Meta:
+        db_table = 'finance"."investment_balance'
 
 
 class AccountStatement(core.models.Log):
@@ -168,12 +186,12 @@ class AccountBalance(core.models.Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING)
     period = models.IntegerField(help_text=_('Período de referência'))
-    previous_balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo da conta antes do período'))
+    previous_balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo da conta no período anterior'))
     incoming = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Todas as entradas no período'))
     outgoing = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Todas as saídas no período'))
     transactions = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo de entradas e saídas'))
     earnings = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Soma de todos os rendimentos da conta no período'))
-    transactions_balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo da movimentação da conta no período'))
+    transactions_balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Soma das entradas e saídas mais os rendimentos'))
     balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo da conta no período'))
 
     class Meta:
@@ -290,3 +308,12 @@ class Index(core.models.Log):
 
     class Meta:
         db_table = 'finance"."index'
+
+
+class Liquidity(core.models.Log):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=250, null=True)
+
+    class Meta:
+        db_table = 'finance"."liquidity'
