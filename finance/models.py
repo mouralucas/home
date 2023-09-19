@@ -136,7 +136,7 @@ class InvestmentStatement(core.models.Log):
 class InvestmentBalance(core.models.Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     investment = models.ForeignKey('finance.Investment', on_delete=models.DO_NOTHING)
-    period = models.IntegerField(help_text=_('Período de referência'))
+    reference = models.IntegerField(help_text=_('Período de referência'))
     previous_balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo dos investimentos no período anterior'))
     incoming = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Todas as entradas no período'))
     outgoing = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Todas as saídas no período'))
@@ -151,7 +151,7 @@ class InvestmentBalance(core.models.Log):
 class AccountStatement(core.models.Log):
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING, related_name='bank_statement_account')
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
-    period = models.IntegerField(help_text=_('Período de referência'))
+    reference = models.IntegerField(help_text=_('Período de referência'))
     currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING)
     amount = models.DecimalField(max_digits=14, decimal_places=2)
     amount_absolute = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('O mesmo do amount sem o sinal'))
@@ -185,7 +185,7 @@ class AccountStatement(core.models.Log):
 class AccountBalance(core.models.Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING)
-    period = models.IntegerField(help_text=_('Período de referência'))
+    reference = models.IntegerField(help_text=_('Período de referência'))
     previous_balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo da conta no período anterior'))
     incoming = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Todas as entradas no período'))
     outgoing = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Todas as saídas no período'))
@@ -201,7 +201,7 @@ class AccountBalance(core.models.Log):
 class CreditCardBill(core.models.Log):
     credit_card = models.ForeignKey('finance.CreditCard', on_delete=models.DO_NOTHING, null=True)
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
-    period = models.IntegerField(null=True, help_text=_('Período de referência'))
+    reference = models.IntegerField(null=True, help_text=_('Período de referência'))
     payment_at = models.DateField(null=True)
     purchase_at = models.DateField(null=True)
     amount = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Sempre em reais, valor final na fatura'))

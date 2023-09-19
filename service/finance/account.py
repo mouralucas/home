@@ -43,20 +43,24 @@ class Account(Finance):
         filters = {}
 
         if start_period:
-            filters['period__get'] = start_period
+            filters['period__gte'] = start_period
 
-        account_registers = finance.models.AccountStatement.objects.values('period') \
-            .filter(account_id=self.account_id, status=True).filter(**filters).order_by('period')
+        account_registers = finance.models.AccountStatement.objects.values('reference') \
+            .filter(account_id=self.account_id, status=True).filter(**filters).order_by('reference')
 
+        incoming = pd.DataFrame(account_registers.exclude(category_id__in=['rendimento']).filter(cash_flow='INCOMING').annotate(incoming=Sum('amount')))
+        outgoing = pd.DataFrame(account_registers.exclude(category_id__in=['rendimento']).filter(cash_flow='OUTGOING').annotate(outgoing=Sum('amount')))
         transactions = pd.DataFrame(account_registers.exclude(category_id__in=['rendimento']).annotate(transactions=Sum('amount')))
+        transactions = pd.merge(transactions, incoming, on='reference', how='outer')
+        transactions = pd.merge(transactions, outgoing, on='reference', how='outer')
         if transactions.empty:
             transactions = pd.DataFrame(columns=['period', 'transactions'])
 
         earnings = pd.DataFrame(account_registers.filter(category_id='rendimento').annotate(earnings=Sum('amount')))
         if earnings.empty:
-            earnings = pd.DataFrame(columns=['period', 'earnings'])
+            earnings = pd.DataFrame(columns=['reference', 'earnings'])
 
-        merged_df = pd.merge(transactions, earnings, on='period', how='outer')
+        merged_df = pd.merge(transactions, earnings, on='reference', how='outer')
         merged_df = merged_df.fillna(0)
         merged_df['transaction_balance'] = merged_df['transactions'] + merged_df['earnings']
 
@@ -64,19 +68,19 @@ class Account(Finance):
 
         # Set min and max periods for each account
         account = finance.models.Account.objects.filter(pk=self.account_id).first()
-        min_period = merged_df['period'].min()
+        min_period = merged_df['reference'].min()
         max_period = util.datetime.DateTime().get_period(account.dat_close) if account.dat_close else util.datetime.DateTime().current_period()
         all_periods = list(range(min_period, max_period + 1))
-        missing_periods = [p for p in all_periods if p not in merged_df['period'].tolist() and 12 >= p % 100 > 1]
+        missing_periods = [p for p in all_periods if p not in merged_df['reference'].tolist() and 12 >= p % 100 > 1]
 
-        # Create row with missing periods
+        # Create row with missing reference
         new_rows = []
         for missing_period in missing_periods:
-            prev_period = merged_df[merged_df['period'] < missing_period]['period'].max()
-            prev_balance = merged_df[merged_df['period'] == prev_period]['balance'].values[0]
+            prev_period = merged_df[merged_df['reference'] < missing_period]['reference'].max()
+            prev_balance = merged_df[merged_df['reference'] == prev_period]['balance'].values[0]
 
             new_row = {
-                'period': missing_period,
+                'reference': missing_period,
                 'transactions': 0,
                 'earnings': 0,
                 'transaction_balance': 0,
@@ -84,17 +88,21 @@ class Account(Finance):
             }
             new_rows.append(pd.DataFrame([new_row]))
 
-        # Concatenar os DataFrames do período ausente ao DataFrame original
+        # Add missing reference to existing DF
         merged_df = pd.concat([merged_df] + new_rows, ignore_index=True)
-        merged_df = merged_df.sort_values(by='period')
+        merged_df = merged_df.sort_values(by='reference')
         merged_df['balance'] = merged_df['transaction_balance'].cumsum()
+        merged_df = merged_df.fillna(0)
 
         balance_list = []
         for idx, balance in merged_df.iterrows():
             aux = finance.models.AccountBalance(
                 dat_created=timezone.now(),
                 account_id=self.account_id,
-                period=balance['period'],
+                reference=balance['reference'],
+                previous_balance=0,
+                incoming=balance['incoming'],
+                outgoing=balance['outgoing'],
                 transactions=balance['transactions'],
                 earnings=balance['earnings'],
                 transactions_balance=balance['transaction_balance'],

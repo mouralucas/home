@@ -68,7 +68,7 @@ class Finance:
             # If amount already lower than zero no need to change again
             multiplier = -1 if float(self.amount) > 0 else 1
 
-        statement.period = self.reference
+        statement.reference = self.reference
         statement.currency_id = self.currency_id
         statement.amount = float(self.amount) * multiplier
         statement.amount_absolute = float(self.amount)
@@ -93,7 +93,7 @@ class Finance:
         if self.account_id:
             filters['account_id'] = self.account_id
 
-        statement = finance.models.AccountStatement.objects.values('period', 'description') \
+        statement = finance.models.AccountStatement.objects.values('reference', 'description') \
             .filter(**filters).active().annotate(statementId=F('id'),
                                                  amount=F('amount'),
                                                  accountName=F('account__nickname'),
@@ -129,10 +129,10 @@ class Finance:
         return response
 
     def get_bill_history(self, start_at=201801, end_at=202302, months=13):
-        history = finance.models.CreditCardBill.objects.values('period') \
+        history = finance.models.CreditCardBill.objects.values('reference') \
             .annotate(total_amount=Sum('amount'),
                       total_amount_absolute=Sum('amount_absolute')) \
-            .filter(period__range=(start_at, end_at), owner_id=self.owner).order_by('period')
+            .filter(period__range=(start_at, end_at), owner_id=self.owner).order_by('reference')
 
         average = sum(item['total_amount_absolute'] for item in history) / len(history) if history else 0
 
@@ -153,11 +153,11 @@ class Finance:
             'owner_id': self.owner
         }
 
-        bills = finance.models.CreditCardBill.objects.values('period', 'category__description') \
-            .filter(**filters).annotate(total=Sum('amount')).order_by('period')
+        bills = finance.models.CreditCardBill.objects.values('reference', 'category__description') \
+            .filter(**filters).annotate(total=Sum('amount')).order_by('reference')
 
-        statements = finance.models.AccountStatement.objects.values('period', 'category__description') \
-            .filter(**filters).annotate(total=Sum('amount')).order_by('period')
+        statements = finance.models.AccountStatement.objects.values('reference', 'category__description') \
+            .filter(**filters).annotate(total=Sum('amount')).order_by('reference')
 
         evolucao = statements.union(bills)
 
