@@ -132,7 +132,7 @@ class Finance:
         history = finance.models.CreditCardBill.objects.values('reference') \
             .annotate(total_amount=Sum('amount'),
                       total_amount_absolute=Sum('amount_absolute')) \
-            .filter(period__range=(start_at, end_at), owner_id=self.owner).order_by('reference')
+            .filter(reference__range=(start_at, end_at), owner_id=self.owner).order_by('reference')
 
         average = sum(item['total_amount_absolute'] for item in history) / len(history) if history else 0
 
@@ -212,7 +212,7 @@ class Finance:
         cat_not_expense = finance.models.CategoryGroup.objects.values_list('category_id', flat=True).filter(group='not_expense')
 
         filters = {
-            'period': self.reference,
+            'reference': self.reference,
             'cash_flow': 'OUTGOING',
             'owner_id': self.owner
         }
@@ -388,8 +388,8 @@ class Finance:
         # TODO: update with new balance model
         cat_not_expense = finance.models.CategoryGroup.objects.values_list('category_id', flat=True).filter(group='not_expense')
 
-        credit_card_bill = finance.models.CreditCardBill.objects.values_list('amount', flat=True).filter(period=self.reference, owner_id=self.owner)
-        bank_statement = finance.models.AccountStatement.objects.filter(period=self.reference, owner_id=self.owner)
+        credit_card_bill = finance.models.CreditCardBill.objects.values_list('amount', flat=True).filter(reference=self.reference, owner_id=self.owner)
+        bank_statement = finance.models.AccountStatement.objects.filter(reference=self.reference, owner_id=self.owner)
 
         bank_statement_incoming = sum(list(bank_statement.values_list('amount', flat=True)
                                            .filter(cash_flow='INCOMING').exclude(category_id__in=list(cat_not_expense))))
@@ -399,7 +399,7 @@ class Finance:
 
         response = {
             'success': True,
-            'period': self.reference,
+            'reference': self.reference,
             'balance': bank_statement_balance,
             'incoming': bank_statement_incoming,
             'outgoing': bank_statement_outgoing,

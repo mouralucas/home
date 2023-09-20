@@ -128,8 +128,8 @@ class Investment(Finance):
 
         response = {
             'success': True,
-            'allocationIncome': list(income),
-            'allocationInvestment': list(investment)
+            'incomeAllocation': list(income),
+            'investmentAllocation': list(investment)
         }
 
         return response
