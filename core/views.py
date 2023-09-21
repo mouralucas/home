@@ -33,7 +33,7 @@ class Category(APIView):
 
         response = service.core.core.Misc().get_category(show_mode=show_mode, module_id=module)
 
-        return JsonResponse(response, safe=False)
+        return Response(response, status=200)
 
     def post(self, *args, **kwargs):
         pass
@@ -50,10 +50,10 @@ class Period(APIView):
         e_month = data.validated_data.get('eMonth')
         e_year = data.validated_data.get('eYear')
 
-        periods = util.datetime.DateTime().list_period(s_month=s_month, s_year=s_year,
-                                                       e_month=e_month, e_year=e_year)
+        response = util.datetime.DateTime().list_period(s_month=s_month, s_year=s_year,
+                                                        e_month=e_month, e_year=e_year)
 
-        return JsonResponse(periods, safe=False)
+        return Response(response, status=200)
 
 
 class Status(APIView):

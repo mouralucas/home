@@ -243,8 +243,8 @@ class DateTime:
             yearmonth = s_year * 100 + s_month
             aux = {
                 'value': yearmonth,
-                'text': monthname(s_month) + ' ' + str(s_year),
-                'is_now': True if yearmonth == self.current_period() else False,
+                'text': self.get_monthname(s_month) + ' ' + str(s_year),
+                'current': True if yearmonth == self.current_period() else False,
             }
             meses.append(aux)
 
@@ -253,7 +253,12 @@ class DateTime:
                 s_month = 1
                 s_year += 1
 
-        return meses
+        response = {
+            'success': True,
+            'periods': meses
+        }
+
+        return response
 
     def get_monthname(self, month, starting=1, abbreviated=False):
         """
