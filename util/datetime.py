@@ -213,7 +213,7 @@ class DateTime:
 
         return year * 100 + month
 
-    def list_period(self, s_year=2018, s_month=1, e_year=None, e_month=None):
+    def list_period(self, s_year=None, s_month=None, e_year=None, e_month=None):
         """
         :Name: list_period
         :Description: Save the information about a category
@@ -221,9 +221,9 @@ class DateTime:
         :Edited by:
 
         Explicit params:
-        :param s_year: Start year (default 2018)
-        :param s_month: Start month (default 1)
-        :param e_year: End month
+        :param s_year: Start year
+        :param s_month: Start month
+        :param e_year: End year
         :param e_month: End month
 
         Implicit params (passed in the class instance or set by other functions):

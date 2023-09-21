@@ -54,3 +54,10 @@ class CustomSerializer(serializers.Serializer):
                 custom_error_dict['errors'][key] = error_string
 
             raise serializers.ValidationError(custom_error_dict)
+
+
+class ReferenceGetSerializer(CustomSerializer):
+    sMonth = serializers.IntegerField(required=False, min_value=1, max_value=12, default=1)
+    sYear = serializers.IntegerField(required=False, default=2018)
+    eMonth = serializers.IntegerField(required=False, min_value=1, max_value=12)
+    eYear = serializers.IntegerField(required=False)

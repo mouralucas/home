@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 
 import service.core.core
 import util.datetime
+from core.serializers import ReferenceGetSerializer
 
 
 class Country(APIView):
@@ -40,7 +41,17 @@ class Category(APIView):
 
 class Period(APIView):
     def get(self, *args, **kwargs):
-        periods = util.datetime.DateTime().list_period()
+        data = ReferenceGetSerializer(data=self.request.query_params)
+        if not data.is_valid():
+            return Response(data.errors, status=400)
+
+        s_month = data.validated_data.get('sMonth')
+        s_year = data.validated_data.get('sYear')
+        e_month = data.validated_data.get('eMonth')
+        e_year = data.validated_data.get('eYear')
+
+        periods = util.datetime.DateTime().list_period(s_month=s_month, s_year=s_year,
+                                                       e_month=e_month, e_year=e_year)
 
         return JsonResponse(periods, safe=False)
 
