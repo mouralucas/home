@@ -44,7 +44,7 @@ class ExpensesHistory(View):
     def get(self, *args, **kwargs):
         referencia = self.request.GET.get('referencia')
 
-        response = service.finance.finance.Finance(reference=referencia).get_category_history()
+        response = service.finance.finance.Finance(period=referencia).get_category_history()
 
         return Response(response)
 
@@ -57,7 +57,7 @@ class Expense(APIView):
         expense_type = self.request.GET.get('expense_type')
         user = self.request.user.id
 
-        response = service.finance.finance.Finance(reference=period, owner=user).get_expenses(expense_type=expense_type)
+        response = service.finance.finance.Finance(period=period, owner=user).get_expenses(expense_type=expense_type)
 
         return JsonResponse(response, safe=False)
 
@@ -67,7 +67,7 @@ class ExpenseCategory(APIView):
         period = self.request.GET.get('period')
         user = self.request.user.id
 
-        response = service.finance.finance.Finance(reference=period, owner=user).get_category_expense()
+        response = service.finance.finance.Finance(period=period, owner=user).get_category_expense()
 
         return Response(response)
 
@@ -78,7 +78,7 @@ class InvestmentStatement(APIView):
     def get(self, *args, **kwargs):
         period = self.request.GET.get('period')
 
-        response = service.finance.finance.Finance(reference=period).get_investment_statement()
+        response = service.finance.finance.Finance(period=period).get_investment_statement()
 
         return JsonResponse(response, safe=False)
 
@@ -93,7 +93,7 @@ class Summary(APIView):
         period = self.request.query_params.get('period', util.datetime.DateTime().current_period())
         user = self.request.user.id
 
-        response = service.finance.finance.Finance(reference=period, owner=user).get_summary()
+        response = service.finance.finance.Finance(period=period, owner=user).get_summary()
 
         return Response(response)
 

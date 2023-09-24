@@ -26,14 +26,14 @@ class Statement(APIView):
         if not validators.is_valid():
             return Response(validators.errors, status=400)
 
-        reference = validators.validated_data.get('reference')
+        reference = validators.validated_data.get('period')
         account_id = validators.validated_data.get('accountId')
         user = self.request.user.id
 
         if account_id in ['', '0']:
             account_id = None
 
-        response = service.finance.finance.Finance(reference=reference, account_id=account_id, owner=user).get_statement()
+        response = service.finance.finance.Finance(period=reference, account_id=account_id, owner=user).get_statement()
 
         return Response(response, status=200)
 

@@ -16,7 +16,7 @@ import util.datetime
 
 class Finance:
 
-    def __init__(self, mes=None, ano=None, statement_id=None, bill_id=None, reference=None, account_id=None, credit_card_id=None, amount=None,
+    def __init__(self, mes=None, ano=None, statement_id=None, bill_id=None, period=None, account_id=None, credit_card_id=None, amount=None,
                  amount_currency=None, price_currency_dollar=None, vlr_moeda=None, amount_tax=None, installment=None, tot_installment=None, dat_compra=None, dat_pagamento=None,
                  description=None, category_id=None, currency_id=None, price_dollar=None, cash_flow_id=None, owner=None):
         self.mes = mes
@@ -24,7 +24,7 @@ class Finance:
 
         self.statement_id = statement_id
         self.bill_id = bill_id
-        self.reference = reference
+        self.period = period
         self.amount = amount
         self.amount_currency = amount_currency
         self.price_currency_dollar = price_currency_dollar
@@ -59,7 +59,7 @@ class Finance:
         else:
             statement = finance.models.AccountStatement()
 
-        self.__set_reference()
+        self.__set_period()
 
         # TODO: Essa lógica de entrada e saída está muito ruim
         if self.cash_flow_id == 'INCOMING':
@@ -68,7 +68,7 @@ class Finance:
             # If amount already lower than zero no need to change again
             multiplier = -1 if float(self.amount) > 0 else 1
 
-        statement.reference = self.reference
+        statement.period = self.period
         statement.currency_id = self.currency_id
         statement.amount = float(self.amount) * multiplier
         statement.amount_absolute = float(self.amount)
@@ -93,7 +93,7 @@ class Finance:
         if self.account_id:
             filters['account_id'] = self.account_id
 
-        statement = finance.models.AccountStatement.objects.values('reference', 'description') \
+        statement = finance.models.AccountStatement.objects.values('period', 'description') \
             .filter(**filters).active().annotate(statementId=F('id'),
                                                  amount=F('amount'),
                                                  accountName=F('account__nickname'),
@@ -118,21 +118,21 @@ class Finance:
     def get_bill_statistic(self):
         bills = finance.models.CreditCardBill.objects.filter(owner_id=self.owner)
         qtd_total = bills.count()
-        qtd_reference = bills.filter(reference=self.reference).count()
+        qtd_period = bills.filter(period=self.period).count()
 
         response = {
             'status': True,
             'qtd_total': qtd_total,
-            'qtd_reference': qtd_reference,
+            'qtd_period': qtd_period,
         }
 
         return response
 
     def get_bill_history(self, start_at=201801, end_at=202302, months=13):
-        history = finance.models.CreditCardBill.objects.values('reference') \
+        history = finance.models.CreditCardBill.objects.values('period') \
             .annotate(total_amount=Sum('amount'),
                       total_amount_absolute=Sum('amount_absolute')) \
-            .filter(reference__range=(start_at, end_at), owner_id=self.owner).order_by('reference')
+            .filter(period__range=(start_at, end_at), owner_id=self.owner).order_by('period')
 
         average = sum(item['total_amount_absolute'] for item in history) / len(history) if history else 0
 
@@ -148,25 +148,25 @@ class Finance:
     def get_category_history(self, months=13):
         fixed_expenses = finance.models.CategoryGroup.objects.values_list('category', flat=True).filter(group='fixed_expenses')
         filters = {
-            'reference__range': (202001, 202012),
+            'period__range': (202001, 202012),
             'category__in': list(fixed_expenses),
             'owner_id': self.owner
         }
 
-        bills = finance.models.CreditCardBill.objects.values('reference', 'category__description') \
-            .filter(**filters).annotate(total=Sum('amount')).order_by('reference')
+        bills = finance.models.CreditCardBill.objects.values('period', 'category__description') \
+            .filter(**filters).annotate(total=Sum('amount')).order_by('period')
 
-        statements = finance.models.AccountStatement.objects.values('reference', 'category__description') \
-            .filter(**filters).annotate(total=Sum('amount')).order_by('reference')
+        statements = finance.models.AccountStatement.objects.values('period', 'category__description') \
+            .filter(**filters).annotate(total=Sum('amount')).order_by('period')
 
         evolucao = statements.union(bills)
 
         default = defaultdict(float)
 
         for i in list(evolucao):
-            default[str(i.get('reference', '')) + '.' + i.get('category__description', '')] += float(i.get('total', 0))
+            default[str(i.get('period', '')) + '.' + i.get('category__description', '')] += float(i.get('total', 0))
 
-        default = [{'reference': i.split('.')[0], 'categoria': i.split('.')[1], 'total': default[i]} for i in sorted(default)]
+        default = [{'period': i.split('.')[0], 'categoria': i.split('.')[1], 'total': default[i]} for i in sorted(default)]
 
         self.response['status'] = True
         self.response['faturas'] = default
@@ -175,7 +175,7 @@ class Finance:
 
     def get_expenses(self, expense_type):
         filters = {
-            'period': self.reference,
+            'period': self.period,
             'owner_id': self.owner
         }
 
@@ -212,7 +212,7 @@ class Finance:
         cat_not_expense = finance.models.CategoryGroup.objects.values_list('category_id', flat=True).filter(group='not_expense')
 
         filters = {
-            'reference': self.reference,
+            'period': self.period,
             'cash_flow': 'OUTGOING',
             'owner_id': self.owner
         }
@@ -388,8 +388,8 @@ class Finance:
         # TODO: update with new balance model
         cat_not_expense = finance.models.CategoryGroup.objects.values_list('category_id', flat=True).filter(group='not_expense')
 
-        credit_card_bill = finance.models.CreditCardBill.objects.values_list('amount', flat=True).filter(reference=self.reference, owner_id=self.owner)
-        bank_statement = finance.models.AccountStatement.objects.filter(reference=self.reference, owner_id=self.owner)
+        credit_card_bill = finance.models.CreditCardBill.objects.values_list('amount', flat=True).filter(period=self.period, owner_id=self.owner)
+        bank_statement = finance.models.AccountStatement.objects.filter(period=self.period, owner_id=self.owner)
 
         bank_statement_incoming = sum(list(bank_statement.values_list('amount', flat=True)
                                            .filter(cash_flow='INCOMING').exclude(category_id__in=list(cat_not_expense))))
@@ -399,7 +399,7 @@ class Finance:
 
         response = {
             'success': True,
-            'reference': self.reference,
+            'period': self.period,
             'balance': bank_statement_balance,
             'incoming': bank_statement_incoming,
             'outgoing': bank_statement_outgoing,
@@ -409,8 +409,8 @@ class Finance:
 
         return response
 
-    def __set_reference(self):
+    def __set_period(self):
         # dat_purchase = util.datetime.date_to_datetime(self.dat_compra, output_format='%Y-%m-%d')
         year = self.purchased_at.year
         month = self.purchased_at.month
-        self.reference = year * 100 + month
+        self.period = year * 100 + month

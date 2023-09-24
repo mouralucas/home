@@ -12,8 +12,8 @@ from django.utils import timezone
 
 class Investment(Finance):
     def __init__(self, investment_id=None, parent_id=None, name=None, date=None, quantity=None, price=None, amount=None, cash_flow=None, interest_rate=None, interest_index=None, investment_type_id=None, dat_maturity=None, custodian_id=None,
-                 owner_id=None, reference=None, request=None):
-        super().__init__(reference=reference, amount=amount)
+                 owner_id=None, period=None, request=None):
+        super().__init__(period=period, amount=amount)
 
         # TODO: clean code with parent class
         self.investment_id = investment_id
@@ -230,15 +230,17 @@ class Investment(Finance):
             index_filters['index_id'] = index_id
 
         # O valor de ganhos no mês devem ser somados ao investido, pra não distorcer a % de ganho
-        statement = pd.DataFrame(finance.models.InvestmentStatement.objects.values('reference').annotate(total=Sum('gross_amount'))
-                                 .filter(**statement_filters).order_by('reference'))
+        statement = pd.DataFrame(finance.models.InvestmentStatement.objects.values(
+            'period').annotate(total=Sum('gross_amount'))
+                                 .filter(**statement_filters).order_by('period'))
         if statement.empty:
             statement = pd.DataFrame(columns=['reference', 'total'])
         statement['variation_percentage'] = statement['total'].pct_change()
         statement = statement.fillna(0)
         statement['investment'] = (((1 + statement['variation_percentage']).cumprod()) - 1) * 100
 
-        reference_index = pd.DataFrame(finance.models.FinanceData.objects.values('reference', 'value').filter(**index_filters).order_by('reference'))
+        reference_index = pd.DataFrame(finance.models.FinanceData.objects.values('period', 'value').filter(**index_filters).order_by(
+            'period'))
         if reference_index.empty:
             reference_index = pd.DataFrame(columns=['reference', 'value'])
         reference_index["value"] = reference_index["value"].astype(float)

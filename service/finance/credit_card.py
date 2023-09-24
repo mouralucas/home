@@ -71,7 +71,7 @@ class CreditCard:
                 filters['credit_card_id'] = self.credit_card_id
 
         bills = finance.models.CreditCardBill.objects \
-            .values('id', 'reference',
+            .values('id', 'period',
                     'installment', 'description') \
             .filter(**filters) \
             .annotate(amount=F('amount'),
@@ -114,7 +114,7 @@ class CreditCard:
 
         bill.credit_card_id = self.credit_card_id
         # Dates
-        bill.reference = self.period
+        bill.period = self.period
         bill.payment_at = dat_pagamento_date
         bill.purchase_at = util.datetime.date_to_datetime(self.dat_purchase, output_format='%Y-%m-%d')
 

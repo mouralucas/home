@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 
 class StatementGetSerializer(serializers.Serializer):
-    reference = serializers.IntegerField(required=True)
+    period = serializers.IntegerField(required=True)
     accountId = serializers.UUIDField(required=False)
 
 

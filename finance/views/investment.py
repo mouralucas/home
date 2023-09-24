@@ -55,7 +55,7 @@ class Statement(APIView):
     def get(self, *args, **kwargs):
         period = self.request.GET.get('period')
 
-        response = service.finance.investment.Investment(reference=period).get_investment_statement()
+        response = service.finance.investment.Investment(period=period).get_investment_statement()
 
         return Response(response, status=200)
 

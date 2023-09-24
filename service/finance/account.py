@@ -45,8 +45,8 @@ class Account(Finance):
         if start_period:
             filters['period__gte'] = start_period
 
-        account_registers = finance.models.AccountStatement.objects.values('reference') \
-            .filter(account_id=self.account_id, status=True).filter(**filters).order_by('reference')
+        account_registers = finance.models.AccountStatement.objects.values('period') \
+            .filter(account_id=self.account_id, status=True).filter(**filters).order_by('period')
 
         incoming = pd.DataFrame(account_registers.exclude(category_id__in=['rendimento']).filter(cash_flow='INCOMING').annotate(incoming=Sum('amount')))
         outgoing = pd.DataFrame(account_registers.exclude(category_id__in=['rendimento']).filter(cash_flow='OUTGOING').annotate(outgoing=Sum('amount')))
