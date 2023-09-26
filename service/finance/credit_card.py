@@ -64,8 +64,7 @@ class CreditCard:
             filters['id'] = credit_card_bill_id
 
         else:
-            pass
-            filters['period__gte'] = 202306
+            filters['period'] = 202310
 
             if self.credit_card_id:
                 filters['credit_card_id'] = self.credit_card_id
