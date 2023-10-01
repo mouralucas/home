@@ -133,7 +133,7 @@ class Finance:
             .annotate(
             total_amount=Sum('amount'),
             total_amount_absolute=Sum('amount_absolute'),
-            balance=Sum('amount')
+            balance=Sum('amount')*-1
         ) \
             .filter(period__range=(start_at, end_at), owner_id=self.owner).order_by('period')
 
