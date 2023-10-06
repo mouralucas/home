@@ -400,14 +400,18 @@ class Finance:
                                            .filter(cash_flow='OUTGOING').exclude(category_id__in=list(cat_not_expense))))
         bank_statement_balance = bank_statement_incoming + bank_statement_outgoing
 
+        summary = {
+            'period': self.period,
+            'periodIncoming': bank_statement_incoming,
+            'periodOutgoing': bank_statement_outgoing,
+            'periodBalance': bank_statement_balance,
+            'periodCreditCardBill': sum(list(credit_card_bill))*-1,
+            'periodCreditCardPurchaseQuantity': len(credit_card_bill),
+        }
+
         response = {
             'success': True,
-            'period': self.period,
-            'balance': bank_statement_balance,
-            'incoming': bank_statement_incoming,
-            'outgoing': bank_statement_outgoing,
-            'credit': sum(list(credit_card_bill)),
-            'credit_qtd': len(credit_card_bill),
+            'summary': summary
         }
 
         return response
