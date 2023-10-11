@@ -104,10 +104,10 @@ class Finance:
                                                  cashFlowId=F('cash_flow'),
                                                  currencyId=F('currency_id'),
                                                  currencySymbol=F('currency__symbol'),
-                                                 createdAt=F('dat_created'),
-                                                 lastEditedAt=F('dat_last_edited'),
+                                                 createdAt=F('created_at'),
+                                                 lastEditedAt=F('edited_at'),
                                                  ) \
-            .order_by('-purchased_at', '-dat_created')
+            .order_by('-purchased_at', '-created_at')
 
         response = {
             'status': True,

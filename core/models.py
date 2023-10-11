@@ -58,9 +58,9 @@ class Log(models.Model):
     last_edited_by = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_last_edit_by')
     deleted_by = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_deleted_by')
 
-    dat_created = models.DateTimeField(null=True, blank=True)
-    dat_last_edited = models.DateTimeField(null=True, blank=True)
-    dat_deleted = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(null=True, blank=True)
+    edited_at = models.DateTimeField(null=True, blank=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         managed = True
@@ -81,12 +81,12 @@ class Log(models.Model):
 
         Create the created_by/last_edited_by and corresponding dates logs
         """
-        if not self.dat_created:
+        if not self.created_at:
             self.created_by = request_.user if request_ else None
-            self.dat_created = timezone.now()
+            self.created_at = timezone.now()
         elif is_update:
             self.last_edited_by = request_.user if request_ else None
-            self.dat_last_edited = timezone.now()
+            self.edited_at = timezone.now()
 
         super(Log, self).save(*args, **kwargs)
 

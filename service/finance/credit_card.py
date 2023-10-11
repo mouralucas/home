@@ -80,10 +80,10 @@ class CreditCard:
                       creditCardName=F('credit_card__name'),
                       categoryId=F('category_id'),
                       categoryName=F('category__description'),
-                      createdAt=F('dat_created'),
-                      lastEditedAt=F('dat_last_edited'),
+                      createdAt=F('created_at'),
+                      lastEditedAt=F('edited_at'),
                       totalInstallment=F('tot_installment')
-                      ).order_by('-purchase_at', '-dat_created')
+                      ).order_by('-purchase_at', '-created_at')
 
         response = {
             'status': True,

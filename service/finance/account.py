@@ -97,7 +97,7 @@ class Account(Finance):
         balance_list = []
         for idx, balance in merged_df.iterrows():
             aux = finance.models.AccountBalance(
-                dat_created=timezone.now(),
+                created_at=timezone.now(),
                 account_id=self.account_id,
                 reference=balance['reference'],
                 previous_balance=0,

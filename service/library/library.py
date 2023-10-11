@@ -37,10 +37,6 @@ class Library:
             if not item:
                 item = library.models.Item()
 
-        # Define as datas usadas
-        # dat_lancamento_form = util.datetime.format_data(dat_published, mask='____-__-__')
-        # dat_lancamento_original_form = util.datetime.format_data(data.validated_data('publishedOriginalAt'), mask='____-__-__')
-        # dat_status_form = util.datetime.format_data(dat_status, mask='____-__-__')
 
         item.main_author_id = data.validated_data.get('mainAuthorId')
         item.title = data.validated_data.get('title')
@@ -137,8 +133,8 @@ class Library:
                       languageId=F('language_id'),
                       coverPrice=F('cover_price'),
                       paidPrice=F('paid_price'),
-                      createdAt=F('dat_created'),
-                      lastEditedAt=F('dat_last_edited')
+                      createdAt=F('created_at'),
+                      lastEditedAt=F('edited_at')
                       ).order_by('title', 'volume')
 
         if is_unique:
