@@ -41,6 +41,8 @@ class Bill(APIView):
         return Response(response, status=200)
 
     def post(self, *args, **kwargs):
+        # TODO: Criar parâmetro do cadastro do cartão indicando se o cartão gera cashback no formato de investimento, se sim
+        # cria uma linha no investimento com a porcentagem pré determinada
         # TODO: padronizar parâmetros como camel case recebidos do front
         bill_id = self.request.data.get('billId')
         amount = self.request.data.get('amount')

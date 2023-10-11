@@ -10,6 +10,7 @@ import finance.models
 from service.finance.finance import Finance
 from django.utils import timezone
 
+
 class Investment(Finance):
     def __init__(self, investment_id=None, parent_id=None, name=None, date=None, quantity=None, price=None, amount=None, cash_flow=None, interest_rate=None, interest_index=None, investment_type_id=None, dat_maturity=None, custodian_id=None,
                  owner_id=None, period=None, request=None):
@@ -53,6 +54,7 @@ class Investment(Finance):
             parent_investment.save(request_=self.request)
 
             child_investment = self.__set_investment()
+            child_investment.liquidity_id = 'ea84f643-bea4-4cad-ac7b-1b848d9aeeb7'
             child_investment.save(request_=self.request)
 
         response = {
@@ -63,7 +65,7 @@ class Investment(Finance):
     def get_investment(self, show_mode):
         filters = {
             'owner_id': self.owner_id,
-            'maturity_at__gte': timezone.now()
+            # 'maturity_at__gte': timezone.now()
         }
 
         if show_mode != 'all':
@@ -72,17 +74,18 @@ class Investment(Finance):
         if self.investment_id:
             filters['pk'] = self.investment_id
 
-        investments = finance.models.Investment.objects.values('name', 'description', 'amount',
-                                                               'price', 'quantity', 'date') \
-            .annotate(investmentId=F('pk'),
-                      maturityAt=F('maturity_at'),
-                      interestRate=F('interest_rate'),
-                      interestIndex=F('interest_index'),
-                      custodianName=F('custodian__name'),
-                      custodianId=F('custodian_id'),
-                      investmentTypeId=F('type_id'),
-                      investmentTypeName=F('type__name'),
-                      parentId=F('parent_id')).order_by('-date').active().filter(**filters)
+        investments = finance.models.Investment.objects.values('name', 'description', 'amount', 'price', 'quantity', 'date') \
+            .annotate(
+            investmentId=F('pk'),
+            maturityAt=F('maturity_at'),
+            interestRate=F('interest_rate'),
+            interestIndex=F('interest_index'),
+            custodianName=F('custodian__name'),
+            custodianId=F('custodian_id'),
+            investmentTypeId=F('type_id'),
+            investmentTypeName=F('type__name'),
+            parentId=F('parent_id')
+        ).order_by('-date').active().filter(**filters)
 
         response = {
             'success': True,
@@ -121,7 +124,7 @@ class Investment(Finance):
 
     def get_allocation(self):
         allocation = (finance.models.Investment.objects.values('id', 'amount').annotate(incomeType=F('type__parent__name'),
-                                                                                       investmentType=F('type__name'))
+                                                                                        investmentType=F('type__name'))
                       .filter(owner_id=self.owner_id).exclude(parent__id__isnull=False))
         income = allocation.values('incomeType').annotate(total=Sum('amount'))
         investment = allocation.values('investmentType').annotate(total=Sum('amount'))
@@ -292,7 +295,7 @@ class Investment(Finance):
         investment.maturity_at = self.dat_maturity if self.dat_maturity not in ('', 'null') else None
         investment.custodian_id = self.custodian_id
         investment.parent_id = self.parent_id
-        investment.index_id = '2a2b100f-17d9-4c61-b3b4-f06662113953' # TODO: adjust to get from request
+        investment.index_id = '2a2b100f-17d9-4c61-b3b4-f06662113953'  # TODO: adjust to get from request
         investment.owner_id = self.owner_id
 
         return investment

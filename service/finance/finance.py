@@ -133,7 +133,7 @@ class Finance:
             .annotate(
             total_amount=Sum('amount'),
             total_amount_absolute=Sum('amount_absolute'),
-            balance=Sum('amount')*-1
+            balance=Sum('amount') * -1
         ) \
             .filter(period__range=(start_at, end_at), owner_id=self.owner).order_by('period')
 
@@ -221,28 +221,40 @@ class Finance:
         }
 
         statement = finance.models.AccountStatement.objects \
-            .values('category__parent__description') \
-            .annotate(category=F('category__parent__description'),
+            .values('category__parent_id') \
+            .annotate(category_id=F('category__parent_id'),
+                      category=F('category__parent__description'),
                       total=Sum('amount_absolute')) \
             .filter(**filters).exclude(category_id__in=list(cat_not_expense))
 
         credit_card = finance.models.CreditCardBill.objects \
-            .values('category__parent__description') \
-            .annotate(category=F('category__parent__description'),
+            .values('category__parent_id') \
+            .annotate(category_id=F('category__parent_id'),
+                      category=F('category__parent__description'),
                       total=Sum('amount_absolute')) \
             .filter(**filters).exclude(category_id__in=list(cat_not_expense))
 
         expenses = statement.union(credit_card)
 
-        grouped_values = defaultdict(float)
-        for info in list(expenses):
-            grouped_values[info['category']] += float(info['total'])
+        merged_data = defaultdict(float)
+        result = []
+        for item in list(expenses):
+            key = item["category_id"]
+            merged_data[key] += float(item["total"])
 
-        grouped_values = [{'category': year, 'total': grouped_values[year]} for year in sorted(grouped_values, reverse=True)]
+        result = [
+            {
+                "category__parent_id": key,
+                "category_id": key,
+                "category": item["category"],
+                "total": value
+            }
+            for key, value in merged_data.items()
+        ]
 
         response = {
             'success': True,
-            'expenses': list(grouped_values)
+            'expenses': result
         }
 
         return response
@@ -405,7 +417,7 @@ class Finance:
             'periodIncoming': bank_statement_incoming,
             'periodOutgoing': bank_statement_outgoing,
             'periodBalance': bank_statement_balance,
-            'periodCreditCardBill': sum(list(credit_card_bill))*-1,
+            'periodCreditCardBill': sum(list(credit_card_bill)) * -1,
             'periodCreditCardPurchaseQuantity': len(credit_card_bill),
         }
 

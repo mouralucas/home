@@ -109,8 +109,7 @@ class Investment(core.models.Log):
     date = models.DateField()
     maturity_at = models.DateField(null=True)
     quantity = models.DecimalField(max_digits=15, decimal_places=5, null=True)
-    price = models.DecimalField(max_digits=15, decimal_places=5, null=True,
-                                help_text=_('Preço do título no momento da compra'))
+    price = models.DecimalField(max_digits=15, decimal_places=5, null=True, help_text=_('Preço do título no momento da compra'))
     amount = models.DecimalField(max_digits=15, decimal_places=5)
     cash_flow = models.CharField(max_length=100, choices=finance.choices.CashFlow.choices)
     interest_rate = models.CharField(max_length=100, choices=finance.choices.InterestRate.choices)
@@ -142,15 +141,12 @@ class InvestmentBalance(core.models.Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     investment = models.ForeignKey('finance.Investment', on_delete=models.DO_NOTHING)
     period = models.IntegerField(help_text=_('Período de referência'))
-    previous_balance = models.DecimalField(max_digits=14, decimal_places=2,
-                                           help_text=_('Saldo dos investimentos no período anterior'))
+    previous_balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo dos investimentos no período anterior'))
     incoming = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Todas as entradas no período'))
     outgoing = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Todas as saídas no período'))
     transactions = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo de entradas e saídas'))
-    earnings = models.DecimalField(max_digits=14, decimal_places=2,
-                                   help_text=_('Soma de todos os rendimentos investimentos no período'))
-    transactions_balance = models.DecimalField(max_digits=14, decimal_places=2,
-                                               help_text=_('Soma das entradas e saídas mais os rendimentos'))
+    earnings = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Soma de todos os rendimentos investimentos no período'))
+    transactions_balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Soma das entradas e saídas mais os rendimentos'))
     balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo do investimento no período'))
 
     class Meta:
@@ -170,23 +166,16 @@ class AccountStatement(core.models.Log):
     cash_flow = models.CharField(max_length=100, choices=finance.choices.CashFlow.choices)
 
     # Currency exchange fields
-    currency_reference = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING, default='BRL',
-                                           related_name='finance_statement_currency_reference',
-                                           help_text=_('Moeda de referência'))
-    amount_reference = models.DecimalField(max_digits=14, decimal_places=2, default=0, help_text=_(
-        'Total na moeda de referência, no caso de câmbio, senão o mesmo valor de amount'))
+    currency_reference = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING, default='BRL', related_name='finance_statement_currency_reference', help_text=_('Moeda de referência'))
+    amount_reference = models.DecimalField(max_digits=14, decimal_places=2, default=0, help_text=_('Total na moeda de referência, no caso de câmbio, senão o mesmo valor de amount'))
 
-    dollar_quote = models.DecimalField(max_digits=14, decimal_places=5, null=True,
-                                       help_text=_('Para conta em outras moedas, em relação a moeda de referência'))
+    dollar_quote = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Para conta em outras moedas, em relação a moeda de referência'))
 
     tax = models.DecimalField(max_digits=14, decimal_places=5, default=0, help_text=_('Iof, aplicado sobre a cotação'))
     perc_tax = models.DecimalField(max_digits=7, decimal_places=2, default=0, help_text=_('Percentagem do IOF'))
-    bank_fee = models.DecimalField(max_digits=14, decimal_places=5, default=0,
-                                   help_text=_('Spread do banco, aplicado sobre a cotação'))
-    perc_bank_fee = models.DecimalField(max_digits=7, decimal_places=2, default=0,
-                                        help_text=_('Percentagem de spread do banco'))
-    effective_rate = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_(
-        'VET: valor efetivo total. valor total do câmbio com as taxas e impostos'))
+    bank_fee = models.DecimalField(max_digits=14, decimal_places=5, default=0, help_text=_('Spread do banco, aplicado sobre a cotação'))
+    perc_bank_fee = models.DecimalField(max_digits=7, decimal_places=2, default=0, help_text=_('Percentagem de spread do banco'))
+    effective_rate = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('VET: valor efetivo total. valor total do câmbio com as taxas e impostos'))
     # Add compos de porcentagem dos impostos e taxas e no front colocar apenas campo aberto pras porcentagem e calcular na mão
     # Procurar forma de apresentar os valores em reais quando for relacionado a transferência para a conta em dólares, mas manter só o valor quando transação normal e dólar
 
@@ -202,15 +191,12 @@ class AccountBalance(core.models.Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING)
     period = models.IntegerField(help_text=_('Período de referência'))
-    previous_balance = models.DecimalField(max_digits=14, decimal_places=2,
-                                           help_text=_('Saldo da conta no período anterior'))
+    previous_balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo da conta no período anterior'))
     incoming = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Todas as entradas no período'))
     outgoing = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Todas as saídas no período'))
     transactions = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo de entradas e saídas'))
-    earnings = models.DecimalField(max_digits=14, decimal_places=2,
-                                   help_text=_('Soma de todos os rendimentos da conta no período'))
-    transactions_balance = models.DecimalField(max_digits=14, decimal_places=2,
-                                               help_text=_('Soma das entradas e saídas mais os rendimentos'))
+    earnings = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Soma de todos os rendimentos da conta no período'))
+    transactions_balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Soma das entradas e saídas mais os rendimentos'))
     balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo da conta no período'))
 
     class Meta:
@@ -225,19 +211,14 @@ class CreditCardBill(core.models.Log):
     purchase_at = models.DateField(null=True)
     amount = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Sempre em reais, valor final na fatura'))
     amount_absolute = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('O mesmo do amount sem o sinal'))
-    amount_total = models.DecimalField(max_digits=14, decimal_places=2,
-                                       help_text=_('Total da compra, quando existe parcelas'))
+    amount_total = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Total da compra, quando existe parcelas'))
     category = models.ForeignKey('core.Category', on_delete=models.DO_NOTHING, null=True)
 
-    currency_reference = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING,
-                                           help_text=_('A moeda da compra'))
+    currency_reference = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING, help_text=_('A moeda da compra'))
     amount_reference = models.DecimalField(max_digits=14, decimal_places=2, null=True, help_text=_('O valor da compra'))
-    dollar_quote = models.DecimalField(max_digits=14, decimal_places=5, null=True,
-                                       help_text=_('Valor do dólar em relação a moeda do cartão'))
-    dollar_currency_quote = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_(
-        'Valor do dólar em relação a moeda original, em caso de compra em uma terceira moeda'))  # TODO: change to
-    tax = models.DecimalField(max_digits=14, decimal_places=2, default=0,
-                              help_text=_('Iof total da compra, quando aplicável'))
+    dollar_quote = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Valor do dólar em relação a moeda do cartão'))
+    dollar_currency_quote = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Valor do dólar em relação a moeda original, em caso de compra em uma terceira moeda'))
+    tax = models.DecimalField(max_digits=14, decimal_places=2, default=0, help_text=_('Iof total da compra, quando aplicável'))
     installment = models.SmallIntegerField(default=1)
     tot_installment = models.SmallIntegerField(default=1)
     is_installment = models.BooleanField(default=False)

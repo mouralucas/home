@@ -63,6 +63,8 @@ class Expense(APIView):
 
 
 class ExpenseCategory(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args, **kwargs):
         period = self.request.GET.get('period')
         user = self.request.user.id
