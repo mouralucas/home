@@ -229,9 +229,8 @@ class Investment(Finance):
         if index_id:
             index_filters['index_id'] = index_id
 
-        # O valor de ganhos no mês devem ser somados ao investido, pra não distorcer a % de ganho
-        statement = pd.DataFrame(finance.models.InvestmentStatement.objects.values(
-            'period').annotate(total=Sum('gross_amount'))
+        # O valor de ganhos no mês devem ser somados ao investido, para não distorcer a % de ganho
+        statement = pd.DataFrame(finance.models.InvestmentStatement.objects.values('period').annotate(total=Sum('gross_amount'))
                                  .filter(**statement_filters).order_by('period'))
         if statement.empty:
             statement = pd.DataFrame(columns=['reference', 'total'])
@@ -239,8 +238,7 @@ class Investment(Finance):
         statement = statement.fillna(0)
         statement['investment'] = (((1 + statement['variation_percentage']).cumprod()) - 1) * 100
 
-        reference_index = pd.DataFrame(finance.models.FinanceData.objects.values('period', 'value').filter(**index_filters).order_by(
-            'period'))
+        reference_index = pd.DataFrame(finance.models.FinanceData.objects.values('period', 'value').filter(**index_filters).order_by('period'))
         if reference_index.empty:
             reference_index = pd.DataFrame(columns=['reference', 'value'])
         reference_index["value"] = reference_index["value"].astype(float)
