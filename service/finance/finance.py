@@ -72,7 +72,7 @@ class Finance:
         statement.currency_id = self.currency_id
         statement.amount = float(self.amount) * multiplier
         statement.amount_absolute = float(self.amount)
-        statement.dat_purchase = self.purchased_at
+        statement.purchased_at = self.purchased_at
         statement.description = self.description
         statement.category_id = self.categoria_id
         statement.account_id = self.account_id
@@ -100,14 +100,14 @@ class Finance:
                                                  accountId=F('account_id'),
                                                  categoryName=F('category__description'),
                                                  categoryId=F('category_id'),
-                                                 purchasedAt=F('dat_purchase'),
+                                                 purchasedAt=F('purchased_at'),
                                                  cashFlowId=F('cash_flow'),
                                                  currencyId=F('currency_id'),
                                                  currencySymbol=F('currency__symbol'),
                                                  createdAt=F('dat_created'),
                                                  lastEditedAt=F('dat_last_edited'),
                                                  ) \
-            .order_by('-dat_purchase', '-dat_created')
+            .order_by('-purchased_at', '-dat_created')
 
         response = {
             'status': True,

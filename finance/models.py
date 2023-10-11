@@ -164,7 +164,7 @@ class AccountStatement(core.models.Log):
     currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING)
     amount = models.DecimalField(max_digits=14, decimal_places=2)
     amount_absolute = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('O mesmo do amount sem o sinal'))
-    dat_purchase = models.DateField(null=True)
+    purchased_at = models.DateField(null=True)
     category = models.ForeignKey('core.Category', on_delete=models.DO_NOTHING, null=True)
     description = models.TextField(null=True)
     cash_flow = models.CharField(max_length=100, choices=finance.choices.CashFlow.choices)
@@ -195,7 +195,7 @@ class AccountStatement(core.models.Log):
     is_validated = models.BooleanField(default=False)
 
     class Meta:
-        db_table = 'finance"."bank_statement'
+        db_table = 'finance"."account_statement'
 
 
 class AccountBalance(core.models.Log):
