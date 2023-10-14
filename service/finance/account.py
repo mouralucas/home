@@ -9,8 +9,7 @@ from service.finance.finance import Finance
 
 class Account(Finance):
     def __init__(self, owner=None, account_id=None):
-        super().__init__(owner=owner)
-        self.account_id = account_id
+        super().__init__(owner=owner, account_id=account_id)
 
     def get_accounts(self):
         """

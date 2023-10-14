@@ -15,10 +15,10 @@ import util.datetime
 
 
 class Finance:
-
+    # TODO: this must have only abstract methods, remove all others
     def __init__(self, mes=None, ano=None, statement_id=None, bill_id=None, period=None, account_id=None, credit_card_id=None, amount=None,
-                 amount_currency=None, price_currency_dollar=None, vlr_moeda=None, amount_tax=None, installment=None, tot_installment=None, dat_compra=None, dat_pagamento=None,
-                 description=None, category_id=None, currency_id=None, price_dollar=None, cash_flow_id=None, owner=None):
+                 amount_currency=None, price_currency_dollar=None, amount_tax=None, installment=None, tot_installment=None, dat_compra=None, dat_pagamento=None,
+                 description=None, category_id=None, currency_id=None, cash_flow_id=None, owner=None):
         self.mes = mes
         self.ano = ano
 
@@ -28,26 +28,23 @@ class Finance:
         self.amount = amount
         self.amount_currency = amount_currency
         self.price_currency_dollar = price_currency_dollar
-        self.vlr_moeda = vlr_moeda
         self.amount_tax = amount_tax
         self.instalment = installment
         self.tot_installment = tot_installment
         self.purchased_at = dat_compra
         self.dat_pagamento = dat_pagamento
         self.description = description
-        self.categoria_id = category_id
+        self.category_id = category_id
         self.account_id = account_id
         self.credit_card_id = credit_card_id
         self.currency_id = currency_id
         self.cash_flow_id = cash_flow_id
         self.owner = owner
 
-        self.response = {}  # Deprecated
-
     def set_statement(self, request=None):
         # TODO: adicionar uma lógica que verifica a data da transação e se não for período anterior adicionar um uma tabela a informação pra reprocessar
         #   todo o extrato a partir do mês da transação
-        if not self.purchased_at or not self.amount or not self.categoria_id or not self.account_id:
+        if not self.purchased_at or not self.amount or not self.category_id or not self.account_id:
             response = {
                 'status': False,
                 'description': _('Todos os parâmetros são obrigatórios')
@@ -74,7 +71,7 @@ class Finance:
         statement.amount_absolute = float(self.amount)
         statement.purchased_at = self.purchased_at
         statement.description = self.description
-        statement.category_id = self.categoria_id
+        statement.category_id = self.category_id
         statement.account_id = self.account_id
         statement.is_validated = True
         statement.cash_flow = self.cash_flow_id
@@ -176,38 +173,8 @@ class Finance:
 
         return self.response
 
-    def get_expenses(self, expense_type):
-        filters = {
-            'period': self.period,
-            'owner_id': self.owner
-        }
-
-        excluders = {}
-
-        fixed_expenses = finance.models.CategoryGroup.objects.values_list('category', flat=True).filter(group='fixed_expenses')
-        if expense_type == 'fixed':
-            filters['category__in'] = list(fixed_expenses)
-        else:
-            excluders['category__in'] = list(fixed_expenses)
-            excluders['total__gt'] = 0.0
-            filters['total__lt'] = 0
-
-        statement = finance.models.AccountStatement.objects.values('category__description').annotate(total=Sum('amount')).filter(**filters).exclude(**excluders)
-        bill = finance.models.CreditCardBill.objects.values('category__description').annotate(total=Sum('amount')).filter(**filters).exclude(**excluders)
-
-        expenses = statement.union(bill)
-
-        grouped_values = defaultdict(float)
-        for info in list(expenses):
-            grouped_values[info['category__description']] += float(info['total'])
-
-        grouped_values = [{'category': year, 'total_amount': grouped_values[year]} for year in sorted(grouped_values, reverse=True)]
-        response = {
-            'status': True,
-            'expenses': list(grouped_values)
-        }
-
-        return response
+    def get_expenses(self):
+        self.category_id = None
 
     def get_category_expense(self):
         # Categorias que não são despesas representam transações que não afetam a quantidade de dinheiro em conta
@@ -236,25 +203,20 @@ class Finance:
 
         expenses = statement.union(credit_card)
 
-        merged_data = defaultdict(float)
-        result = []
-        for item in list(expenses):
-            key = item["category_id"]
-            merged_data[key] += float(item["total"])
-
-        result = [
-            {
-                "category__parent_id": key,
-                "category_id": key,
-                "category": item["category"],
-                "total": value
-            }
-            for key, value in merged_data.items()
-        ]
+        merged_data = {}
+        for item in expenses:
+            category_id = item["category_id"]
+            total = item["total"]
+            if category_id in merged_data:
+                # If category_id already exists, add the 'total' value
+                merged_data[category_id]["total"] += total
+            else:
+                # If category_id is new, add the entire dictionary
+                merged_data[category_id] = item
 
         response = {
             'success': True,
-            'expenses': result
+            'expenses': list(merged_data.values())
         }
 
         return response
