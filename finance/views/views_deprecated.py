@@ -92,6 +92,7 @@ class Summary(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
+        # TODO: add serializer
         period = self.request.query_params.get('period', util.datetime.DateTime().current_period())
         user = self.request.user.id
 

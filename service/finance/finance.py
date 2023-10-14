@@ -368,14 +368,13 @@ class Finance:
         credit_card_bill = finance.models.CreditCardBill.objects.values_list('amount', flat=True).filter(period=self.period, owner_id=self.owner)
         bank_statement = finance.models.AccountStatement.objects.filter(period=self.period, owner_id=self.owner)
 
-        bank_statement_incoming = sum(list(bank_statement.values_list('amount', flat=True)
-                                           .filter(cash_flow='INCOMING').exclude(category_id__in=list(cat_not_expense))))
-        bank_statement_outgoing = sum(list(bank_statement.values_list('amount', flat=True)
-                                           .filter(cash_flow='OUTGOING').exclude(category_id__in=list(cat_not_expense))))
+        bank_statement_incoming = sum(list(bank_statement.values_list('amount', flat=True).filter(cash_flow='INCOMING').exclude(category_id__in=list(cat_not_expense))))
+        bank_statement_outgoing = sum(list(bank_statement.values_list('amount', flat=True).filter(cash_flow='OUTGOING').exclude(category_id__in=list(cat_not_expense))))
         bank_statement_balance = bank_statement_incoming + bank_statement_outgoing
 
         summary = {
             'period': self.period,
+            'referenceDate': '2023-10-13',
             'periodIncoming': bank_statement_incoming,
             'periodOutgoing': bank_statement_outgoing,
             'periodBalance': bank_statement_balance,
