@@ -3,8 +3,8 @@ from service.finance.finance import Finance
 
 
 class Core(Finance):
-    def __init__(self, category_id=None):
-        super().__init__(category_id=category_id)
+    def __init__(self, category_id=None, period=None):
+        super().__init__(category_id=category_id, period=period)
 
     def get_expense(self):
         """
@@ -23,3 +23,19 @@ class Core(Finance):
         """
         statement = finance.models.AccountStatement.objects.filter(category_id=self.category_id)
         bill = finance.models.CreditCardBill.objects.filter(category_id=self.category_id)
+
+
+    def get_currency(self, is_shown=True):
+        filters = {}
+
+        if is_shown:
+            filters['is_shown'] = True
+
+        currency = finance.models.Currency.objects.values('id', 'name', 'symbol').filter(**filters)
+
+        response = {
+            'success': True,
+            'currency': list(currency)
+        }
+
+        return response

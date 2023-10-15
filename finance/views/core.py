@@ -1,5 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+import service.finance.core
 import service.finance.finance
 from finance.serializers.core import ExpenseGetSerializer
 from service.security.security import IsAuthenticated
@@ -7,7 +9,7 @@ from service.security.security import IsAuthenticated
 
 class Currency(APIView):
     def get(self, *args, **kwargs):
-        response = service.finance.finance.Finance().get_currency()
+        response = service.finance.core.Core().get_currency()
 
         return Response(response, status=200)
 
@@ -22,3 +24,7 @@ class Expense(APIView):
 
         period = data.validated_data.get('period')
         category_id = data.validated_data.get('category_id')
+
+        response = service.finance.core.Core(category_id=category_id, period=period).get_expense()
+
+        return Response(response, status=200)

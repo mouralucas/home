@@ -346,20 +346,6 @@ class Finance:
 
         return response
 
-    def get_currency(self, is_shown=True):
-        filters = {}
-
-        if is_shown:
-            filters['is_shown'] = True
-
-        currency = finance.models.Currency.objects.values('id', 'name', 'symbol').filter(**filters)
-
-        response = {
-            'success': True,
-            'currency': list(currency)
-        }
-
-        return response
 
     def get_summary(self):
         # TODO: update with new balance model
