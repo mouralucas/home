@@ -1,3 +1,5 @@
+from django.db.models import F
+
 import finance.models
 from service.finance.finance import Finance
 
@@ -21,9 +23,25 @@ class Core(Finance):
 
         Return: the list of saved accounts
         """
-        statement = finance.models.AccountStatement.objects.filter(category_id=self.category_id)
-        bill = finance.models.CreditCardBill.objects.filter(category_id=self.category_id)
+        statement = finance.models.AccountStatement.objects.values('id') \
+            .annotate(date=F('purchased_at'),
+                      amount=F('amount'),
+                      description=F('Description')) \
+            .filter(category_id=self.category_id)
+        bill = finance.models.CreditCardBill.objects.values('id') \
+            .annotate(date=F('purchased_at'),
+                      amount=F('amount'),
+                      description=F('Description')) \
+            .filter(category_id=self.category_id)
 
+        expenses = statement.union(bill)
+
+        response = {
+            "success": True,
+            "expanses": list(expenses)
+        }
+
+        return response
 
     def get_currency(self, is_shown=True):
         filters = {}
