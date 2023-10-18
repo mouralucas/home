@@ -30,8 +30,8 @@ urlpatterns = [
 
     re_path(r'^upload/pdf', views_deprecated.PdfImport.as_view()),
 
-    re_path(r'^expense$', core.Expense.as_view()),
-    re_path(r'^expense/category$', views_deprecated.ExpenseCategory.as_view()),
+    re_path(r'^transaction/category/list$', core.TransactionByCategoryList.as_view()),
+    re_path(r'^transaction/category/aggregated$', core.TransactionsByCategoryAggregated.as_view()),
     re_path(r'^expenses/history$', views_deprecated.ExpensesHistory.as_view()),
     re_path(r'^payment/date$', views_deprecated.PaymentDate.as_view()),
 

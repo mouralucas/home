@@ -24,21 +24,25 @@ class Core(Finance):
         Return: the list of saved accounts
         """
         statement = finance.models.AccountStatement.objects.values('id') \
-            .annotate(date=F('purchased_at'),
+            .annotate(transactionId=F('id'),
+                      date=F('purchased_at'),
                       amount=F('amount'),
-                      description=F('Description')) \
-            .filter(category_id=self.category_id)
+                      description=F('description'),
+                      categoryName=F('category__name')) \
+            .filter(category__parent_id=self.category_id, period=self.period)
         bill = finance.models.CreditCardBill.objects.values('id') \
-            .annotate(date=F('purchased_at'),
+            .annotate(transactionId=F('id'),
+                      date=F('purchase_at'),
                       amount=F('amount'),
-                      description=F('Description')) \
-            .filter(category_id=self.category_id)
+                      description=F('description'),
+                      categoryName=F('category__name')) \
+            .filter(category__parent_id=self.category_id, period=self.period)
 
         expenses = statement.union(bill)
 
         response = {
             "success": True,
-            "expanses": list(expenses)
+            "transactions": list(expenses)
         }
 
         return response

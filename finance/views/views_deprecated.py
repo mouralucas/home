@@ -62,18 +62,6 @@ class Expense(APIView):
         return JsonResponse(response, safe=False)
 
 
-class ExpenseCategory(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, *args, **kwargs):
-        period = self.request.GET.get('period')
-        user = self.request.user.id
-
-        response = service.finance.finance.Finance(period=period, owner=user).get_category_expense()
-
-        return Response(response)
-
-
 class InvestmentStatement(APIView):
     permission_classes = [IsAuthenticated]
 

@@ -189,14 +189,14 @@ class Finance:
 
         statement = finance.models.AccountStatement.objects \
             .values('category__parent_id') \
-            .annotate(category_id=F('category__parent_id'),
+            .annotate(categoryId=F('category__parent_id'),
                       category=F('category__parent__description'),
                       total=Sum('amount_absolute')) \
             .filter(**filters).exclude(category_id__in=list(cat_not_expense))
 
         credit_card = finance.models.CreditCardBill.objects \
             .values('category__parent_id') \
-            .annotate(category_id=F('category__parent_id'),
+            .annotate(categoryId=F('category__parent_id'),
                       category=F('category__parent__description'),
                       total=Sum('amount_absolute')) \
             .filter(**filters).exclude(category_id__in=list(cat_not_expense))
@@ -205,7 +205,7 @@ class Finance:
 
         merged_data = {}
         for item in expenses:
-            category_id = item["category_id"]
+            category_id = item["categoryId"]
             total = item["total"]
             if category_id in merged_data:
                 # If category_id already exists, add the 'total' value
