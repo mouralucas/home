@@ -31,7 +31,7 @@ class TransactionByCategoryList(APIView):
         period = data.validated_data.get('period')
         category_id = data.validated_data.get('categoryId')
 
-        response = service.finance.core.Core(category_id=category_id, period=period).get_expense()
+        response = service.finance.core.Core(category_id=category_id, period=period).get_category_transactions_list()
 
         return Response(response, status=200)
 
@@ -49,6 +49,6 @@ class TransactionsByCategoryAggregated(APIView):
         period = self.request.GET.get('period')
         user = self.request.user.id
 
-        response = service.finance.finance.Finance(period=period, owner=user).get_category_expense()
+        response = service.finance.finance.Finance(period=period, owner=user).get_category_transactions_aggregated()
 
         return Response(response)

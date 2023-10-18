@@ -236,23 +236,23 @@ class Investment(Finance):
         statement = pd.DataFrame(finance.models.InvestmentStatement.objects.values('period').annotate(total=Sum('gross_amount'))
                                  .filter(**statement_filters).order_by('period'))
         if statement.empty:
-            statement = pd.DataFrame(columns=['reference', 'total'])
+            statement = pd.DataFrame(columns=['period', 'total'])
         statement['variation_percentage'] = statement['total'].pct_change()
         statement = statement.fillna(0)
         statement['investment'] = (((1 + statement['variation_percentage']).cumprod()) - 1) * 100
 
         reference_index = pd.DataFrame(finance.models.FinanceData.objects.values('period', 'value').filter(**index_filters).order_by('period'))
         if reference_index.empty:
-            reference_index = pd.DataFrame(columns=['reference', 'value'])
+            reference_index = pd.DataFrame(columns=['period', 'value'])
         reference_index["value"] = reference_index["value"].astype(float)
         # Clean first month, so begins at zero
         if not reference_index.empty:
             reference_index.at[0, "value"] = 0
         reference_index['index'] = ((1 + reference_index['value'] / 100).cumprod() - 1) * 100
 
-        merged_ = statement.merge(reference_index, on='reference', how='outer')
+        merged_ = statement.merge(reference_index, on='period', how='outer')
         merged_ = merged_.fillna(0)
-        merged_ = merged_.sort_values(by='reference')
+        merged_ = merged_.sort_values(by='period')
 
         response_list = []
         for idx, i in merged_.iterrows():

@@ -176,7 +176,7 @@ class Finance:
     def get_expenses(self):
         self.category_id = None
 
-    def get_category_expense(self):
+    def get_category_transactions_aggregated(self):
         # Categorias que não são despesas representam transações que não afetam a quantidade de dinheiro em conta
         # Normalmente são categorias de transferências e depósitos para contas do mesmo titular
         cat_not_expense = finance.models.CategoryGroup.objects.values_list('category_id', flat=True).filter(group='not_expense')
@@ -188,14 +188,14 @@ class Finance:
         }
 
         statement = finance.models.AccountStatement.objects \
-            .values('category__parent_id') \
+            .values('id') \
             .annotate(categoryId=F('category__parent_id'),
                       category=F('category__parent__description'),
                       total=Sum('amount_absolute')) \
             .filter(**filters).exclude(category_id__in=list(cat_not_expense))
 
         credit_card = finance.models.CreditCardBill.objects \
-            .values('category__parent_id') \
+            .values('id') \
             .annotate(categoryId=F('category__parent_id'),
                       category=F('category__parent__description'),
                       total=Sum('amount_absolute')) \
@@ -216,7 +216,7 @@ class Finance:
 
         response = {
             'success': True,
-            'expenses': list(merged_data.values())
+            'transactions': list(merged_data.values())
         }
 
         return response

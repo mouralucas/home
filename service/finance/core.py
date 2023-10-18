@@ -8,7 +8,7 @@ class Core(Finance):
     def __init__(self, category_id=None, period=None):
         super().__init__(category_id=category_id, period=period)
 
-    def get_expense(self):
+    def get_category_transactions_list(self):
         """
         :Name: get_expense
         :Description: get the list of expenses based on filters
