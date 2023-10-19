@@ -66,6 +66,7 @@ class Investment(Finance):
         filters = {
             'owner_id': self.owner_id,
             # 'maturity_at__gte': timezone.now()
+            'is_liquidated': False
         }
 
         if show_mode != 'all':
@@ -123,9 +124,15 @@ class Investment(Finance):
         return response
 
     def get_allocation(self):
-        allocation = (finance.models.Investment.objects.values('id', 'amount').annotate(incomeType=F('type__parent__name'),
-                                                                                        investmentType=F('type__name'))
-                      .filter(owner_id=self.owner_id).exclude(parent__id__isnull=False))
+        filters = {
+            'owner_id': self.owner_id,
+            'is_liquidated': False
+        }
+
+        allocation = (finance.models.Investment.objects.values('id', 'amount')
+                      .annotate(incomeType=F('type__parent__name'),
+                                investmentType=F('type__name'))
+                      .filter(**filters).exclude(parent__id__isnull=False))
         income = allocation.values('incomeType').annotate(total=Sum('amount'))
         investment = allocation.values('investmentType').annotate(total=Sum('amount'))
 
@@ -215,13 +222,13 @@ class Investment(Finance):
 
         statement_filters = {
             'investment__owner_id': self.owner_id,
-            'reference__gte': start_at
+            'period__gte': start_at
         }
 
         index_filters = {
             'index': index,
             'periodicity_id': 'dc5b3bf8-2b84-423a-9a90-e7e194e355fa',
-            'reference__gte': start_at
+            'period__gte': start_at
         }
 
         investment_name = 'Total'
@@ -257,7 +264,7 @@ class Investment(Finance):
         response_list = []
         for idx, i in merged_.iterrows():
             aux = {
-                'reference': str(i['reference']),
+                'reference': str(i['period']),
                 'investment': i['investment'],
                 'index': i['index']
             }
