@@ -13,9 +13,6 @@ import util.datetime
 from service.security.security import IsAuthenticated
 
 
-
-
-
 class PdfImport(APIView):
     def get(self, *args, **kwargs):
         path = self.request.query_params.get('path')
@@ -32,34 +29,33 @@ class PdfImport(APIView):
                 'descriptions': _('Não implementado')
             }
 
-
         response = {}
 
         return JsonResponse(response, safe=False)
 
 
-class ExpensesHistory(View):
-    permission_classes = [IsAuthenticated]
+# class ExpensesHistory(View):
+#     permission_classes = [IsAuthenticated]
+#
+#     def get(self, *args, **kwargs):
+#         referencia = self.request.GET.get('referencia')
+#
+#         response = service.finance.finance.Finance(period=referencia).get_category_history()
+#
+#         return Response(response)
 
-    def get(self, *args, **kwargs):
-        referencia = self.request.GET.get('referencia')
 
-        response = service.finance.finance.Finance(period=referencia).get_category_history()
-
-        return Response(response)
-
-
-class Expense(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, *args, **kwargs):
-        period = self.request.GET.get('period')
-        expense_type = self.request.GET.get('expense_type')
-        user = self.request.user.id
-
-        response = service.finance.finance.Finance(period=period, owner=user).get_expenses(expense_type=expense_type)
-
-        return JsonResponse(response, safe=False)
+# class Expense(APIView):
+#     permission_classes = [IsAuthenticated]
+#
+#     def get(self, *args, **kwargs):
+#         period = self.request.GET.get('period')
+#         expense_type = self.request.GET.get('expense_type')
+#         user = self.request.user.id
+#
+#         response = service.finance.finance.Finance(period=period, owner=user).get_expenses(expense_type=expense_type)
+#
+#         return JsonResponse(response, safe=False)
 
 
 class InvestmentStatement(APIView):
@@ -74,19 +70,6 @@ class InvestmentStatement(APIView):
 
     def post(self, *args, **kwargs):
         period = self.request.query_params.get('period')
-
-
-class Summary(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, *args, **kwargs):
-        # TODO: add serializer
-        period = self.request.query_params.get('period', util.datetime.DateTime().current_period())
-        user = self.request.user.id
-
-        response = service.finance.finance.Finance(period=period, owner=user).get_summary()
-
-        return Response(response)
 
 
 class InvestmentStatementUpload(View):
@@ -110,9 +93,6 @@ class Csv(APIView):
             path='/run/media/lucas/Dados/Projetos/Financeiro/dados_csv/nubank-2021-11.csv')
         # response = service.finance.finance.Financeiro().import_csv_investimento(path='/run/media/lucas/Dados/System/Documents/mega/Financeiro/2021/202106-PreFixado.xlsx')
         return JsonResponse(response, safe=False)
-
-
-
 
 
 class PaymentDate(View):

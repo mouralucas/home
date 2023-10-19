@@ -22,7 +22,7 @@ urlpatterns = [
     re_path(r'^investment/profit', investment.Profit.as_view()),
 
     # Dashboard
-    re_path(r'summary', views_deprecated.Summary.as_view()),
+    re_path(r'summary', core.Summary.as_view()),
 
     # Other
     re_path(r'^currency$', core.Currency.as_view()),
@@ -32,7 +32,7 @@ urlpatterns = [
 
     re_path(r'^transaction/category/list$', core.TransactionByCategoryList.as_view()),
     re_path(r'^transaction/category/aggregated$', core.TransactionsByCategoryAggregated.as_view()),
-    re_path(r'^expenses/history$', views_deprecated.ExpensesHistory.as_view()),
+    # re_path(r'^expenses/history$', views_deprecated.ExpensesHistory.as_view()),
     re_path(r'^payment/date$', views_deprecated.PaymentDate.as_view()),
 
     re_path(r'^interest$', investment.Interest.as_view()),

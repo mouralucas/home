@@ -7,6 +7,19 @@ from finance.serializers.core import ExpenseGetSerializer
 from service.security.security import IsAuthenticated
 
 
+class Summary(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, *args, **kwargs):
+        # TODO: add serializer
+        period = self.request.query_params.get('period', util.datetime.DateTime().current_period())
+        user = self.request.user.id
+
+        response = service.finance.finance.Finance(period=period, owner=user).get_summary()
+
+        return Response(response)
+    
+
 class Currency(APIView):
     def get(self, *args, **kwargs):
         response = service.finance.core.Core().get_currency()

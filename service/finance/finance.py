@@ -145,33 +145,33 @@ class Finance:
 
         return response
 
-    def get_category_history(self, months=13):
-        fixed_expenses = finance.models.CategoryGroup.objects.values_list('category', flat=True).filter(group='fixed_expenses')
-        filters = {
-            'period__range': (202001, 202012),
-            'category__in': list(fixed_expenses),
-            'owner_id': self.owner
-        }
-
-        bills = finance.models.CreditCardBill.objects.values('period', 'category__description') \
-            .filter(**filters).annotate(total=Sum('amount')).order_by('period')
-
-        statements = finance.models.AccountStatement.objects.values('period', 'category__description') \
-            .filter(**filters).annotate(total=Sum('amount')).order_by('period')
-
-        evolucao = statements.union(bills)
-
-        default = defaultdict(float)
-
-        for i in list(evolucao):
-            default[str(i.get('period', '')) + '.' + i.get('category__description', '')] += float(i.get('total', 0))
-
-        default = [{'period': i.split('.')[0], 'categoria': i.split('.')[1], 'total': default[i]} for i in sorted(default)]
-
-        self.response['status'] = True
-        self.response['faturas'] = default
-
-        return self.response
+    # def get_category_history(self, months=13):
+    #     fixed_expenses = finance.models.CategoryGroup.objects.values_list('category', flat=True).filter(group='fixed_expenses')
+    #     filters = {
+    #         'period__range': (202001, 202012),
+    #         'category__in': list(fixed_expenses),
+    #         'owner_id': self.owner
+    #     }
+    #
+    #     bills = finance.models.CreditCardBill.objects.values('period', 'category__description') \
+    #         .filter(**filters).annotate(total=Sum('amount')).order_by('period')
+    #
+    #     statements = finance.models.AccountStatement.objects.values('period', 'category__description') \
+    #         .filter(**filters).annotate(total=Sum('amount')).order_by('period')
+    #
+    #     evolucao = statements.union(bills)
+    #
+    #     default = defaultdict(float)
+    #
+    #     for i in list(evolucao):
+    #         default[str(i.get('period', '')) + '.' + i.get('category__description', '')] += float(i.get('total', 0))
+    #
+    #     default = [{'period': i.split('.')[0], 'categoria': i.split('.')[1], 'total': default[i]} for i in sorted(default)]
+    #
+    #     self.response['status'] = True
+    #     self.response['faturas'] = default
+    #
+    #     return self.response
 
     def get_expenses(self):
         self.category_id = None
