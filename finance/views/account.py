@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 
 import service.finance.account
 import service.finance.finance
-from service.security.security import IsAuthenticated
 from finance.serializers.account import StatementPostSerializer, StatementGetSerializer, BalancePostSerializer
+from service.security.security import IsAuthenticated
 
 
 class Account(APIView):

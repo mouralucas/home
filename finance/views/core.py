@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 
 import service.finance.core
 import service.finance.finance
+import util.datetime
 from finance.serializers.core import ExpenseGetSerializer
 from service.security.security import IsAuthenticated
 
@@ -18,7 +19,7 @@ class Summary(APIView):
         response = service.finance.finance.Finance(period=period, owner=user).get_summary()
 
         return Response(response)
-    
+
 
 class Currency(APIView):
     def get(self, *args, **kwargs):

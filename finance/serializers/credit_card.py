@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 import core.serializers
 
 
 class CreditCardGetSerializer(serializers.Serializer):
     pass
+
 
 class CreditCardBillGetSerializer(serializers.Serializer):
     bill_id = serializers.IntegerField(required=False)

@@ -126,13 +126,21 @@ class Finance:
         return response
 
     def get_bill_history(self, start_at=201801, end_at=202302, months=13):
-        history = finance.models.CreditCardBill.objects.values('period') \
+        filters = {
+            'owner_id': self.owner,
+            'period__range': (start_at, end_at)
+        }
+
+        # TODO: add here a condition, if history by card id add to fields
+        # Find a way to merge keys with same period and send to front a list of credit card id to dynamically create columns
+        fields = 'period'
+
+        history = finance.models.CreditCardBill.objects.values(*fields) \
             .annotate(
             total_amount=Sum('amount'),
             total_amount_absolute=Sum('amount_absolute'),
             balance=Sum('amount') * -1
-        ) \
-            .filter(period__range=(start_at, end_at), owner_id=self.owner).order_by('period')
+        ).filter(**filters).order_by('period')
 
         average = sum(item['total_amount_absolute'] for item in history) / len(history) if history else 0
 
