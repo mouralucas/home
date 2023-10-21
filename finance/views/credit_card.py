@@ -84,7 +84,9 @@ class BillHistory(APIView):
         end_at = data.validated_data.get('endAt')
         user = self.request.user.id
 
-        response = service.finance.credit_card.CreditCard().get_bill_history(start_at=start_at, end_at=end_at)
+        response = service.finance.credit_card.CreditCard(owner=user).get_bill_history(start_at=start_at, end_at=end_at)
+
+        return Response(response, status=200)
 
 
 class BillHistoryAggregated(APIView):

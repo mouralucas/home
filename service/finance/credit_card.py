@@ -169,12 +169,8 @@ class CreditCard:
             'period__range': (start_at, end_at)
         }
 
-        history = finance.models.CreditCardBill.objects.values('period') \
-            .annotate(
-            total_amount=Sum('amount'),  # calc may be removed
-            total_amount_absolute=Sum('amount_absolute'),  # calc may be removed
-            balance=Sum('amount') * -1
-        ).filter(**filters).order_by('period')
+        history = finance.models.CreditCardBill.objects.values('period', 'credit_card_id') \
+            .annotate(balance=Sum('amount') * -1).filter(**filters).order_by('period')
 
         transformed_data = {}
 
