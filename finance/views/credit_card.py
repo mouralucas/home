@@ -2,8 +2,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-import service.finance.finance
 import service.finance.credit_card
+import service.finance.finance
 import util.datetime
 from finance.serializers.credit_card import CreditCardBillGetSerializer, BillHistorySerializer
 
@@ -75,6 +75,19 @@ class Bill(APIView):
 
 
 class BillHistory(APIView):
+    def get(self, *args, **kwargs):
+        data = BillHistorySerializer(data=self.request.query_params)
+        if not data.is_valid():
+            return Response(data.errors, status=400)
+
+        start_at = data.validated_data.get('startAt')
+        end_at = data.validated_data.get('endAt')
+        user = self.request.user.id
+
+        response = service.finance.credit_card.CreditCard().get_bill_history(start_at=start_at, end_at=end_at)
+
+
+class BillHistoryAggregated(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
@@ -86,6 +99,6 @@ class BillHistory(APIView):
         end_at = data.validated_data.get('endAt')
         user = self.request.user.id
 
-        response = service.finance.finance.Finance(owner=user).get_bill_history(start_at=start_at, end_at=end_at)
+        response = service.finance.credit_card.CreditCard(owner=user).get_bill_history_aggregated(start_at=start_at, end_at=end_at)
 
         return Response(response, status=200)

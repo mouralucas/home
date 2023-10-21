@@ -1,5 +1,4 @@
 import datetime
-from collections import defaultdict
 from datetime import datetime
 
 import numpy as np
@@ -121,34 +120,6 @@ class Finance:
             'status': True,
             'qtd_total': qtd_total,
             'qtd_period': qtd_period,
-        }
-
-        return response
-
-    def get_bill_history(self, start_at=201801, end_at=202302, months=13):
-        filters = {
-            'owner_id': self.owner,
-            'period__range': (start_at, end_at)
-        }
-
-        # TODO: add here a condition, if history by card id add to fields
-        # Find a way to merge keys with same period and send to front a list of credit card id to dynamically create columns
-        fields = 'period'
-
-        history = finance.models.CreditCardBill.objects.values(*fields) \
-            .annotate(
-            total_amount=Sum('amount'),
-            total_amount_absolute=Sum('amount_absolute'),
-            balance=Sum('amount') * -1
-        ).filter(**filters).order_by('period')
-
-        average = sum(item['total_amount_absolute'] for item in history) / len(history) if history else 0
-
-        response = {
-            'success': True,
-            'average': average,
-            'goal': 2300,
-            'history': list(history),
         }
 
         return response
@@ -353,7 +324,6 @@ class Finance:
         }
 
         return response
-
 
     def get_summary(self):
         # TODO: update with new balance model

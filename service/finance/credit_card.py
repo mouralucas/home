@@ -1,7 +1,8 @@
-from django.db.models import Case, When, Value, CharField, F
+from django.db.models import F, Sum
 from django.utils.translation import gettext_lazy as _
-import util.datetime
+
 import finance.models
+import util.datetime
 
 
 class CreditCard:
@@ -144,6 +145,99 @@ class CreditCard:
 
         response = {
             'success': True
+        }
+
+        return response
+
+    def get_bill_history(self, start_at=201801, end_at=202405):
+        """
+        :Name: get_bill_history_aggregated
+        :Created by: Lucas Penha de Moura - 20/10/2023
+        :Edited by:
+
+        Explicit params:
+        :param start_at: Start period
+        :param end_at: End period
+
+        Implicit params (passed in the class instance or set by other functions):
+        self.owner: the owner of the cards (logged user)
+
+        Get the credit card expenses from all users cards by period/card
+        """
+        filters = {
+            'owner_id': self.owner,
+            'period__range': (start_at, end_at)
+        }
+
+        history = finance.models.CreditCardBill.objects.values('period') \
+            .annotate(
+            total_amount=Sum('amount'),  # calc may be removed
+            total_amount_absolute=Sum('amount_absolute'),  # calc may be removed
+            balance=Sum('amount') * -1
+        ).filter(**filters).order_by('period')
+
+        transformed_data = {}
+
+        for item in history:
+            period = item["period"]
+            card_id = item["credit_card_id"]
+            balance = item["balance"]
+
+            if period not in transformed_data:
+                transformed_data[period] = {
+                    "period": period,
+                    "totalByCard": {},
+                    "total": 0,
+                    "columns": []
+                }
+
+            if card_id not in transformed_data[period]["columns"]:
+                transformed_data[period]["columns"].append(card_id)
+
+            transformed_data[period]["totalByCard"][card_id] = balance
+            transformed_data[period]["total"] += balance
+
+        result = list(transformed_data.values())
+
+        return {
+            'success': True,
+            'history': result
+        }
+
+    def get_bill_history_aggregated(self, start_at=201801, end_at=202302):
+        """
+        :Name: get_bill_history_aggregated
+        :Created by: Lucas Penha de Moura - 08/09/2022
+        :Edited by:
+
+        Explicit params:
+        :param start_at: Start period
+        :param end_at: End period
+
+        Implicit params (passed in the class instance or set by other functions):
+        self.owner: the owner of the cards (logged user)
+
+        Get the credit card expenses from all users cards by period
+        """
+        filters = {
+            'owner_id': self.owner,
+            'period__range': (start_at, end_at)
+        }
+
+        history = finance.models.CreditCardBill.objects.values('period') \
+            .annotate(
+            total_amount=Sum('amount'),
+            total_amount_absolute=Sum('amount_absolute'),
+            balance=Sum('amount') * -1
+        ).filter(**filters).order_by('period')
+
+        average = sum(item['total_amount_absolute'] for item in history) / len(history) if history else 0
+
+        response = {
+            'success': True,
+            'average': average,
+            'goal': 2300,
+            'history': list(history),
         }
 
         return response
