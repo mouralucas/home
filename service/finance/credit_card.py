@@ -149,7 +149,14 @@ class CreditCard:
 
         return response
 
-    def get_bill_history(self, start_at=201801, end_at=202405):
+    def get_bill_history(self, history_type, start_at, end_at):
+        if history_type == 'aggregated':
+            return self.__get_bill_history_aggregated(start_at=start_at, end_at=end_at)
+
+        if history_type == 'byCard':
+            return self.__get_bill_history_card(start_at=start_at, end_at=end_at)
+
+    def __get_bill_history_card(self, start_at, end_at):
         """
         :Name: get_bill_history_aggregated
         :Created by: Lucas Penha de Moura - 20/10/2023
@@ -200,7 +207,7 @@ class CreditCard:
             'history': result
         }
 
-    def get_bill_history_aggregated(self, start_at=201801, end_at=202302):
+    def __get_bill_history_aggregated(self, start_at, end_at):
         """
         :Name: get_bill_history_aggregated
         :Created by: Lucas Penha de Moura - 08/09/2022
