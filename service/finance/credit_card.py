@@ -150,13 +150,20 @@ class CreditCard:
         return response
 
     def get_bill_history(self, history_type, start_at, end_at):
+        filters = {
+            'owner_id': self.owner,
+            'period__range': (start_at, end_at)
+        }
+
+        history = finance.models.CreditCardBill.objects.filter(**filters).order_by('period')
+
         if history_type == 'aggregated':
-            return self.__get_bill_history_aggregated(start_at=start_at, end_at=end_at)
+            return self.__get_bill_history_aggregated(history=history)
 
         if history_type == 'byCard':
-            return self.__get_bill_history_card(start_at=start_at, end_at=end_at)
+            return self.__get_bill_history_card(history=history)
 
-    def __get_bill_history_card(self, start_at, end_at):
+    def __get_bill_history_card(self, history):
         """
         :Name: get_bill_history_aggregated
         :Created by: Lucas Penha de Moura - 20/10/2023
@@ -171,19 +178,16 @@ class CreditCard:
 
         Get the credit card expenses from all users cards by period/card
         """
-        filters = {
-            'owner_id': self.owner,
-            'period__range': (start_at, end_at)
-        }
-
-        history = finance.models.CreditCardBill.objects.values('period', 'credit_card_id') \
-            .annotate(balance=Sum('amount') * -1).filter(**filters).order_by('period')
-
+        history = history.values('period', 'credit_card_id') \
+            .annotate(creditCardName=F('credit_card__name'),
+                      balance=Sum('amount') * -1)
         transformed_data = {}
 
+        # TODO: The columns should not appear by period, show a single key with all columns found in range
         for item in history:
             period = item["period"]
             card_id = item["credit_card_id"]
+            card_name = item['creditCardName']
             balance = item["balance"]
 
             if period not in transformed_data:
@@ -195,7 +199,13 @@ class CreditCard:
                 }
 
             if card_id not in transformed_data[period]["columns"]:
-                transformed_data[period]["columns"].append(card_id)
+                transformed_data[period]["columns"].append(
+                    {
+                        'dataField': card_id,
+                        'caption': card_name,
+                        'dataType': 'string'
+                    }
+                )
 
             transformed_data[period]["totalByCard"][card_id] = balance
             transformed_data[period]["total"] += balance
@@ -207,7 +217,7 @@ class CreditCard:
             'history': result
         }
 
-    def __get_bill_history_aggregated(self, start_at, end_at):
+    def __get_bill_history_aggregated(self, history):
         """
         :Name: get_bill_history_aggregated
         :Created by: Lucas Penha de Moura - 08/09/2022
@@ -222,19 +232,9 @@ class CreditCard:
 
         Get the credit card expenses from all users cards by period
         """
-        filters = {
-            'owner_id': self.owner,
-            'period__range': (start_at, end_at)
-        }
-
-        history = finance.models.CreditCardBill.objects.values('period') \
-            .annotate(
-            total_amount=Sum('amount'),
-            total_amount_absolute=Sum('amount_absolute'),
-            balance=Sum('amount') * -1
-        ).filter(**filters).order_by('period')
-
-        average = sum(item['total_amount_absolute'] for item in history) / len(history) if history else 0
+        history = history.values('period') \
+            .annotate(balance=Sum('amount') * -1)
+        average = sum(item['balance'] for item in history) / len(history) if history else 0
 
         response = {
             'success': True,

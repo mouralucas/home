@@ -11,7 +11,7 @@ urlpatterns = [
     # Credit card
     re_path(r'^credit-card$', credit_card.CreditCard().as_view()),
     re_path(r'^credit-card/bill$', credit_card.Bill.as_view()),
-    re_path(r'^credit-card/bill/history/aggregated$', credit_card.BillHistoryAggregated.as_view()),
+    # re_path(r'^credit-card/bill/history/aggregated$', credit_card.BillHistoryAggregated.as_view()),
     re_path(r'^credit-card/bill/history$', credit_card.BillHistory.as_view()),
 
     # Investment
