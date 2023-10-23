@@ -170,14 +170,14 @@ class CreditCard:
         :Edited by:
 
         Explicit params:
-        :param start_at: Start period
-        :param end_at: End period
+        :param history: The complete queryset of history
 
         Implicit params (passed in the class instance or set by other functions):
         self.owner: the owner of the cards (logged user)
 
         Get the credit card expenses from all users cards by period/card
         """
+        cards = history.values('credit_card_id').annotate(creditCardName=F('credit_card__name'), creditCardId=F('credit_card_id')).distinct('credit_card_id').order_by('credit_card_id')
         history = history.values('period', 'credit_card_id') \
             .annotate(creditCardName=F('credit_card__name'),
                       balance=Sum('amount') * -1)
@@ -187,34 +187,31 @@ class CreditCard:
         for item in history:
             period = item["period"]
             card_id = item["credit_card_id"]
-            card_name = item['creditCardName']
             balance = item["balance"]
 
             if period not in transformed_data:
                 transformed_data[period] = {
                     "period": period,
-                    "totalByCard": {},
+                    # "totalByCard": {},
                     "total": 0,
-                    "columns": []
                 }
 
-            if card_id not in transformed_data[period]["columns"]:
-                transformed_data[period]["columns"].append(
-                    {
-                        'dataField': card_id,
-                        'caption': card_name,
-                        'dataType': 'string'
-                    }
-                )
-
-            transformed_data[period]["totalByCard"][card_id] = balance
+            transformed_data[period][card_id] = balance
             transformed_data[period]["total"] += balance
 
         result = list(transformed_data.values())
+        columns = [{
+            'dataField': card['creditCardId'],
+            'caption': card['creditCardName'],
+            'dataType': 'string'
+        } for card in cards]
 
         return {
             'success': True,
-            'history': result
+            'history': {
+                'periods': result,
+                'columns': columns
+            }
         }
 
     def __get_bill_history_aggregated(self, history):
@@ -224,8 +221,7 @@ class CreditCard:
         :Edited by:
 
         Explicit params:
-        :param start_at: Start period
-        :param end_at: End period
+        :param history: The complete queryset of history
 
         Implicit params (passed in the class instance or set by other functions):
         self.owner: the owner of the cards (logged user)
