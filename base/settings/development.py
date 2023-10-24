@@ -9,7 +9,7 @@ DATABASES = {
         'HOST': config('DB_HOST'),
         'PORT': config('DB_PORT'),
         'TEST': {
-            'NAME': config('DB_NAME'),
+            'NAME': config('DB_TEST_NAME'),
         }
     },
 }

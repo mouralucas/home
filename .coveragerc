@@ -1,0 +1,3 @@
+[run]
+    source = core, finance
+    omit = */migrations/*, *tests*, *admin*, *apps.py, *wsgi.py, *asgi.py, *urls.py, *manage.py, *models.py, *__init__.py
