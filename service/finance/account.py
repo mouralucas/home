@@ -1,5 +1,5 @@
 import pandas as pd
-from django.db.models import Sum
+from django.db.models import Sum, F
 from django.utils import timezone
 
 import finance.models
@@ -26,8 +26,13 @@ class Account(Finance):
 
         Return: the list of saved accounts
         """
-        bank_accounts = finance.models.Account.objects \
-            .values('id', 'nickname', 'branch_formatted', 'account_number_formatted', 'dat_open', 'dat_close').filter(owner=self.owner).active()
+        bank_accounts = (finance.models.Account.objects
+                         .values('id', 'nickname')
+                         .annotate(branchFormated=F('branch_formatted'),
+                                   accountNumberFormatted=F('account_number_formatted'),
+                                   openAt=F('dat_open'),
+                                   closedAt=F('dat_close'))
+                         .filter(owner=self.owner).active())
 
         response = {
             'status': True,
@@ -117,4 +122,3 @@ class Account(Finance):
         }
 
         return response
-
