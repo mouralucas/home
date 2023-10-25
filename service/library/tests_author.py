@@ -16,3 +16,14 @@ class CreateAuthor(TestCase):
 
         self.assertTrue(response['success'])
         self.assertEquals(response['length'], len(response['authors']))
+
+
+
+    def test_get_translators(self):
+        pass
+
+    def test_create_author_success(self):
+        pass
+
+    def test_create_author_fail (self):
+        pass
