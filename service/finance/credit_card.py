@@ -183,7 +183,6 @@ class CreditCard:
                       balance=Sum('amount') * -1)
         transformed_data = {}
 
-        # TODO: The columns should not appear by period, show a single key with all columns found in range
         for item in history:
             period = item["period"]
             card_id = item["credit_card_id"]
@@ -192,7 +191,6 @@ class CreditCard:
             if period not in transformed_data:
                 transformed_data[period] = {
                     "period": period,
-                    # "totalByCard": {},
                     "total": 0,
                 }
 
