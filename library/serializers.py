@@ -1,8 +1,9 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-import core.serializers
+from core.serializers import CustomSerializer
 
-class ItemGetSerializer(core.serializers.CustomSerializer):
+
+class ItemGetSerializer(CustomSerializer):
     itemId = serializers.IntegerField(required=False)
     itemType = serializers.CharField(required=True)
     isUnique = serializers.BooleanField(required=False, default=False)
@@ -15,7 +16,7 @@ class ItemGetSerializer(core.serializers.CustomSerializer):
         return value
 
 
-class ItemPostSerializer(core.serializers.CustomSerializer):
+class ItemPostSerializer(CustomSerializer):
     itemId = serializers.IntegerField(required=False)
     lastStatusId = serializers.CharField(required=True)
     lastStatusAt = serializers.DateField(required=True)
@@ -45,3 +46,11 @@ class ItemPostSerializer(core.serializers.CustomSerializer):
     width = serializers.IntegerField(required=False)
     thickness = serializers.IntegerField(required=False)
     summary = serializers.CharField(required=False)
+
+
+class AuthorGetSerializer(CustomSerializer):
+    pass
+
+
+class AuthorPostSerializer(CustomSerializer):
+    pass

@@ -1,5 +1,3 @@
-import json
-
 from django.http import JsonResponse
 from django.views import View
 from drf_yasg import openapi
@@ -8,7 +6,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-import service.author.author
+import service.library.author
 import service.core.core
 import service.library.library
 from service.security.security import IsAuthenticated
@@ -159,7 +157,7 @@ class Author(APIView):
         """
         is_tradutor = True if self.request.GET.get('is_tradutor') else False
 
-        response = service.author.author.Author().get_author(is_translator=is_tradutor)
+        response = service.library.author.Author().get_author(is_translator=is_tradutor)
 
         return JsonResponse(response, safe=False)
 
@@ -172,10 +170,10 @@ class Author(APIView):
         language_id = self.request.POST.get('language_id')
         country_id = self.request.POST.get('country_id')
 
-        response = service.author.author.Author(author_id=author_id).set_author(nm_full=nm_full, dat_birth=dat_birth,
-                                                                                description=description, is_translator=is_translator,
-                                                                                language_id=language_id, country_id=country_id,
-                                                                                request=self.request)
+        response = service.library.author.Author(author_id=author_id).set_author(nm_full=nm_full, dat_birth=dat_birth,
+                                                                                 description=description, is_translator=is_translator,
+                                                                                 language_id=language_id, country_id=country_id,
+                                                                                 request=self.request)
 
         return JsonResponse(response, safe=False)
 

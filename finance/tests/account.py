@@ -1,5 +1,6 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
+from service.library.author import Author
 
 
 class TestAccountViews(APITestCase):

@@ -37,6 +37,7 @@ class CustomSerializer(serializers.Serializer):
 
     Create a customized version of the return json when validation fails
     """
+
     def to_internal_value(self, data):
         try:
             return super().to_internal_value(data)

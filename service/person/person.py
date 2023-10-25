@@ -18,9 +18,9 @@ class Person:
         self.person_id = None
         self.id_type = id_type
 
-    def _id_handler(self):
+    def __id_handler(self):
         """
-        :Name: _process_id_type
+        :Name: _id_handler
         :Created by: Lucas Penha de Moura - 16/06/2022
         :Edited by:
 
@@ -56,7 +56,7 @@ class Person:
 
         return response
 
-    def _name_handler(self):
+    def __name_handler(self):
         try:
             self.nm_full = self.nm_full[:200].strip()
             aux = self.nm_full.split()
@@ -70,7 +70,7 @@ class Person:
             # TODO: raise exception?
             return False
 
-    def _cell_handler(self):
+    def __cell_handler(self):
         pass
         # try:
         #     numero_completo = numero.replace('(', '').replace(')', '').replace(' ', '').replace('-', '')

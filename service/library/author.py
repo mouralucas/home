@@ -19,7 +19,7 @@ class Author(service.person.person.Person):
                 author = library.models.Author()
 
         self.nm_full = nm_full
-        self._name_handler()
+        self.__name_handler()
 
         author.nm_full = self.nm_full
         author.nm_first = self.nm_first
@@ -41,23 +41,27 @@ class Author(service.person.person.Person):
 
     def get_author(self, is_translator=False):
         authors = library.models.Author.objects.filter(is_translator=is_translator) \
-            .values('id').annotate(authorId=F('id'),
-                                   authorName=F('nm_full'),
-                                   birthDate=F('dat_birth'),
-                                   languageId=F('language_id'),
-                                   languageName=F('language__name'),
-                                   countryId=F('country_id'),
-                                   countryName=F('country__name')).order_by('nm_full')
+            .values('id', 'nm_full', 'dat_birth', 'language_id', 'language__name', 'country_id', 'country__name') \
+            .order_by('nm_full')
+
+        authors = authors.values('id').annotate(authorId=F('id'),
+                                                authorName=F('nm_full'),
+                                                birthDate=F('dat_birth'),
+                                                languageId=F('language_id'),
+                                                languageName=F('language__name'),
+                                                countryId=F('country_id'),
+                                                countryName=F('country__name')).order_by('nm_full')
 
         if not authors:
             response = {
-                'status': False,
-                'description': _('Nenhum autor encontrado')
+                'success': False,
+                'message': _('Nenhum autor encontrado')
             }
             return response
 
         response = {
-            'status': True,
+            'success': True,
+            'length': len(authors),
             'authors': list(authors)
         }
 

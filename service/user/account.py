@@ -8,6 +8,7 @@ class Account:
         self.raw_password = raw_password
 
     def create(self):
+
         if not self.username:
             return {'status': False, 'description': ''}
 
