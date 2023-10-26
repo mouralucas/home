@@ -6,9 +6,9 @@ import library.models
 
 
 class Author(service.person.person.Person):
-    def __init__(self, author_id=None):
-        super(Author, self).__init__()
-        self.author_id = author_id if author_id != "null" else None
+    def __init__(self, author_id=None, nm_full=None):
+        super(Author, self).__init__(nm_full=nm_full)
+        self.author_id = author_id if author_id != "null" else None # serializer correct this problem
 
     def set_author(self, nm_full=None, dat_birth=None, language_id=None, country_id=None, is_translator=False, description=None, request=None):
         if not self.author_id:
