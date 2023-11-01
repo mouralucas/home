@@ -2,6 +2,8 @@
     source = .
     omit =
         */migrations/*,
+        */util/*,
+        */templatetags/*
         *tests*,
         *admin*,
         *apps.py,
