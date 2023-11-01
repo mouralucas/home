@@ -1,0 +1,21 @@
+[run]
+    source = .
+    omit =
+        */migrations/*,
+        */util/*,
+        */templatetags/*
+        *tests*,
+        *admin*,
+        *apps.py,
+        *wsgi.py,
+        *asgi.py,
+        *urls.py,
+        *manage.py,
+        *models.py,
+        *__init__.py,
+        */node_modules/*
+
+[report]
+    fail_under = 100
+    show_missing = True
+    skip_covered = True

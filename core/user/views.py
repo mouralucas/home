@@ -1,43 +1,43 @@
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.shortcuts import render
-from django.urls import reverse
-from django.views import View
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenObtainPairView
 
-import BO.user.login
-import BO.user.account
+import service.user.account
+import service.user.login
+
+from core.user.serializers import AccountPostSerializer
 
 
-class Login(View):
+class Login(TokenObtainPairView):
+    """
+    :Name: Login
+    :Description: View for user login
+    :Created by: Lucas Penha de Moura - 01/02/2021
+    :Edited by:
+
+    Explicit params:
+    username: the username of the user
+    password: the password of the user
+
+        Implements TokenObtainPairView from simple jwt
+    """
+    serializer_class = service.user.login.Login
+
+
+class Account(APIView):
     def get(self, *args, **kwargs):
-
-        return render(self.request, 'user/login.html')
-
-    def post(self, *args, **kwargs):
-        """
-        :Name: Login - post
-        :Created by: Lucas Penha de Moura - 09/06/2022
-        :Edited by:
-
-        Handles the input data and send to BO the proccess the login
-        """
-        username = self.request.POST.get('username')
-        raw_password = self.request.POST.get('raw_password')
-
-        response = BO.user.login.Login(username=username, raw_password=raw_password, request=self.request).authenticate()
-
-        # return render(self.request, response['redirect'], context=response)
-        return HttpResponseRedirect(reverse('finance:home'))
-
-
-class Account(View):
-    def get(self, *args, **kwargs):
-
         return render(self.request, '')
 
     def post(self, *args, **kwargs):
-        username = self.request.POST.get('username')
-        raw_password = self.request.POST.get('raw_password')
+        data = AccountPostSerializer(data=self.request.data)
+        if not data.is_valid():
+            return Response(data.errors, status=400)
 
-        response = BO.user.account.Account(username=username, raw_password=raw_password).create()
+        username = data.validated_data.get('username')
+        raw_password = data.validated_data.get('rawPassword')
+
+        response = service.user.account.Account(username=username, raw_password=raw_password).create()
 
         return JsonResponse(response, safe=False)

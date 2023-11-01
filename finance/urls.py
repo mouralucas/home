@@ -1,26 +1,47 @@
 from django.urls import re_path
-from django.views.generic import RedirectView
 
-from finance import views
+from finance.views import account, credit_card, investment, views_deprecated, integration, core
 
 urlpatterns = [
-    # path('dashboard/', include(('finance.financeiro_dashboard.urls', 'finance.financeiro_dashboard'), namespace='dashboard')),
+    # Account
+    re_path(r'^account$', account.Account().as_view()),
+    re_path(r'^account/statement$', account.Statement().as_view()),
+    re_path(r'balance', account.Balance.as_view()),
 
-    re_path('^$', views.Home.as_view(), name='home'),
-    re_path('^configracoes$', views.Configuracoes.as_view(), name='configuracoes'),
+    # Credit card
+    re_path(r'^credit-card$', credit_card.CreditCard().as_view()),
+    re_path(r'^credit-card/bill$', credit_card.Bill.as_view()),
+    # re_path(r'^credit-card/bill/history/aggregated$', credit_card.BillHistoryAggregated.as_view()),
+    re_path(r'^credit-card/bill/history$', credit_card.BillHistory.as_view()),
 
-    # Ajax functions
-    re_path(r'^contas$', views.BankAccount().as_view(), name='conta'),
-    re_path(r'^cartoes$', views.CreditCard().as_view(), name='credit_card'),
-    re_path(r'^categorias$', views.Category().as_view(), name='categoria'),
-    re_path(r'^fatura$', views.Bill().as_view(), name='fatura'),
+    # Investment
+    re_path(r'^investment$', investment.Investment.as_view()),
+    re_path(r'^investment/type$', investment.InvestmentType.as_view()),
+    re_path(r'^investment/allocation$', investment.Allocation.as_view()),
+    re_path(r'^investment/statement$', views_deprecated.InvestmentStatement.as_view()),
+    re_path(r'^investment/statement/upload$', views_deprecated.InvestmentStatementUpload.as_view()),
+    re_path(r'^investment/profit', investment.Profit.as_view()),
 
-    re_path(r'^extrato$', views.Statement().as_view(), name='statement'),
-    re_path(r'^ajax/investmento$', views.Investment.as_view(), name='investment'),
-    re_path(r'^ajax/fatura/csv', views.Csv.as_view(), name='csv_fatura'),
-    re_path(r'^ajax/periodos', views.Periodos.as_view(), name='periods'),
-    re_path(r'^ajax/currency', views.Currency.as_view(), name='currency'),
-    re_path(r'^ajax/payment/date', views.PaymentDate.as_view(), name='payment_date'),
-    re_path(r'^ajax/expenses/fixed', views.FixedExpenses.as_view(), name='fixed_expenses'),
-    re_path(r'^ajax/expenses/evolution', views.ExpensesEvolution.as_view(), name='evolution_expenses'),
+    # Dashboard
+    re_path(r'summary', core.Summary.as_view()),
+
+    # Other
+    re_path(r'^currency$', core.Currency.as_view()),
+    re_path(r'^bank$', views_deprecated.Bank.as_view()),
+
+    re_path(r'^upload/pdf', views_deprecated.PdfImport.as_view()),
+
+    re_path(r'^transaction/category/list$', core.TransactionByCategoryList.as_view()),
+    re_path(r'^transaction/category/aggregated$', core.TransactionsByCategoryAggregated.as_view()),
+    # re_path(r'^expenses/history$', views_deprecated.ExpensesHistory.as_view()),
+    re_path(r'^payment/date$', views_deprecated.PaymentDate.as_view()),
+
+    re_path(r'^interest$', investment.Interest.as_view()),
+    re_path(r'^interest/accumulated$', investment.InterestAccumulated.as_view()),
+
+    # Integration
+    re_path('integration/historical', integration.Historical.as_view()),
+
+    # File content uploads for some banks
+    re_path('file/upload/excel/pagbank', views_deprecated.ImportExcelPagBank.as_view())
 ]

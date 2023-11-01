@@ -1,6 +1,0 @@
-@each $level, $value in $elevations {
-  .c-elevation-#{$level} {
-    border: 0;
-    box-shadow: unquote($value) !important; // stylelint-disable-line declaration-no-important
-  }
-}
