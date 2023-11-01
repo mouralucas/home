@@ -5,6 +5,7 @@ from django.utils import timezone
 import finance.models
 import util.datetime
 from service.finance.finance import Finance
+from rest_framework import status
 
 
 class Account(Finance):
@@ -35,8 +36,8 @@ class Account(Finance):
                          .filter(owner=self.owner).active())
 
         response = {
-            'status': True,
-            'description': None,
+            'success': True,
+            'statusCode': status.HTTP_200_OK,
             'quantity': len(bank_accounts),
             'accounts': list(bank_accounts),
         }

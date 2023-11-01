@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
 
 import service.finance.account
 import service.finance.finance
@@ -15,7 +16,7 @@ class Account(APIView):
 
         response = service.finance.account.Account(owner=user).get_accounts()
 
-        return Response(response)
+        return Response(response, status=response['statusCode'])
 
 
 class Statement(APIView):
@@ -24,7 +25,8 @@ class Statement(APIView):
     def get(self, *args, **kwargs):
         data = StatementGetSerializer(data=self.request.query_params)
         if not data.is_valid():
-            return Response(data.errors, status=400)
+
+            return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
 
         reference = data.validated_data.get('period')
         account_id = data.validated_data.get('accountId')

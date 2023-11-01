@@ -29,5 +29,5 @@ numpy~=1.23.1
 # PDF table readers
 camelot-py[base]
 
-# Coverage
+# Tests
 coverage

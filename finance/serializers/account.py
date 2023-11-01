@@ -1,12 +1,13 @@
 from rest_framework import serializers
+from core.serializers import CustomSerializer
 
 
-class StatementGetSerializer(serializers.Serializer):
+class StatementGetSerializer(CustomSerializer):
     period = serializers.IntegerField(required=True)
     accountId = serializers.UUIDField(required=False)
 
 
-class StatementPostSerializer(serializers.Serializer):
+class StatementPostSerializer(CustomSerializer):
     statementId = serializers.IntegerField(required=False)
     amount = serializers.DecimalField(max_digits=14, decimal_places=2, required=True)
     purchasedAt = serializers.DateField(required=True)
@@ -17,7 +18,7 @@ class StatementPostSerializer(serializers.Serializer):
     cashFlowId = serializers.CharField(required=True)
 
 
-class BalanceGetSerializer(serializers.Serializer):
+class BalanceGetSerializer(CustomSerializer):
     pass
 
 
