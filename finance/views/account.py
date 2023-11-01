@@ -22,16 +22,13 @@ class Statement(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
-        validators = StatementGetSerializer(data=self.request.query_params)
-        if not validators.is_valid():
-            return Response(validators.errors, status=400)
+        data = StatementGetSerializer(data=self.request.query_params)
+        if not data.is_valid():
+            return Response(data.errors, status=400)
 
-        reference = validators.validated_data.get('period')
-        account_id = validators.validated_data.get('accountId')
+        reference = data.validated_data.get('period')
+        account_id = data.validated_data.get('accountId')
         user = self.request.user.id
-
-        if account_id in ['', '0']:
-            account_id = None
 
         response = service.finance.finance.Finance(period=reference, account_id=account_id, owner=user).get_statement()
 
