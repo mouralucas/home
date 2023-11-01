@@ -190,6 +190,7 @@ class CreditCard:
 
             if period not in transformed_data:
                 transformed_data[period] = {
+                    "id": period,
                     "period": period,
                     "total": 0,
                 }
@@ -203,6 +204,7 @@ class CreditCard:
             'caption': card['creditCardName'],
             'dataType': 'string'
         } for card in cards]
+
 
         return {
             'success': True,

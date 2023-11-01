@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -20,7 +21,7 @@ class Module(APIView):
 
         response = service.core.core.Misc().get_module(id_selected=selected_id)
 
-        return JsonResponse(response, safe=False)
+        return Response(response, status=status.HTTP_200_OK)
 
     def post(self, *args, **kwargs):
         pass
@@ -33,7 +34,7 @@ class Category(APIView):
 
         response = service.core.core.Misc().get_category(show_mode=show_mode, module_id=module)
 
-        return Response(response, status=200)
+        return Response(response, status=status.HTTP_200_OK)
 
     def post(self, *args, **kwargs):
         pass
@@ -43,7 +44,7 @@ class Period(APIView):
     def get(self, *args, **kwargs):
         data = ReferenceGetSerializer(data=self.request.query_params)
         if not data.is_valid():
-            return Response(data.errors, status=400)
+            return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
 
         s_month = data.validated_data.get('sMonth')
         s_year = data.validated_data.get('sYear')
@@ -71,22 +72,9 @@ class State(APIView):
 
         return JsonResponse(response, safe=False)
 
-    def post(self, *args, **kwargs):
-        """
-        Teste de ação post do ReactJS
-        """
-        name = self.request.POST.get('txtNome')
-
-        response = {
-            'status': True,
-            'mensagem': 'O post deu boa, truta!, o nome é {}'.format(name)
-        }
-
-        return Response(response, status=200)
-
 
 class Version(APIView):
     def get(self, *args, **kwargs):
         response = service.core.core.Misc().get_version()
 
-        return Response(response, status=200)
+        return Response(response, status=status.HTTP_200_OK)

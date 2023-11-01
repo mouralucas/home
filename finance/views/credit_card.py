@@ -88,20 +88,3 @@ class BillHistory(APIView):
         response = service.finance.credit_card.CreditCard(owner=user).get_bill_history(history_type=type, start_at=start_at, end_at=end_at)
 
         return Response(response, status=200)
-
-
-# class BillHistoryAggregated(APIView):
-#     permission_classes = [IsAuthenticated]
-#
-#     def get(self, *args, **kwargs):
-#         data = BillHistorySerializer(data=self.request.query_params)
-#         if not data.is_valid():
-#             return Response(data.errors, status=400)
-#
-#         start_at = data.validated_data.get('startAt')
-#         end_at = data.validated_data.get('endAt')
-#         user = self.request.user.id
-#
-#         response = service.finance.credit_card.CreditCard(owner=user).get_bill_history_aggregated(start_at=start_at, end_at=end_at)
-#
-#         return Response(response, status=200)

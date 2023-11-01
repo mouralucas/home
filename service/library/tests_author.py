@@ -11,7 +11,7 @@ class CreateAuthor(TestCase):
         # Clean up run after every test method.
         pass
 
-    def test_get_author(self):
+    def test_get_authors(self):
         response = Author().get_author(is_translator=False)
 
         self.assertTrue(response['success'])
