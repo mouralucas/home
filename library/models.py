@@ -106,6 +106,11 @@ class Item(core.models.Log):
 
     origin = models.CharField(max_length=50, default='SYSTEM', null=True)
 
+    # TODO: add related name
+    # Rule: if status read it must have at list a reading entry, the reading progress may be empty
+    # Item dedicated page will contain a card with all reading dates
+    # reading_status = models.ForeignKey('core.Status', on_delete=models.DO_NOTHING, null=True, related_name='')
+
     class Meta:
         db_table = 'library"."item'
 
@@ -134,7 +139,7 @@ class Reading(core.models.Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     user = models.ForeignKey('user.User', on_delete=models.DO_NOTHING, null=True)
     item = models.ForeignKey('library.Item', on_delete=models.DO_NOTHING)
-    dat_start = models.DateField()
+    dat_start = models.DateField(null=True)
     dat_end = models.DateField(null=True)
     is_dropped = models.BooleanField(default=False)
 
@@ -145,7 +150,7 @@ class Reading(core.models.Log):
 class ReadingProgress(core.models.Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     reading = models.ForeignKey('library.Reading', on_delete=models.DO_NOTHING)
-    date = models.DateTimeField()
+    date = models.DateField()
     page = models.IntegerField(null=True)
     percentage = models.DecimalField(max_digits=7, decimal_places=2, null=True)
 
