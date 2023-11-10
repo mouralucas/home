@@ -137,10 +137,11 @@ class ItemStatus(core.models.Log):
 
 class Reading(core.models.Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    user = models.ForeignKey('user.User', on_delete=models.DO_NOTHING, null=True)
+    owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING, null=True)
     item = models.ForeignKey('library.Item', on_delete=models.DO_NOTHING)
-    dat_start = models.DateField(null=True)
-    dat_end = models.DateField(null=True)
+    start_at = models.DateField(null=True)
+    end_at = models.DateField(null=True)
+    number = models.SmallIntegerField(default=1, help_text='Indicate if it\'s the fist, second... time the user reads the item')
     is_dropped = models.BooleanField(default=False)
 
     class Meta:
@@ -153,6 +154,8 @@ class ReadingProgress(core.models.Log):
     date = models.DateField()
     page = models.IntegerField(null=True)
     percentage = models.DecimalField(max_digits=7, decimal_places=2, null=True)
+    rate = models.SmallIntegerField(null=True)  # add min 0 and max 5 in serializer
+    comment = models.CharField(max_length=500, null=True)
 
     class Meta:
         db_table = 'library"."reading_progress'

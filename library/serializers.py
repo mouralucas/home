@@ -48,6 +48,13 @@ class ItemPostSerializer(CustomSerializer):
     summary = serializers.CharField(required=False)
 
 
+class ItemReadingPostSerializer(CustomSerializer):
+    itemId = serializers.IntegerField(required=True)
+    startAt = serializers.DateField(required=False)
+    endAt = serializers.DateField(required=False)
+    isDropped = serializers.BooleanField(default=False)
+
+
 class AuthorGetSerializer(CustomSerializer):
     pass
 
