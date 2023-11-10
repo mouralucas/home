@@ -68,7 +68,7 @@ class Finance:
         statement.currency_id = self.currency_id
         statement.amount = float(self.amount) * multiplier
         statement.amount_absolute = float(self.amount)
-        statement.purchased_at = self.purchased_at
+        statement.purchase_at = self.purchased_at
         statement.description = self.description
         statement.category_id = self.category_id
         statement.account_id = self.account_id
@@ -213,8 +213,8 @@ class Finance:
             }
             return response
 
-        day_close = card.dat_closing
-        day_payment = card.dat_due
+        day_close = card.closing_at
+        day_payment = card.due_at
 
         dat_purchase = datetime.date(year=2023, month=4, day=27)
 

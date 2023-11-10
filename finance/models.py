@@ -27,8 +27,8 @@ class Account(core.models.Log):
     account_number = models.IntegerField(null=True)
     digit = models.SmallIntegerField(null=True)
     account_number_formatted = models.CharField(max_length=150, null=True)
-    dat_open = models.DateField(null=True, help_text=_('Data de início do contrato'))
-    dat_close = models.DateField(null=True, help_text=_('Data de fim do contrato'))
+    open_at = models.DateField(null=True, help_text=_('Data de início do contrato'))
+    close_at = models.DateField(null=True, help_text=_('Data de fim do contrato'))
 
     class Meta:
         db_table = 'finance"."account'
@@ -68,10 +68,10 @@ class CreditCard(core.models.Log):
     bank_account = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING, null=True)
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING, null=True)
     description = models.CharField(max_length=500, null=True)
-    dat_start = models.DateField(null=True, help_text=_('Data de início do contrato'))
-    dat_end = models.DateField(null=True, help_text=_('Data de fim do contrato'))
-    dat_due = models.IntegerField(null=True)
-    dat_closing = models.IntegerField(null=True, help_text=_('Data de fechamento da fatura'))
+    start_at = models.DateField(null=True, help_text=_('Data de início do contrato'))
+    end_at = models.DateField(null=True, help_text=_('Data de fim do contrato'))
+    due_at = models.IntegerField(null=True)
+    closing_at = models.IntegerField(null=True, help_text=_('Data de fechamento da fatura'))
 
     class Meta:
         db_table = 'finance"."credit_card'
@@ -160,7 +160,7 @@ class AccountStatement(core.models.Log):
     currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING)
     amount = models.DecimalField(max_digits=14, decimal_places=2)
     amount_absolute = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('O mesmo do amount sem o sinal'))
-    purchased_at = models.DateField(null=True)
+    purchase_at = models.DateField(null=True)
     category = models.ForeignKey('core.Category', on_delete=models.DO_NOTHING, null=True)
     description = models.TextField(null=True)
     cash_flow = models.CharField(max_length=100, choices=finance.choices.CashFlow.choices)
@@ -238,8 +238,7 @@ class CategoryGroup(core.models.Log):
     class GroupType(models.TextChoices):
         FIXED_EXPENSES = ('fixed_expenses', _('Despesas fixas'))
         VARIABLE_EXPENSES = ('variable_expenses', _('Despesas variáveis'))
-        NOT_EXPENSE = (
-        'not_expense', _('Não é despesa'))  # Usado para categoria de transferência de valores entre contas
+        NOT_EXPENSE = ('not_expense', _('Não é despesa'))  # Usado para categoria de transferência de valores entre contas
 
     category = models.ForeignKey('core.Category', on_delete=models.CASCADE, null=True)
     group = models.CharField(max_length=50, choices=GroupType.choices, default=GroupType.VARIABLE_EXPENSES)

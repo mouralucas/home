@@ -74,7 +74,7 @@ class Account(Finance):
         # Set min and max periods for each account
         account = finance.models.Account.objects.filter(pk=self.account_id).first()
         min_period = merged_df['reference'].min()
-        max_period = util.datetime.DateTime().get_period(account.dat_close) if account.dat_close else util.datetime.DateTime().current_period()
+        max_period = util.datetime.DateTime().get_period(account.close_at) if account.close_at else util.datetime.DateTime().current_period()
         all_periods = list(range(min_period, max_period + 1))
         missing_periods = [p for p in all_periods if p not in merged_df['reference'].tolist() and 12 >= p % 100 > 1]
 

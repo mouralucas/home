@@ -45,7 +45,7 @@ class CreditCard:
         Return: the list of saved credit cards
         """
         # TODO: mudar para receber parâmetro de status
-        credit_cards = finance.models.CreditCard.objects.values('id', 'name', 'description', 'dat_closing', 'dat_due').active().order_by('-status', 'id')
+        credit_cards = finance.models.CreditCard.objects.values('id', 'name', 'description', 'closing_at', 'due_at').active().order_by('-status', 'id')
 
         response = {
             'status': True,
