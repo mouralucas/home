@@ -31,8 +31,8 @@ class Account(Finance):
                          .values('id', 'nickname')
                          .annotate(branchFormated=F('branch_formatted'),
                                    accountNumberFormatted=F('account_number_formatted'),
-                                   openAt=F('dat_open'),
-                                   closedAt=F('dat_close'))
+                                   openAt=F('open_at'),
+                                   closeAt=F('close_at'))
                          .filter(owner=self.owner).active())
 
         response = {

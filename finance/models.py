@@ -153,6 +153,21 @@ class InvestmentBalance(core.models.Log):
         db_table = 'finance"."investment_balance'
 
 
+# class InvestmentObjective(core.models.Log):
+#     name = models.CharField(max_length=150)
+#     goal_amount = models.DecimalField(max_length=12, decimal_places=2, null=True)
+#     goal_at = models.DateField(null=True, help_text='Date to achieve the goal')
+#     objective = models.CharField(max_length=500, null=True)
+#     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
+#
+#     class Meta:
+#         db_table = 'finance.investment_objective'
+
+
+# class InvestmentObjectiveInvestment(core.models.Log):
+#     investment_objective = models.ForeignKey('finance.InvestmentObjective', on_delete=models.DO_NOTHING)
+#     investment = models.ForeignKey('finance.Investment', on_delete=models.DO_NOTHING)
+
 class AccountStatement(core.models.Log):
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING, related_name='bank_statement_account')
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)

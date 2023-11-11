@@ -96,14 +96,14 @@ class Finance:
                                                  accountId=F('account_id'),
                                                  categoryName=F('category__description'),
                                                  categoryId=F('category_id'),
-                                                 purchasedAt=F('purchased_at'),
+                                                 purchasedAt=F('purchase_at'),
                                                  cashFlowId=F('cash_flow'),
                                                  currencyId=F('currency_id'),
                                                  currencySymbol=F('currency__symbol'),
                                                  createdAt=F('created_at'),
                                                  lastEditedAt=F('edited_at'),
                                                  ) \
-            .order_by('-purchased_at', '-created_at')
+            .order_by('-purchase_at', '-created_at')
 
         response = {
             'status': True,

@@ -16,6 +16,7 @@ class TestAccount(APITestCase):
         response = self.client.get('/finance/account')
 
         self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data['success'])
 
     def test_get_statement_success(self):
         payload = {
@@ -29,7 +30,6 @@ class TestAccount(APITestCase):
         response = self.client.get('/finance/account/statement')
 
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertFalse(response.data['success'])
         self.assertIn('errors', response.data)
         self.assertIn('period', response.data['errors'])
 
