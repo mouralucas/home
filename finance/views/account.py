@@ -25,14 +25,14 @@ class Statement(APIView):
     def get(self, *args, **kwargs):
         data = StatementGetSerializer(data=self.request.query_params)
         if not data.is_valid():
-
             return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
 
         reference = data.validated_data.get('period')
         account_id = data.validated_data.get('accountId')
         user = self.request.user.id
 
-        response = service.finance.finance.Finance(period=reference, account_id=account_id, owner=user).get_statement()
+        # response = service.finance.finance.Finance(period=reference, account_id=account_id, owner=user).get_statement()
+        response = service.finance.account.Account(period=reference, account_id=account_id, owner=user).get_statement()
 
         return Response(response, status=200)
 
@@ -61,8 +61,12 @@ class Statement(APIView):
 
 
 class Balance(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args, **kwargs):
-        pass
+        response = service.finance.account.Account(owner=self.request.user.id).get_balance_tests()
+
+        return Response(response)
 
     def post(self, *args, **kwargs):
         data = BalancePostSerializer(data=self.request.data)

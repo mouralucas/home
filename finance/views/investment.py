@@ -65,7 +65,7 @@ class Statement(APIView):
         return Response({}, status=200)
 
 
-class InvestmentType(APIView):
+class Type(APIView):
     def get(self, *args, **kwargs):
         data = TypeGetSerializer(data=self.request.query_params)
         if not data.is_valid():

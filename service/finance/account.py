@@ -1,5 +1,6 @@
 import pandas as pd
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Window, Subquery, OuterRef
+from django.db.models.functions import Lag, Coalesce
 from django.utils import timezone
 
 import finance.models
@@ -9,8 +10,8 @@ from rest_framework import status
 
 
 class Account(Finance):
-    def __init__(self, owner=None, account_id=None):
-        super().__init__(owner=owner, account_id=account_id)
+    def __init__(self, owner=None, account_id=None, period=None):
+        super().__init__(owner=owner, account_id=account_id, period=period)
 
     def get_accounts(self):
         """
@@ -43,6 +44,17 @@ class Account(Finance):
         }
 
         return response
+
+    def get_statement_beta(self):
+
+        previous_balance = finance.models.AccountStatement.objects.filter(period__lt=self.period, owner=self.owner, status=True).aggregate(tot=Sum('amount'))
+        statement = finance.models.AccountStatement.objects.values('amount', 'description').filter(period=self.period, owner=self.owner, status=True)
+
+        return {
+            'success': True,
+            'previous': previous_balance['tot'],
+            'statement': list(statement)
+        }
 
     def set_balance(self, start_period=None):
         filters = {}
@@ -120,6 +132,37 @@ class Account(Finance):
         response = {
             'success': True,
             'periods_saved': len(balance)
+        }
+
+        return response
+
+    def get_balance_tests(self):
+        subquery = (
+            finance.models.AccountStatement.objects
+            .filter(owner_id=self.owner, account_id='f211dc0e-411e-4728-b7cd-ef3b91f4ddb5', status=True, period__lt=OuterRef('period'))
+            .values('period')
+            .annotate(
+                previous_period_balance=Sum('amount')
+            )
+            .order_by()
+            .values('previous_period_balance')[:1]
+        )
+
+        query = (
+            finance.models.AccountStatement.objects
+            .filter(owner_id=self.owner, account_id='f211dc0e-411e-4728-b7cd-ef3b91f4ddb5', status=True)
+            .values('period')
+            .annotate(
+                current_period_balance=Sum('amount'),
+                previous_period_balance=Coalesce(Subquery(subquery), 0),
+                current_balance=F('current_period_balance') + Coalesce(Subquery(subquery), 0)
+            )
+            .order_by('period')
+        )
+
+        response = {
+            'success': True,
+            'balance': list(query)
         }
 
         return response

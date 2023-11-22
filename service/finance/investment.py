@@ -113,7 +113,10 @@ class Investment(Finance):
         if show_mode != 'all':
             filters['parent_id__isnull'] = True if show_mode == 'father' else False
 
-        investment_type = finance.models.InvestmentType.objects.values('id', 'name', 'description').filter(**filters).order_by('name')
+        investment_type = (finance.models.InvestmentType.objects.values('id', 'name', 'description')
+                           .annotate(parentId=F('parent_id'),
+                                     parentName=F('parent__name'))
+                           .filter(**filters).order_by('name'))
 
         response = {
             'success': True,
