@@ -16,7 +16,17 @@ class Bank(core.models.Log):
         db_table = 'finance"."bank'
 
 
+class AccountType(core.models.Log):
+    name = models.CharField(max_length=150)
+    description = models.CharField(max_length=500)
+
+    class Meta:
+        db_table = 'finance"."account_type'
+
+
 class Account(core.models.Log):
+    # TODO: add a type to replace is_investment to the type of the account (investment, checking, business, etc)
+    # TODO: another field to indicate if is a single or joint account (maybe the ownership must be a mxn table)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     bank = models.ForeignKey('finance.Bank', on_delete=models.DO_NOTHING)
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
@@ -29,6 +39,7 @@ class Account(core.models.Log):
     account_number_formatted = models.CharField(max_length=150, null=True)
     open_at = models.DateField(null=True, help_text=_('Data de início do contrato'))
     close_at = models.DateField(null=True, help_text=_('Data de fim do contrato'))
+    type = models.ForeignKey('finance.AccountType', on_delete=models.DO_NOTHING, null=True)  # remove null after first migrate
 
     class Meta:
         db_table = 'finance"."account'

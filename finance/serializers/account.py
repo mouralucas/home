@@ -2,6 +2,10 @@ from rest_framework import serializers
 from core.serializers import CustomSerializer
 
 
+class AccountGetSerializer(CustomSerializer):
+    accountType = serializers.CharField(required=True)
+
+
 class StatementGetSerializer(CustomSerializer):
     period = serializers.IntegerField(required=True)
     accountId = serializers.UUIDField(required=False)
