@@ -13,7 +13,7 @@ class Account(Finance):
     def __init__(self, owner=None, account_id=None, period=None):
         super().__init__(owner=owner, account_id=account_id, period=period)
 
-    def get_accounts(self):
+    def get_accounts(self, is_investment):
         """
         :Name: get_bank_accounts
         :Description: get the list of accounts
@@ -21,12 +21,12 @@ class Account(Finance):
         :Edited by:
 
         Explicit params:
-        None
+        :param is_investment: if True return only investment accounts
 
         Implicit params (passed in the class instance or set by other functions):
-        None
+        :param self.owner: the owner of the account
 
-        Return: the list of saved accounts
+        Return: the list of user (owner) accounts
         """
         bank_accounts = (finance.models.Account.objects
                          .values('id', 'nickname')

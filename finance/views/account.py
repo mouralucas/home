@@ -4,7 +4,7 @@ from rest_framework import status
 
 import service.finance.account
 import service.finance.finance
-from finance.serializers.account import StatementPostSerializer, StatementGetSerializer, BalancePostSerializer
+from finance.serializers.account import StatementPostSerializer, StatementGetSerializer, BalancePostSerializer, AccountGetSerializer
 from service.security.security import IsAuthenticated
 
 
@@ -12,9 +12,14 @@ class Account(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
+        data = AccountGetSerializer(data=self.request.query_params)
+        if not data.is_valid():
+            return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        is_investment = data.validated_data.get('isInvestment')
         user = self.request.user.id
 
-        response = service.finance.account.Account(owner=user).get_accounts()
+        response = service.finance.account.Account(owner=user).get_accounts(is_investment=is_investment)
 
         return Response(response, status=response['statusCode'])
 
