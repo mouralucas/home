@@ -1,4 +1,5 @@
 from django.db.models import F
+from rest_framework import status
 
 import finance.models
 from service.finance.finance import Finance
@@ -53,11 +54,13 @@ class Core(Finance):
         if is_shown:
             filters['is_shown'] = True
 
-        currency = finance.models.Currency.objects.values('id', 'name', 'symbol').filter(**filters)
+        currency = finance.models.Currency.objects.values('name', 'symbol').annotate(currencyId=F('id')).filter(**filters)
 
         response = {
             'success': True,
-            'currency': list(currency)
+            'statusCode': status.HTTP_200_OK,
+            'quantity': len(currency),
+            'currencies': list(currency)
         }
 
         return response

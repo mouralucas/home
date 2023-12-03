@@ -1,6 +1,9 @@
+from django.utils.translation import gettext_lazy as _
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
 
 import service.finance.account
 import service.finance.finance
@@ -11,6 +14,43 @@ from service.security.security import IsAuthenticated
 class Account(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_description='Return all accounts of selected type',
+        manual_parameters=[
+            openapi.Parameter(
+                name='accountType', in_=openapi.IN_QUERY, type=openapi.TYPE_STRING, description=_('Tipo de conta (corrente, PJ, Investimento, etc)'), required=True,
+            ),
+        ],
+        responses={
+            status.HTTP_200_OK: openapi.Response(
+                description="OK",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'success': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                        'statusCode': openapi.Schema(type=openapi.TYPE_INTEGER),
+                        'quantity': openapi.Schema(type=openapi.TYPE_INTEGER),
+                        'accounts': openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    'accountId': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'branch': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'number': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'openAt': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'closeAt': openapi.Schema(type=openapi.TYPE_STRING),
+                                }
+                            ),
+                        ),
+                    },
+                ),
+            ),
+            status.HTTP_403_FORBIDDEN: openapi.Response(
+                description="Acesso proibido",
+            ),
+        },
+    )
     def get(self, *args, **kwargs):
         data = AccountGetSerializer(data=self.request.query_params)
         if not data.is_valid():

@@ -28,19 +28,20 @@ class Account(Finance):
 
         Return: the list of user (owner) accounts
         """
-        bank_accounts = (finance.models.Account.objects
-                         .values('id', 'nickname')
-                         .annotate(branchFormated=F('branch_formatted'),
-                                   accountNumberFormatted=F('account_number_formatted'),
-                                   openAt=F('open_at'),
-                                   closeAt=F('close_at'))
-                         .filter(owner=self.owner).active())
+        accounts = (finance.models.Account.objects
+                    .values('nickname')
+                    .annotate(accountId=F('id'),
+                              branch=F('branch_formatted'),
+                              number=F('account_number_formatted'),
+                              openAt=F('open_at'),
+                              closeAt=F('close_at'))
+                    .filter(owner=self.owner).active())
 
         response = {
             'success': True,
             'statusCode': status.HTTP_200_OK,
-            'quantity': len(bank_accounts),
-            'accounts': list(bank_accounts),
+            'quantity': len(accounts),
+            'accounts': list(accounts),
         }
 
         return response

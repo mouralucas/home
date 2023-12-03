@@ -2,6 +2,7 @@ import warnings
 
 from django.db.models import Case, When, BooleanField, F
 from django.utils.translation import gettext_lazy as _
+from rest_framework import status
 
 import core.models
 import core.serializers
@@ -96,13 +97,16 @@ class Misc:
         if show_mode != 'all':
             filters['father_id__isnull'] = True if show_mode == 'father' else False
 
-        categories = core.models.Category.objects.values('id', 'name', 'description', 'comments').active() \
+        categories = core.models.Category.objects.values('name', 'description', 'comments').active() \
             .filter(parent__status=True) \
-            .annotate(id_father=F('parent_id'),
-                      nm_father=F('parent__name')).filter(**filters).order_by('order')
+            .annotate(categoryId=F('id'),
+                      fatherId=F('parent_id'),
+                      fatherName=F('parent__name')).filter(**filters).order_by('order')
 
         response = {
-            'status': True,
+            'success': True,
+            'statusCode': status.HTTP_200_OK,
+            'quantity': len(categories),
             'categories': list(categories)
         }
 

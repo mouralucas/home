@@ -1,3 +1,4 @@
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -18,14 +19,14 @@ class Summary(APIView):
 
         response = service.finance.finance.Finance(period=period, owner=user).get_summary()
 
-        return Response(response)
+        return Response(response, status=status.HTTP_200_OK)
 
 
 class Currency(APIView):
     def get(self, *args, **kwargs):
         response = service.finance.core.Core().get_currency()
 
-        return Response(response, status=200)
+        return Response(response, status=status.HTTP_200_OK)
 
 
 class TransactionByCategoryList(APIView):
