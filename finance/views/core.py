@@ -1,3 +1,6 @@
+from django.utils.translation import gettext_lazy as _
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -23,6 +26,34 @@ class Summary(APIView):
 
 
 class Currency(APIView):
+    @swagger_auto_schema(
+        operation_description='Returns all available currencies',
+        responses={
+            status.HTTP_200_OK: openapi.Response(
+                description="OK",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'success': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                        'message': openapi.Schema(type=openapi.TYPE_STRING),
+                        'statusCode': openapi.Schema(type=openapi.TYPE_INTEGER),
+                        'quantity': openapi.Schema(type=openapi.TYPE_INTEGER),
+                        'currencies': openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    'currencyId': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'name': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'symbol': openapi.Schema(type=openapi.TYPE_STRING),
+                                }
+                            ),
+                        ),
+                    },
+                ),
+            ),
+        },
+    )
     def get(self, *args, **kwargs):
         response = service.finance.core.Core().get_currency()
 
