@@ -14,7 +14,7 @@ class StatementGetSerializer(CustomSerializer):
 class StatementPostSerializer(CustomSerializer):
     statementId = serializers.IntegerField(required=False)
     amount = serializers.DecimalField(max_digits=14, decimal_places=2, required=True)
-    purchasedAt = serializers.DateField(required=True)
+    purchaseAt = serializers.DateField(required=True)
     description = serializers.CharField(required=False)
     categoryId = serializers.CharField(required=True)
     accountId = serializers.UUIDField(required=True)
