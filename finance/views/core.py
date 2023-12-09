@@ -60,6 +60,13 @@ class Currency(APIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
+class CashFlow(APIView):
+    def get(self, *args, **kwargs):
+        response = service.finance.core.Core().get_cash_flow()
+
+        return Response(response, status=response['statusCode'])
+
+
 class TransactionByCategoryList(APIView):
     permission_classes = [IsAuthenticated]
 

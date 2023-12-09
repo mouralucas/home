@@ -27,7 +27,7 @@ class InvestmentPostSerializer(core.serializers.CustomSerializer):
     cashFlowId = serializers.CharField(required=True)
     interestRate = serializers.CharField(required=True)
     interestIndex = serializers.CharField(required=True)
-    investmentTypeId = serializers.CharField(required=True)
+    investmentTypeId = serializers.UUIDField(required=True)
     maturityDate = serializers.DateField(required=False)
     custodianId = serializers.UUIDField(required=True)
 

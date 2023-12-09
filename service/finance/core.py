@@ -64,3 +64,15 @@ class Core(Finance):
         }
 
         return response
+
+    def get_cash_flow(self):
+        cash_flow = finance.models.CashFlow.objects.annotate(cashFlowId=F('id'), cashFlowName=F('name')).values('cashFlowId', 'cashFlowName')
+
+        response = {
+            'success': True,
+            'statusCode': status.HTTP_200_OK,
+            'quantity': len(cash_flow),
+            'cashFlow': list(cash_flow)
+        }
+
+        return response

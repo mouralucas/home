@@ -42,10 +42,10 @@ class Investment(Finance):
             investment = self.__set_investment()
             investment.save(request_=self.request)
 
-            child_investment = finance.models.Investment.objects.filter(pk=investment.pk).first()
-            child_investment.pk = None
-            child_investment.parent_id = investment.pk
-            child_investment.save(request_=self.request)
+            # child_investment = finance.models.Investment.objects.filter(pk=investment.pk).first()
+            # child_investment.pk = None
+            # child_investment.parent_id = investment.pk
+            # child_investment.save(request_=self.request)
 
         else:
             parent_investment = finance.models.Investment.objects.filter(pk=self.parent_id).first()
@@ -54,7 +54,7 @@ class Investment(Finance):
             parent_investment.save(request_=self.request)
 
             child_investment = self.__set_investment()
-            child_investment.liquidity_id = 'ea84f643-bea4-4cad-ac7b-1b848d9aeeb7'
+            child_investment.liquidity_id = '4f0a614b-3e11-46ab-817e-36f3a6de87f8'
             child_investment.save(request_=self.request)
 
         response = {
@@ -306,6 +306,7 @@ class Investment(Finance):
         investment.custodian_id = self.custodian_id
         investment.parent_id = self.parent_id
         investment.index_id = '2a2b100f-17d9-4c61-b3b4-f06662113953'  # TODO: adjust to get from request
+        investment.liquidity_id = '4f0a614b-3e11-46ab-817e-36f3a6de87f8'  # TODO: adjust to get from request
         investment.owner_id = self.owner_id
 
         return investment

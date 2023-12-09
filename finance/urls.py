@@ -2,6 +2,7 @@ from django.urls import re_path
 
 from finance.views import account, credit_card, investment, views_deprecated, integration, core
 
+
 urlpatterns = [
     # Account
     re_path(r'^account$', account.Account().as_view()),
@@ -27,6 +28,7 @@ urlpatterns = [
 
     # Other
     re_path(r'^currency$', core.Currency.as_view()),
+    re_path(r'^cash-flow$', core.CashFlow.as_view()),
     re_path(r'^bank$', views_deprecated.Bank.as_view()),
 
     re_path(r'^upload/pdf', views_deprecated.PdfImport.as_view()),

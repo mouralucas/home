@@ -248,7 +248,7 @@ class CreditCardBill(core.models.Log):
     installment = models.SmallIntegerField(default=1)
     tot_installment = models.SmallIntegerField(default=1)
     is_installment = models.BooleanField(default=False)
-    parent = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)  # TODO: change to parent
+    parent = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True)
     description = models.TextField(null=True)
     cash_flow = models.CharField(max_length=100, choices=finance.choices.CashFlow.choices)
 
@@ -353,3 +353,11 @@ class Liquidity(core.models.Log):
 
     class Meta:
         db_table = 'finance"."liquidity'
+
+
+class CashFlow(core.models.Log):
+    id = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'finance"."cash_flow'
