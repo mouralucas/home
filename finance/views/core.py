@@ -57,10 +57,37 @@ class Currency(APIView):
     def get(self, *args, **kwargs):
         response = service.finance.core.Core().get_currency()
 
-        return Response(response, status=status.HTTP_200_OK)
+        return Response(response, status=response['statusCode'])
 
 
 class CashFlow(APIView):
+    @swagger_auto_schema(
+        operation_description='Return the cash flow options',
+        responses={
+            status.HTTP_200_OK: openapi.Response(
+                description="OK",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'success': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                        'message': openapi.Schema(type=openapi.TYPE_STRING),
+                        'statusCode': openapi.Schema(type=openapi.TYPE_INTEGER),
+                        'quantity': openapi.Schema(type=openapi.TYPE_INTEGER),
+                        'cashFlow': openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    'cashFlowId': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'cashFlowName': openapi.Schema(type=openapi.TYPE_STRING),
+                                }
+                            ),
+                        ),
+                    },
+                ),
+            ),
+        },
+    )
     def get(self, *args, **kwargs):
         response = service.finance.core.Core().get_cash_flow()
 
