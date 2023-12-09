@@ -14,7 +14,10 @@ tabula-py
 # Cv2
 opencv-python==4.8.0.74
 
+# Database
 psycopg2-binary
+redis
+
 requests==2.31.0
 django-crontab
 pandas~=1.4.3
