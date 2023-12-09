@@ -1,89 +1,22 @@
-from django.contrib.auth import authenticate, login, logout
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework import serializers
-from django.utils.translation import gettext_lazy as _
-import service.user.account
+import uuid
 from datetime import datetime, timedelta
 
-
-class LoginDjango(service.user.account.Account):
-    def __init__(self, username=None, raw_password=None, request=None):
-        super(LoginDjango, self).__init__(username=username, raw_password=raw_password)
-        self.request = request
-
-    def authenticate(self):
-        """
-        :Name: authenticate
-        :Created by: Lucas Penha de Moura - 09/06/2022
-        :Edited by:
-
-        Check if all data is correct for the user and log the user into the system.
-        Create the user session with all information needed to navigate
-        """
-
-        # Check if all data is available
-        if not self.username or not self.raw_password:
-            return {'status': False, 'description': 'All fields are needed', 'redirect': ''}
-
-        # Authenticate the user
-        self.user = authenticate(username=self.username, password=self.raw_password)
-        if not self.user:
-            return {'status': False, 'description': 'User or passwor not found!', 'redirect': ''}
-
-        # Log the user
-        login(self.request, self.user)
-
-        # Create the session
-        pass
-
-        response = {
-            'status': True,
-            'redirect': ''
-        }
-
-        return response
-
-    def logout(self):
-        """
-        :Name: logout
-        :Created by: Lucas Penha de Moura - 09/06/2022
-        :Edited by:
-
-        Log the user out of the system
-        """
-        logout(self.request)
-
-        response = {
-            'status': True,
-            'redirect': ''
-        }
-
-        return response
-
-    authenticate.__doc__ = 'Used the authenticate a user into the system'
+from django.contrib.auth import authenticate
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 
-class LoginSerializer(TokenObtainPairSerializer):
-    """
-    :Nome da classe/função: LoginApiSerializer
-    :Descrição: Classe de serializaçaõ do login da API
-    :Criação: Lucas Penha de Moura - 04/11/2020
-    :Edições:
-    """
-
-    def update(self, instance, validated_data):
-        pass
-
-    def create(self, validated_data):
-        pass
-
+class Login(TokenObtainPairSerializer):
     def validate(self, attrs):
         """
         :Name: validate
         :Created by: Lucas Penha de Moura - 04/11/2020
         :Edited by:
 
-            Handles the username and password from the user loggin in
+            Handles the username and password from the user log in
         """
 
         try:
@@ -103,39 +36,48 @@ class LoginSerializer(TokenObtainPairSerializer):
                 raise serializers.ValidationError({'error': _('Usuário ou senha inválidos')})
 
             refresh = self.get_token(user=user)
-            data = {
-                'expire': datetime.now() + timedelta(days=1),
-                'access': str(refresh.access_token),
-                'refresh': str(refresh),
-            }
+            # data = {
+            #     'expire': datetime.now() + timedelta(days=1),
+            #     'access': str(refresh.access_token),
+            #     'refresh': str(refresh),
+            # }
 
-            return data
+            return refresh
 
         else:
             raise serializers.ValidationError({'error': _('Usuário e senhas são campos obrigatórios')})
 
-
-class Login(LoginSerializer):
-    def update(self, instance, validated_data):
-        pass
-
-    def create(self, validated_data):
-        pass
-
-    def get_serializer_class(self):
-        pass
-
     @classmethod
     def get_token(cls, user):
-        token = super().get_token(user)
 
-        # Add custom claims
-        token['user'] = user.username
-        # token['matricula'] = user
+        now = timezone.now()
+        access_token_expire = now + timezone.timedelta(minutes=15)
+        refresh_token_expire = now + timezone.timedelta(days=30)
+        issue_date = now
 
-        # usr_info = service.autenticacao.sessao.SessaoFuncionario().criar_sessao_funcionario(user=user)
+        access_token_id = str(uuid.uuid4())
+        refresh_token_id = str(uuid.uuid4())
 
-        # token['view_inicial'] = usr_info['view_inicial']
-        # token['is_loja'] = True if usr_info['perfil_principal'] == 'loja' else False
+        # Generate access token
+        access_token = AccessToken()
+        access_token_payload = {
+            'user_id': str(user.id),
+            'token_type': 'access',
+            'exp': access_token_expire,
+            'iat': issue_date,
+            'jti': access_token_id
+        }
+        access_token.payload = access_token_payload
 
-        return token
+        # Generate refresh token
+        refresh_token = RefreshToken()
+        refresh_token_payload = {
+            'user_id': str(user.id),
+            'token_type': 'refresh',
+            'exp': refresh_token_expire,
+            'iat': issue_date,
+            'jti': refresh_token_id
+        }
+        refresh_token.payload = refresh_token_payload
+
+        return {'access': str(access_token), 'refresh': str(refresh_token)}

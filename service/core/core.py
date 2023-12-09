@@ -213,5 +213,5 @@ class Misc:
         return {
             'status': True,
             'version': '0.0.1',
-            'environment': config('ENV_NAME')
+            'environment': config('ENVIRONMENT')
         }
