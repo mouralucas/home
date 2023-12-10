@@ -2,10 +2,10 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 import service.user.account
-import service.user.login
+import service.security.login
 
 from core.user.serializers import AccountPostSerializer
 
@@ -23,7 +23,11 @@ class Login(TokenObtainPairView):
 
         Implements TokenObtainPairView from simple jwt
     """
-    serializer_class = service.user.login.Login
+    serializer_class = service.security.login.Login
+
+
+class Refresh(TokenRefreshView):
+    serializer_class = service.security.login.Refresh
 
 
 class Account(APIView):
