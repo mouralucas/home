@@ -1,17 +1,22 @@
 import uuid
-from datetime import datetime, timedelta
 
 from django.contrib.auth import authenticate
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken
 
+import service.core.cache
 from service.security.login import CustomAccessToken
 
 
 class Login(TokenObtainPairSerializer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.redis_instance = service.core.cache.LoginTokens()
+        self.redis = self.redis_instance.get_connection()
+
     def validate(self, attrs):
         """
         :Name: validate
@@ -38,20 +43,13 @@ class Login(TokenObtainPairSerializer):
                 raise serializers.ValidationError({'error': _('Usuário ou senha inválidos')})
 
             refresh = self.get_token(user=user)
-            # data = {
-            #     'expire': datetime.now() + timedelta(days=1),
-            #     'access': str(refresh.access_token),
-            #     'refresh': str(refresh),
-            # }
 
             return refresh
 
         else:
             raise serializers.ValidationError({'error': _('Usuário e senhas são campos obrigatórios')})
 
-    @classmethod
-    def get_token(cls, user):
-
+    def get_token(self, user):
         now = timezone.now()
         access_token_expire = now + timezone.timedelta(minutes=15)
         refresh_token_expire = now + timezone.timedelta(days=30)
@@ -70,8 +68,10 @@ class Login(TokenObtainPairSerializer):
             'jti': access_token_id
         }
         access_token.payload = access_token_payload
+        self.redis.set(access_token_id, 'access_token_payload')
 
         # Generate refresh token
+        # TODO: not working
         refresh_token = RefreshToken()
         refresh_token_payload = {
             'user_id': str(user.id),

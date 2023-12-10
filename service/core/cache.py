@@ -13,7 +13,7 @@ class LoginTokens:
             cls._instance_token_login._redis = redis.StrictRedis(
                 host=config('REDIS_HOST'),
                 port=config('REDIS_PORT'),
-                db=config('REDIS_COMPANY_PRODUCTS_DB'),
+                db=config('REDIS_TOKENS_DB'),
                 password=config('REDIS_PASSWORD')
             )
         return cls._instance_token_login
