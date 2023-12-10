@@ -8,7 +8,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
-from service.security.security import CustomAccessToken
+from service.security.login import CustomAccessToken
 
 
 class Login(TokenObtainPairSerializer):
