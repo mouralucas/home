@@ -8,6 +8,8 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
+from service.security.security import CustomAccessToken
+
 
 class Login(TokenObtainPairSerializer):
     def validate(self, attrs):
@@ -59,7 +61,7 @@ class Login(TokenObtainPairSerializer):
         refresh_token_id = str(uuid.uuid4())
 
         # Generate access token
-        access_token = AccessToken()
+        access_token = CustomAccessToken()
         access_token_payload = {
             'user_id': str(user.id),
             'token_type': 'access',
