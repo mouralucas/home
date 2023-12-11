@@ -55,7 +55,7 @@ class Login(TokenObtainPairSerializer):
             self.redis.set(refresh.payload['jti'], 'value_refresh', refresh.payload['exp'])
 
             # return refresh
-            return {'access': str(refresh.access_token), 'refresh': str(refresh)}
+            return {'access': str(access_token), 'refresh': str(refresh)}
         else:
             raise serializers.ValidationError({'error': _('Usuário e senhas são campos obrigatórios')})
 
