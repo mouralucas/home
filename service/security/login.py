@@ -1,75 +1,19 @@
-import uuid
+from __future__ import annotations
 
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import update_last_login
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer, TokenObtainSerializer
 from rest_framework_simplejwt.settings import api_settings
-from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken, Token
 from rest_framework_simplejwt.utils import format_lazy, datetime_from_epoch
 
 import service.core.cache
 
 
-class Login(TokenObtainPairSerializer):
-    def __init__(self, *args, **kwargs):
-        self.redis_instance = service.core.cache.LoginTokens()
-        self.redis = self.redis_instance.get_connection()
-        super().__init__(*args, **kwargs)
-
-    def validate(self, attrs):
-        """
-        :Name: validate
-        :Created by: Lucas Penha de Moura - 04/11/2020
-        :Edited by:
-
-            Handles the username and password from the user log in
-        """
-
-        try:
-            request = self.context["request"]
-        except KeyError:
-            raise serializers.ValidationError({'error': _('Houve um erro na autenticação')})
-
-        if request:
-            request_data = request.data
-        else:
-            raise serializers.ValidationError({'error': _('Houve um erro na autenticação')})
-
-        if "username" in request_data and "password" in request_data:
-            user = authenticate(username=request_data['username'], password=request_data['password'])
-
-            if not user:
-                raise serializers.ValidationError({'error': _('Usuário ou senha inválidos')})
-
-            refresh = self.get_token(user=user)
-            access_token = refresh.access_token
-
-            # Add tokens to redis (yet to create the value field, maybe will contain permissions data in access token)
-            self.redis.set(access_token.payload['jti'], 'value', access_token.payload['exp'])
-            self.redis.set(refresh.payload['jti'], 'value_refresh', refresh.payload['exp'])
-
-            # return refresh
-            return {'access': str(access_token), 'refresh': str(refresh)}
-        else:
-            raise serializers.ValidationError({'error': _('Usuário e senhas são campos obrigatórios')})
-
-
-class CustomAccessToken(AccessToken):
-    """
-    :Name: CustomAccessToken
-    :Description: Class that overwrite AccessToken
-    :Created by: Lucas Penha de Moura - 09/12/2023
-    :Edited by:
-
-        This class overrides the default AccessToken class to allow check the token using Redis cache
-    """
-
+class CustomToken(Token):
     def __init__(self, token=None, verify=True):
         self.redis_instance = service.core.cache.LoginTokens()
         self.redis = self.redis_instance.get_connection()
@@ -108,9 +52,56 @@ class CustomAccessToken(AccessToken):
             raise TokenError(format_lazy(_("Token '{}' claim has expired"), claim))
 
 
+class CustomAccessToken(CustomToken):
+    """
+    :Name: CustomAccessToken
+    :Description: Class that overwrite AccessToken
+    :Created by: Lucas Penha de Moura - 09/12/2023
+    :Edited by:
+
+        This class overrides the default AccessToken class to allow check the token using Redis cache
+    """
+    token_type = "access"
+    lifetime = api_settings.ACCESS_TOKEN_LIFETIME
+
+
 class CustomRefreshToken(RefreshToken):
-    def __init__(self, refresh_token):
-        super().__init__()
+    token_type = "refresh"
+    lifetime = api_settings.REFRESH_TOKEN_LIFETIME
+    no_copy_claims = (
+        api_settings.TOKEN_TYPE_CLAIM,
+        "exp",
+        # Both of these claims are included even though they may be the same.
+        # It seems possible that a third party token might have a custom or
+        # namespaced JTI claim as well as a default "jti" claim.  In that case,
+        # we wouldn't want to copy either one.
+        api_settings.JTI_CLAIM,
+        "jti",
+    )
+    access_token_class = CustomAccessToken
+
+    @property
+    def access_token(self):
+        """
+        Returns an access token created from this refresh token.  Copies all
+        claims present in this refresh token to the new access token except
+        those claims listed in the `no_copy_claims` attribute.
+        """
+        access = self.access_token_class()
+
+        # Use instantiation time of refresh token as relative timestamp for
+        # access token "exp" claim.  This ensures that both a refresh and
+        # access token expire relative to the same time if they are created as
+        # a pair.
+        access.set_exp(from_time=self.current_time)
+
+        no_copy = self.no_copy_claims
+        for claim, value in self.payload.items():
+            if claim in no_copy:
+                continue
+            access[claim] = value
+
+        return access
 
 
 class CustomJWTAuthentication(JWTAuthentication):
@@ -160,6 +151,52 @@ class CustomJWTAuthentication(JWTAuthentication):
                 "messages": messages,
             }
         )
+
+
+class Login(TokenObtainSerializer):
+    token_class = CustomRefreshToken
+
+    def __init__(self, *args, **kwargs):
+        self.redis_instance = service.core.cache.LoginTokens()
+        self.redis = self.redis_instance.get_connection()
+        super().__init__(*args, **kwargs)
+
+    def validate(self, attrs):
+        """
+        :Name: validate
+        :Created by: Lucas Penha de Moura - 04/11/2020
+        :Edited by:
+
+            Handles the username and password from the user log in
+        """
+
+        try:
+            request = self.context["request"]
+        except KeyError:
+            raise serializers.ValidationError({'error': _('Houve um erro na autenticação')})
+
+        if request:
+            request_data = request.data
+        else:
+            raise serializers.ValidationError({'error': _('Houve um erro na autenticação')})
+
+        if "username" in request_data and "password" in request_data:
+            user = authenticate(username=request_data['username'], password=request_data['password'])
+
+            if not user:
+                raise serializers.ValidationError({'error': _('Usuário ou senha inválidos')})
+
+            refresh = self.get_token(user=user)
+            access_token = refresh.access_token
+
+            # Add tokens to redis (yet to create the value field, maybe will contain permissions data in access token)
+            self.redis.set(access_token.payload['jti'], 'value', access_token.payload['exp'])
+            self.redis.set(refresh.payload['jti'], 'value_refresh', refresh.payload['exp'])
+
+            # return refresh
+            return {'access': str(access_token), 'refresh': str(refresh)}
+        else:
+            raise serializers.ValidationError({'error': _('Usuário e senhas são campos obrigatórios')})
 
 
 class Refresh(TokenRefreshSerializer):
