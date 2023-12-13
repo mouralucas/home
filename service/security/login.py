@@ -7,7 +7,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer, TokenObtainSerializer
 from rest_framework_simplejwt.settings import api_settings
-from rest_framework_simplejwt.tokens import AccessToken, RefreshToken, Token
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken, Token, BlacklistMixin
 from rest_framework_simplejwt.utils import format_lazy, datetime_from_epoch
 
 import service.core.cache
@@ -44,7 +44,7 @@ class CustomToken(Token):
         # if not present in Redis it raises an exception
         user_token = self.redis.get(claim_id)
         if not user_token:
-            raise TokenError(format_lazy(_("Token '{}' claim has expired"), claim))
+            raise TokenError(format_lazy(_("Token was revoked"), claim))
 
         claim_time = datetime_from_epoch(claim_value)
         leeway = self.get_token_backend().get_leeway()
@@ -65,7 +65,7 @@ class CustomAccessToken(CustomToken):
     lifetime = api_settings.ACCESS_TOKEN_LIFETIME
 
 
-class CustomRefreshToken(RefreshToken):
+class CustomRefreshToken(BlacklistMixin, CustomToken):
     token_type = "refresh"
     lifetime = api_settings.REFRESH_TOKEN_LIFETIME
     no_copy_claims = (
@@ -210,21 +210,23 @@ class Refresh(TokenRefreshSerializer):
     def validate(self, attrs):
         refresh = self.token_class(attrs["refresh"])
 
-        data = {"access": str(refresh.access_token)}
+        access_token = refresh.access_token
+        data = {"access": str(access_token)}
 
         if api_settings.ROTATE_REFRESH_TOKENS:
-            if api_settings.BLACKLIST_AFTER_ROTATION:
-                try:
-                    # Attempt to blacklist the given refresh token
-                    refresh.blacklist()
-                except AttributeError:
-                    # If blacklist app not installed, `blacklist` method will
-                    # not be present
-                    pass
+            try:
+                # Remove Redis reference
+                claim_id = refresh.payload['jti']
+                self.redis.delete(claim_id)
+            except KeyError:
+                raise TokenError(format_lazy(_("Token has no '{}' claim"), "jti"))
 
             refresh.set_jti()
             refresh.set_exp()
             refresh.set_iat()
+
+            self.redis.set(access_token.payload['jti'], 'value', access_token.payload['exp'])
+            self.redis.set(refresh.payload['jti'], 'value_refresh', refresh.payload['exp'])
 
             data["refresh"] = str(refresh)
 
