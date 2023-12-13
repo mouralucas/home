@@ -7,7 +7,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 import service.user.account
 import service.security.login
 
-from core.user.serializers import AccountPostSerializer
+from core.user.serializers import AccountPostSerializer, LoginSerializer, RefreshSerializer
 
 
 class Login(TokenObtainPairView):
@@ -23,11 +23,11 @@ class Login(TokenObtainPairView):
 
         Implements TokenObtainPairView from simple jwt
     """
-    serializer_class = service.security.login.Login
+    serializer_class = LoginSerializer
 
 
 class Refresh(TokenRefreshView):
-    serializer_class = service.security.login.Refresh
+    serializer_class = RefreshSerializer
 
 
 class Account(APIView):
