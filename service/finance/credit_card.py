@@ -1,5 +1,6 @@
 from django.db.models import F, Sum
 from django.utils.translation import gettext_lazy as _
+from rest_framework import status
 
 import finance.models
 import util.datetime
@@ -45,11 +46,16 @@ class CreditCard:
         Return: the list of saved credit cards
         """
         # TODO: mudar para receber parâmetro de status
-        credit_cards = finance.models.CreditCard.objects.values('id', 'name', 'description', 'closing_at', 'due_at').active().order_by('-status', 'id')
+        credit_cards = (finance.models.CreditCard.objects.values('name', 'description')
+                        .annotate(creditCardId=F('id'),
+                                  closingAt=F('closing_at'),
+                                  dueAt=F('due_at'))
+                        .active().order_by('-status', 'id'))
 
         response = {
-            'status': True,
-            'description': None,
+            'success': True,
+            'message': None,
+            'statusCode': status.HTTP_200_OK,
             'quantity': len(credit_cards),
             'creditCards': list(credit_cards),
         }
@@ -96,8 +102,9 @@ class CreditCard:
     def set_bill(self, request=None):
         if not self.dat_purchase or not self.amount or not self.category_id or not self.credit_card_id:
             response = {
-                'status': False,
-                'description': _('Todos os parâmetros são obrigatórios')
+                'success': False,
+                'statusCode': status.HTTP_400_BAD_REQUEST,
+                'message': _('Todos os parâmetros são obrigatórios')
             }
             return response
 
@@ -144,7 +151,8 @@ class CreditCard:
         bill.save(request_=request)
 
         response = {
-            'success': True
+            'success': True,
+            'statusCode': status.HTTP_200_OK
         }
 
         return response

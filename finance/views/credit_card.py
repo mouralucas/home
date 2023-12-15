@@ -1,3 +1,4 @@
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -5,7 +6,7 @@ from rest_framework.views import APIView
 import service.finance.credit_card
 import service.finance.finance
 import util.datetime
-from finance.serializers.credit_card import CreditCardBillGetSerializer, BillHistorySerializer
+from finance.serializers.credit_card import CreditCardBillGetSerializer, BillHistorySerializer, CreditCardBillPostSerializer
 
 
 class CreditCard(APIView):
@@ -41,6 +42,10 @@ class Bill(APIView):
         return Response(response, status=200)
 
     def post(self, *args, **kwargs):
+        data = CreditCardBillPostSerializer(data=self.request.data)
+        if not data.is_valid():
+            return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
+
         # TODO: Criar parâmetro do cadastro do cartão indicando se o cartão gera cashback no formato de investimento, se sim
         # cria uma linha no investimento com a porcentagem pré determinada
         # TODO: padronizar parâmetros como camel case recebidos do front
@@ -56,8 +61,8 @@ class Bill(APIView):
         tot_installment = self.request.data.get('installmentTotal', 1)
         currency_id = self.request.data.get('currency_id', 'BRL')
         description = self.request.data.get('description')
-        category_id = self.request.data.get('category_id')
-        card_id = self.request.data.get('card_id')
+        category_id = self.request.data.get('categoryId')
+        card_id = self.request.data.get('creditCardId')
         cash_flow_id = self.request.data.get('cashFlowId')
         user = self.request.user.id
 
@@ -71,7 +76,8 @@ class Bill(APIView):
                                                           currency_id=currency_id, description=description,
                                                           category_id=category_id, credit_card_id=card_id, owner=user) \
             .set_bill(request=self.request)
-        return Response(response)
+
+        return Response(response, status=response['statusCode'])
 
 
 class BillHistory(APIView):

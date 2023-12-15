@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -8,6 +9,7 @@ import service.user.account
 import service.security.login
 
 from core.user.serializers import AccountPostSerializer, LoginSerializer, RefreshSerializer
+from service.security.security import IsAuthenticated
 
 
 class Login(TokenObtainPairView):
@@ -45,3 +47,15 @@ class Account(APIView):
         response = service.user.account.Account(username=username, raw_password=raw_password).create()
 
         return JsonResponse(response, safe=False)
+
+
+class TestViewWithoutAuth(APIView):
+    def get(self, *args, **kwargs):
+        return Response({'success': True}, status=status.HTTP_200_OK)
+
+
+class TestViewWithAuth(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, *args, **kwargs):
+        return Response({'success': True}, status=status.HTTP_200_OK)
