@@ -2,16 +2,22 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from core.serializers import CustomSerializer
+from util.datetime import DateTime
 
 
 class CreditCardGetSerializer(CustomSerializer):
     pass
 
 
+class CreditCardPostSerializer(CustomSerializer):
+    card_number = serializers.CharField()
+    # ...
+
+
 class CreditCardBillGetSerializer(CustomSerializer):
-    bill_id = serializers.IntegerField(required=False)
-    period = serializers.IntegerField(required=False)
-    card_id = serializers.CharField(required=False)
+    creditCardBillId = serializers.IntegerField(required=False)
+    creditCardId = serializers.CharField(required=False)
+    period = serializers.IntegerField(required=False, default=DateTime().current_period())
 
 
 class CreditCardBillPostSerializer(CustomSerializer):

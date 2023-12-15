@@ -38,13 +38,13 @@ class Finance:
         # self.cash_flow_id = cash_flow_id
         self.owner = owner
 
-    def get_statement(self):
+    def get_statement(self, account_id=None, period=None):
         filters = {
             'owner_id': self.owner
         }
 
-        if self.account_id:
-            filters['account_id'] = self.account_id
+        if account_id:
+            filters['account_id'] = account_id
 
         statement = finance.models.AccountStatement.objects.values('period', 'description') \
             .filter(**filters).active().annotate(statementId=F('id'),
@@ -63,7 +63,7 @@ class Finance:
             .order_by('-purchase_at', '-created_at')
 
         response = {
-            'status': True,
+            'success': True,
             'statement': list(statement)
         }
         return response
@@ -81,36 +81,8 @@ class Finance:
 
         return response
 
-    # def get_category_history(self, months=13):
-    #     fixed_expenses = finance.models.CategoryGroup.objects.values_list('category', flat=True).filter(group='fixed_expenses')
-    #     filters = {
-    #         'period__range': (202001, 202012),
-    #         'category__in': list(fixed_expenses),
-    #         'owner_id': self.owner
-    #     }
-    #
-    #     bills = finance.models.CreditCardBill.objects.values('period', 'category__description') \
-    #         .filter(**filters).annotate(total=Sum('amount')).order_by('period')
-    #
-    #     statements = finance.models.AccountStatement.objects.values('period', 'category__description') \
-    #         .filter(**filters).annotate(total=Sum('amount')).order_by('period')
-    #
-    #     evolucao = statements.union(bills)
-    #
-    #     default = defaultdict(float)
-    #
-    #     for i in list(evolucao):
-    #         default[str(i.get('period', '')) + '.' + i.get('category__description', '')] += float(i.get('total', 0))
-    #
-    #     default = [{'period': i.split('.')[0], 'categoria': i.split('.')[1], 'total': default[i]} for i in sorted(default)]
-    #
-    #     self.response['status'] = True
-    #     self.response['faturas'] = default
-    #
-    #     return self.response
-
-    def get_expenses(self):
-        self.category_id = None
+    def get_expenses(self, category_id=None):
+        pass
 
     def get_category_transactions_aggregated(self):
         # Categorias que não são despesas representam transações que não afetam a quantidade de dinheiro em conta
@@ -161,6 +133,7 @@ class Finance:
         pass
 
     def get_due_date(self, dat_purchase, credit_card_id):
+        # TODO: Find a definitive solution to this problem
         card = finance.models.CreditCard.objects.filter(pk=credit_card_id, status=True).first()
 
         if not card or not dat_purchase:

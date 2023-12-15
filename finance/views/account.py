@@ -72,12 +72,11 @@ class Statement(APIView):
         if not data.is_valid():
             return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        reference = data.validated_data.get('period')
+        period = data.validated_data.get('period')
         account_id = data.validated_data.get('accountId')
         user = self.request.user.id
 
-        # response = service.finance.finance.Finance(period=reference, account_id=account_id, owner=user).get_statement()
-        response = service.finance.account.Account(period=reference, account_id=account_id, owner=user).get_statement()
+        response = service.finance.account.Account(owner=user).get_statement(account_id=account_id, period=period)
 
         return Response(response, status=200)
 
@@ -86,14 +85,6 @@ class Statement(APIView):
         if not data.is_valid():
             return Response(data.errors, status=400)
 
-        statement_id = data.validated_data.get('statementId')
-        amount = data.validated_data.get('amount')
-        dat_purchase = data.validated_data.get('purchasedAt')
-        description = data.validated_data.get('description')
-        category_id = data.validated_data.get('categoryId')
-        account_id = data.validated_data.get('accountId')
-        currency_id = data.validated_data.get('currencyId')
-        cash_flow_id = data.validated_data.get('cashFlowId')
         user = self.request.user.id
 
         response = service.finance.account.Account(owner=user) \

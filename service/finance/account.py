@@ -11,8 +11,8 @@ from rest_framework import status
 
 
 class Account(Finance):
-    def __init__(self, owner=None, account_id=None, period=None):
-        super().__init__(owner=owner, account_id=account_id, period=period)
+    def __init__(self, owner=None):
+        super().__init__(owner=owner)
 
     def get_accounts(self, is_investment):
         """

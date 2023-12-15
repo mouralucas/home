@@ -8,12 +8,9 @@ from service.finance.finance import Finance
 
 
 class CreditCard(Finance):
-    def __init__(self, month=None, year=None, reference=None, account_id=None, credit_card_id=None, amount=None, amount_currency=None, price_currency_dollar=None, vlr_moeda=None, amount_tax=None,
-                 installment=None,
-                 tot_installment=None, purchase_at=None, payment_at=None, description=None, category_id=None, currency_id=None, owner=None):
+    def __init__(self, owner=None):
 
         super().__init__(owner=owner)
-        self.vlr_moeda = vlr_moeda
 
     def get_credit_card(self):
         """
@@ -47,7 +44,7 @@ class CreditCard(Finance):
 
         return response
 
-    def get_credit_card_bill(self, credit_card_bill_id=None):
+    def get_credit_card_bill(self, period=None, credit_card_id=None, credit_card_bill_id=None):
         filters = {
             'owner_id': self.owner
         }
@@ -55,10 +52,10 @@ class CreditCard(Finance):
             filters['id'] = credit_card_bill_id
 
         else:
-            filters['reference'] = self.period
+            filters['period'] = period
 
-            if self.credit_card_id:
-                filters['credit_card_id'] = self.credit_card_id
+            if credit_card_id:
+                filters['credit_card_id'] = credit_card_id
 
         bills = finance.models.CreditCardBill.objects \
             .values('id', 'period',
