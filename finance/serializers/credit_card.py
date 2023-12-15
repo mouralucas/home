@@ -20,7 +20,7 @@ class CreditCardBillPostSerializer(CustomSerializer):
     # amountCurrency = serializers.DecimalField(required=False)
     # priceDollar = serializers.DecimalField(required=False)
     # amountTax = serializers.DecimalField(required=False)
-    # price_currency_dollar = self.request.data.get('price_currency_dollar')
+    dollarCurrencyQuote = serializers.DecimalField(required=False, max_digits=14, decimal_places=5, default=0)
     purchaseAt = serializers.DateField(required=True)
     paymentAt = serializers.DateField(required=True)
     installment = serializers.IntegerField(required=False, default=1)

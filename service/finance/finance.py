@@ -15,71 +15,28 @@ import util.datetime
 
 class Finance:
     # TODO: this must have only abstract methods, remove all others
-    def __init__(self, mes=None, ano=None, statement_id=None, bill_id=None, period=None, account_id=None, credit_card_id=None, amount=None,
-                 amount_currency=None, price_currency_dollar=None, amount_tax=None, installment=None, tot_installment=None, dat_compra=None, dat_pagamento=None,
+    def __init__(self, mes=None, ano=None, statement_id=None, period=None, account_id=None, credit_card_id=None, amount=None,
+                 amount_currency=None, price_currency_dollar=None, amount_tax=None, installment=None, tot_installment=None, purchase_at=None, payment_at=None,
                  description=None, category_id=None, currency_id=None, cash_flow_id=None, owner=None):
         self.mes = mes
         self.ano = ano
 
-        self.statement_id = statement_id
-        self.bill_id = bill_id
+        # self.statement_id = statement_id
         self.period = period
-        self.amount = amount
-        self.amount_currency = amount_currency
-        self.price_currency_dollar = price_currency_dollar
-        self.amount_tax = amount_tax
-        self.instalment = installment
-        self.tot_installment = tot_installment
-        self.purchased_at = dat_compra
-        self.dat_pagamento = dat_pagamento
-        self.description = description
-        self.category_id = category_id
-        self.account_id = account_id
-        self.credit_card_id = credit_card_id
-        self.currency_id = currency_id
-        self.cash_flow_id = cash_flow_id
+        # self.amount = amount
+        # self.amount_currency = amount_currency
+        # self.price_currency_dollar = price_currency_dollar
+        # self.amount_tax = amount_tax
+        # self.instalment = installment
+        # self.tot_installment = tot_installment
+        self.purchase_at = purchase_at
+        # self.payment_at = payment_at
+        # self.description = description
+        # self.category_id = category_id
+        # self.account_id = account_id
+        # self.currency_id = currency_id
+        # self.cash_flow_id = cash_flow_id
         self.owner = owner
-
-    def set_statement(self, request=None):
-        # TODO: adicionar uma lógica que verifica a data da transação e se não for período anterior adicionar um uma tabela a informação pra reprocessar
-        #   todo o extrato a partir do mês da transação
-        if not self.purchased_at or not self.amount or not self.category_id or not self.account_id:
-            response = {
-                'status': False,
-                'description': _('Todos os parâmetros são obrigatórios')
-            }
-            return response
-
-        if self.statement_id:
-            statement = finance.models.AccountStatement.objects.filter(pk=self.statement_id).first()
-        else:
-            statement = finance.models.AccountStatement()
-
-        self.__set_period()
-
-        # TODO: Essa lógica de entrada e saída está muito ruim
-        if self.cash_flow_id == 'INCOMING':
-            multiplier = 1
-        else:
-            # If amount already lower than zero no need to change again
-            multiplier = -1 if float(self.amount) > 0 else 1
-
-        statement.period = self.period
-        statement.currency_id = self.currency_id
-        statement.amount = float(self.amount) * multiplier
-        statement.amount_absolute = float(self.amount)
-        statement.purchase_at = self.purchased_at
-        statement.description = self.description
-        statement.category_id = self.category_id
-        statement.account_id = self.account_id
-        statement.is_validated = True
-        statement.cash_flow = self.cash_flow_id
-        statement.owner_id = self.owner
-        statement.save(request_=request)
-
-        response = self.get_statement()
-
-        return response
 
     def get_statement(self):
         filters = {
@@ -353,8 +310,7 @@ class Finance:
 
         return response
 
-    def __set_period(self):
-        # dat_purchase = util.datetime.date_to_datetime(self.dat_compra, output_format='%Y-%m-%d')
-        year = self.purchased_at.year
-        month = self.purchased_at.month
+    def _set_period(self):
+        year = self.purchase_at.year
+        month = self.purchase_at.month
         self.period = year * 100 + month

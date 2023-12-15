@@ -2,6 +2,7 @@ import pandas as pd
 from django.db.models import Sum, F, Window, Subquery, OuterRef
 from django.db.models.functions import Lag, Coalesce
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 import finance.models
 import util.datetime
@@ -43,6 +44,39 @@ class Account(Finance):
             'quantity': len(accounts),
             'accounts': list(accounts),
         }
+
+        return response
+
+    def set_statement(self, data, request=None):
+        if data.get('statementId'):
+            statement = finance.models.AccountStatement.objects.filter(pk=data.get('statementId')).first()
+        else:
+            statement = finance.models.AccountStatement()
+
+        self.purchase_at = data.get('purchaseAt')
+        self._set_period()
+
+        # TODO: Essa lógica de entrada e saída está muito ruim
+        if data.get('cashFlowId') == 'INCOMING':
+            multiplier = 1
+        else:
+            # If amount already lower than zero no need to change again
+            multiplier = -1 if float(data.get('amount')) > 0 else 1
+
+        statement.period = self.period
+        statement.currency_id = data.get('currencyId')
+        statement.amount = float(data.get('amount')) * multiplier
+        statement.amount_absolute = data.get('amount')
+        statement.purchase_at = data.get('purchaseAt')
+        statement.description = data.get('description')
+        statement.category_id = data.get('categoryId')
+        statement.account_id = data.get('accountId')
+        statement.is_validated = True
+        statement.cash_flow = data.get('cashFlowId')
+        statement.owner_id = self.owner
+        statement.save(request_=request)
+
+        response = self.get_statement()
 
         return response
 

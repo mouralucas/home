@@ -82,25 +82,22 @@ class Statement(APIView):
         return Response(response, status=200)
 
     def post(self, *args, **kwargs):
-        validators = StatementPostSerializer(data=self.request.data)
-        if not validators.is_valid():
-            return Response(validators.errors, status=400)
+        data = StatementPostSerializer(data=self.request.data)
+        if not data.is_valid():
+            return Response(data.errors, status=400)
 
-        statement_id = validators.validated_data.get('statementId')
-        amount = validators.validated_data.get('amount')
-        dat_purchase = validators.validated_data.get('purchasedAt')
-        description = validators.validated_data.get('description')
-        category_id = validators.validated_data.get('categoryId')
-        account_id = validators.validated_data.get('accountId')
-        currency_id = validators.validated_data.get('currencyId')
-        cash_flow_id = validators.validated_data.get('cashFlowId')
+        statement_id = data.validated_data.get('statementId')
+        amount = data.validated_data.get('amount')
+        dat_purchase = data.validated_data.get('purchasedAt')
+        description = data.validated_data.get('description')
+        category_id = data.validated_data.get('categoryId')
+        account_id = data.validated_data.get('accountId')
+        currency_id = data.validated_data.get('currencyId')
+        cash_flow_id = data.validated_data.get('cashFlowId')
         user = self.request.user.id
 
-        response = service.finance.finance.Finance(statement_id=statement_id, amount=amount, dat_compra=dat_purchase,
-                                                   description=description,
-                                                   category_id=category_id, account_id=account_id, currency_id=currency_id,
-                                                   cash_flow_id=cash_flow_id, owner=user) \
-            .set_statement(request=self.request)
+        response = service.finance.account.Account(owner=user) \
+            .set_statement(data=data.validated_data, request=self.request)
 
         return Response(response, status=200)
 
