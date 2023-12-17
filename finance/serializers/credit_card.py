@@ -33,9 +33,9 @@ class CreditCardBillPostSerializer(CustomSerializer):
     installmentTotal = serializers.IntegerField(required=False, default=1)
     currencyID = serializers.CharField(required=False, default='BRL')
     description = serializers.CharField(required=False)
-    categoryId = serializers.UUIDField(required=True)
-    creditCardID = serializers.CharField(required=True)
-    cashFlowID = serializers.CharField(required=False, default='OUTGOING')
+    categoryId = serializers.CharField(required=True)
+    creditCardId = serializers.CharField(required=True)
+    cashFlowId = serializers.CharField(required=False, default='OUTGOING')
 
 
 class BillHistorySerializer(CustomSerializer):

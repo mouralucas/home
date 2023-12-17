@@ -1,9 +1,9 @@
-from rest_framework.permissions import BasePermission
 from django.utils.translation import gettext_lazy as _
+from rest_framework import status
+from rest_framework.permissions import BasePermission
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken, AuthenticationFailed
 from rest_framework_simplejwt.settings import api_settings
-from rest_framework_simplejwt.tokens import UntypedToken, AccessToken
 
 
 class IsAuthenticated(BasePermission):
@@ -29,7 +29,7 @@ class CustomJWTAuthentication(JWTAuthentication):
     def authenticate(self, request):
         header = self.get_header(request)
         if header is None:
-            return None
+            raise AuthenticationFailed(detail={'success': False, 'message': 'caraio manolo'}, code=status.HTTP_401_UNAUTHORIZED)
 
         raw_token = self.get_raw_token(header)
         if raw_token is None:

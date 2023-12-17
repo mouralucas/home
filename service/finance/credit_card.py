@@ -52,7 +52,8 @@ class CreditCard(Finance):
             filters['id'] = credit_card_bill_id
 
         else:
-            filters['period'] = period
+            # filters['period'] = period
+            pass
 
             if credit_card_id:
                 filters['credit_card_id'] = credit_card_id

@@ -49,7 +49,7 @@ class CreditCardBill(APIView):
         user = self.request.user.id
 
         response = service.finance.credit_card.CreditCard(owner=user) \
-            .set_bill(data=data.validated_data,request=self.request)
+            .set_bill(data=data.validated_data, request=self.request)
 
         return Response(response, status=response['statusCode'])
 
