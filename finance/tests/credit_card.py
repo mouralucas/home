@@ -3,13 +3,11 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 
-class CreditCardTest(APITestCase):
+class TestCreditCard(APITestCase):
     def setUp(self):
         self.credit_card_url = '/finance/credit-card'
-        self.credit_card_bill_url = '/finance/credit-card/bill'
 
-        # All tests are made
-
+        # All tests are made with the assumption that there is data in database, if not the setUp function must create the necessary inserts
         if self._testMethodName not in ['test_get_User_credit_card_without_login']:
             self.credentials = {
                 'username': config('TEST_USER'),
@@ -33,5 +31,17 @@ class CreditCardTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-def create_user_credit_card():
-    pass
+class TestCreditCardBill(APITestCase):
+    def setUp(self):
+        self.credit_card_bill_url = '/finance/credit-card/bill'
+
+    def test_credit_card_bill_get_success(self):
+        pass
+
+    def test_credit_card_bill_get_without_token(self):
+        response = self.client.get(self.credit_card_bill_url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_credit_card_bill_post_success(self):
+        pass

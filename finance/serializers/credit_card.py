@@ -10,8 +10,13 @@ class CreditCardGetSerializer(CustomSerializer):
 
 
 class CreditCardPostSerializer(CustomSerializer):
-    card_number = serializers.CharField()
-    # ...
+    name = serializers.CharField(max_length=100, required=True)
+    account = serializers.UUIDField(required=False)
+    description = serializers.CharField(required=False)
+    startAt = serializers.DateField(required=False)
+    endAt = serializers.DateField(required=False)
+    dueAt = serializers.IntegerField(required=True)
+    closingAt = serializers.IntegerField(required=True)
 
 
 class CreditCardBillGetSerializer(CustomSerializer):
