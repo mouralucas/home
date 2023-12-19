@@ -90,7 +90,9 @@ class CreditCard(Finance):
             bill = finance.models.CreditCardBill()
 
         self.purchase_at = data.get('purchaseAt')
-        self._set_period()
+        year = data.get('paymentAt').year
+        month = data.get('paymentAt').year
+        self.period = year * 100 + month
 
         # Basic
         bill.credit_card_id = data.get('creditCardId')
