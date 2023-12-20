@@ -1,5 +1,7 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
 
 import service.finance.investment
 from finance.serializers.investment import InvestmentGetSerializer, TypeGetSerializer, ProfitGetSerializer, InvestmentPostSerializer
@@ -9,6 +11,7 @@ from service.security.security import IsAuthenticated
 class Investment(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(summary='Get investments of the user', parameters=[InvestmentGetSerializer], responses={200: None})
     def get(self, *args, **kwargs):
         validators = InvestmentGetSerializer(data=self.request.query_params)
         if not validators.is_valid():
@@ -22,6 +25,7 @@ class Investment(APIView):
 
         return Response(response)
 
+    @extend_schema(summary='Create a new investment', request=InvestmentPostSerializer, responses={200: None})
     def post(self, *args, **kwargs):
         validators = InvestmentPostSerializer(data=self.request.data)
         if not validators.is_valid():
@@ -52,13 +56,20 @@ class Investment(APIView):
 class Statement(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(summary='This endpoint was not implemented yet',
+                   description='This endpoint fetches the statement for every investment registered by the user.\n '
+                               'It can by filtered by investment and/or period range',
+                   parameters=[], responses={501: None})
     def get(self, *args, **kwargs):
         period = self.request.GET.get('period')
 
-        response = service.finance.investment.Investment(period=period).get_investment_statement()
+        # response = service.finance.investment.Investment(period=period).get_investment_statement()
 
-        return Response(response, status=200)
+        return Response({'success': False, 'message': 'This endpoint was not implemented yet'}, status=status.HTTP_501_NOT_IMPLEMENTED)
 
+    @extend_schema(summary='This endpoint was not implemented yet',
+                   description='This endpoint create a new entry for a investment for a specific period',
+                   request=[], responses={501: None})
     def post(self, *args, **kwargs):
         period = self.request.query_params.get('period')
 
@@ -66,6 +77,7 @@ class Statement(APIView):
 
 
 class Type(APIView):
+    @extend_schema(summary='Get investment types', parameters=[TypeGetSerializer], responses={200: None})
     def get(self, *args, **kwargs):
         data = TypeGetSerializer(data=self.request.query_params)
         if not data.is_valid():
@@ -81,6 +93,7 @@ class Type(APIView):
 class Allocation(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(summary='Get the current investment allocation by investment type', parameters=[], responses={200: None})
     def get(self, *args, **kwargs):
         user = self.request.user.id
 
@@ -90,6 +103,9 @@ class Allocation(APIView):
 
 
 class Interest(APIView):
+    @extend_schema(summary='This endpoint was not implemented yet',
+                   description='This endpoint returns the interest rate based in periodicity and start date',
+                   parameters=[], responses={501: None})
     def get(self, *args, **kwargs):
         response = service.finance.investment.Investment().get_interest()
 
@@ -99,6 +115,9 @@ class Interest(APIView):
 class Profit(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(summary='This endpoint was not implemented yet',
+                   description='This endpoint returns the accumulated profit based in periodicity and start date',
+                   parameters=[], responses={501: None})
     def get(self, *args, **kwargs):
         data = ProfitGetSerializer(data=self.request.query_params)
         if not data.is_valid():
@@ -116,6 +135,10 @@ class Profit(APIView):
 
 
 class InterestAccumulated(APIView):
+    @extend_schema(summary='This endpoint was not implemented yet',
+                   description='This endpoint returns the accumulated interest rate based in periodicity and start date',
+                   parameters=[], responses={501: None},
+                   deprecated=True)
     def get(self, *args, **kwargs):
         response = service.finance.investment.Investment().get_period_interest_accumulated()
 

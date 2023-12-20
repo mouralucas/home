@@ -13,7 +13,7 @@ from finance.serializers.credit_card import CreditCardBillGetSerializer, BillHis
 class CreditCard(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(description='Get all the active credit cards from user', parameters=[CreditCardGetSerializer], responses={201: None})
+    @extend_schema(summary='Get all the active credit cards from user.', parameters=[CreditCardGetSerializer], responses={201: None})
     def get(self, *args, **kwargs):
         data = CreditCardGetSerializer(data=self.request.query_params)
         if not data.is_valid():
@@ -25,17 +25,18 @@ class CreditCard(APIView):
 
         return Response(response, status=response['statusCode'])
 
-    @extend_schema(description='This endpoint was not implemented yet', request=CreditCardPostSerializer, responses={501: None})
+    @extend_schema(description='This endpoint is used to create a new credit card for the user.',
+                   summary='This endpoint was not implemented yet.', request=CreditCardPostSerializer, responses={501: None})
     def post(self, *args, **kwargs):
         data = CreditCardPostSerializer(data=self.request.data)
 
-        Response({'success': False, 'message': 'This endpoint was not implemented yet'}, status=status.HTTP_501_NOT_IMPLEMENTED)
+        return Response({'success': False, 'message': 'This endpoint was not implemented yet'}, status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
 class CreditCardBill(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(description='Get the entries from the credit card bill', parameters=[CreditCardBillGetSerializer], responses={200: None})
+    @extend_schema(summary='Get the entries from the credit card bill.', parameters=[CreditCardBillGetSerializer], responses={200: None})
     def get(self, *args, **kwargs):
         validator = CreditCardBillGetSerializer(data=self.request.query_params)
         if not validator.is_valid():
@@ -51,7 +52,7 @@ class CreditCardBill(APIView):
 
         return Response(response, status=response['statusCode'])
 
-    @extend_schema(description='Create a new entry in credit card bill statement', request=CreditCardBillPostSerializer, responses={200: None})
+    @extend_schema(summary='Create a new entry in credit card bill statement.', request=CreditCardBillPostSerializer, responses={200: None})
     def post(self, *args, **kwargs):
         data = CreditCardBillPostSerializer(data=self.request.data)
         if not data.is_valid():
@@ -66,7 +67,7 @@ class CreditCardBill(APIView):
 
 
 class BillHistory(APIView):
-    @extend_schema(description='Get the history of the credit card bills', parameters=[BillHistorySerializer], responses={200: None})
+    @extend_schema(summary='Get the history of the credit card bills.', parameters=[BillHistorySerializer], responses={200: None})
     def get(self, *args, **kwargs):
         data = BillHistorySerializer(data=self.request.query_params)
         if not data.is_valid():

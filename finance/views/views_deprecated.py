@@ -58,18 +58,18 @@ class PdfImport(APIView):
 #         return JsonResponse(response, safe=False)
 
 
-class InvestmentStatement(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, *args, **kwargs):
-        period = self.request.GET.get('period')
-
-        response = service.finance.finance.Finance(period=period).get_investment_statement()
-
-        return JsonResponse(response, safe=False)
-
-    def post(self, *args, **kwargs):
-        period = self.request.query_params.get('period')
+# class InvestmentStatement(APIView):
+#     permission_classes = [IsAuthenticated]
+#
+#     def get(self, *args, **kwargs):
+#         period = self.request.GET.get('period')
+#
+#         response = service.finance.finance.Finance(period=period).get_investment_statement()
+#
+#         return JsonResponse(response, safe=False)
+#
+#     def post(self, *args, **kwargs):
+#         period = self.request.query_params.get('period')
 
 
 class InvestmentStatementUpload(View):
