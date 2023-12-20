@@ -29,7 +29,11 @@ class CustomJWTAuthentication(JWTAuthentication):
     def authenticate(self, request):
         header = self.get_header(request)
         if header is None:
-            raise AuthenticationFailed(detail={'success': False, 'message': 'caraio manolo'}, code=status.HTTP_401_UNAUTHORIZED)
+            # If there is no token user is AnonymousUser,
+            # so it will not validate in classes with IsAuthenticated as permissions_classes
+            # but will pass in open views
+            return None
+            # raise AuthenticationFailed(detail={'success': False, 'message': 'caraio manolo'}, code=status.HTTP_401_UNAUTHORIZED)
 
         raw_token = self.get_raw_token(header)
         if raw_token is None:
