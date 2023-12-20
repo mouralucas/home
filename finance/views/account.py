@@ -14,29 +14,7 @@ class Account(APIView):
     permission_classes = [IsAuthenticated]
 
     @extend_schema(
-        parameters=[
-            OpenApiParameter(name='artist', description='Filter by artist', required=False, type=str),
-            OpenApiParameter(
-                name='release',
-                type=OpenApiTypes.DATE,
-                location=OpenApiParameter.QUERY,
-                description='Filter by release date',
-                examples=[
-                    OpenApiExample(
-                        'Example 1',
-                        summary='short optional summary',
-                        description='longer description',
-                        value='1993-08-23'
-                    ),
-                    OpenApiExample(
-                        'Example 2',
-                        summary='short optional summary caralhos',
-                        description='longer asdas',
-                        value='1990-03-31'
-                    ),
-                ],
-            ),
-        ],
+        parameters=[AccountGetSerializer],
         responses={200: None},
     )
     def get(self, *args, **kwargs):
@@ -55,6 +33,7 @@ class Account(APIView):
 class Statement(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(parameters=[StatementGetSerializer], responses={200: None})
     def get(self, *args, **kwargs):
         data = StatementGetSerializer(data=self.request.query_params)
         if not data.is_valid():
@@ -68,6 +47,7 @@ class Statement(APIView):
 
         return Response(response, status=200)
 
+    @extend_schema(request=StatementPostSerializer, responses={200: None})
     def post(self, *args, **kwargs):
         data = StatementPostSerializer(data=self.request.data)
         if not data.is_valid():

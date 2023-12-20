@@ -32,7 +32,7 @@ class CreditCard(Finance):
                         .annotate(creditCardId=F('id'),
                                   closingAt=F('closing_at'),
                                   dueAt=F('due_at'))
-                        .active().order_by('-status', 'id'))
+                        .filter(owner=self.owner).active().order_by('-status', 'id'))
 
         response = {
             'success': True,

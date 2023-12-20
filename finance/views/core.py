@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -5,7 +6,7 @@ from rest_framework.views import APIView
 import service.finance.core
 import service.finance.finance
 import util.datetime
-from finance.serializers.core import ExpenseGetSerializer
+from finance.serializers.core import TransactionByCategoryListGetSerializer, TransactionsByCategoryAggregatedGetSerializer
 from service.security.security import IsAuthenticated
 
 
@@ -23,6 +24,9 @@ class Summary(APIView):
 
 
 class Currency(APIView):
+    serializer_class = None
+
+    @extend_schema(description='Get all available currencies.', responses={200: None})
     def get(self, *args, **kwargs):
         response = service.finance.core.Core().get_currency()
 
@@ -30,6 +34,9 @@ class Currency(APIView):
 
 
 class CashFlow(APIView):
+    serializer_class = None
+
+    @extend_schema(description='Get available cash flow values', responses={200: None})
     def get(self, *args, **kwargs):
         response = service.finance.core.Core().get_cash_flow()
 
@@ -39,6 +46,7 @@ class CashFlow(APIView):
 class TransactionByCategoryList(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(description='Get the list of transactions by category', parameters=[TransactionByCategoryListGetSerializer], responses={200: None})
     def get(self, *args, **kwargs):
         """
         :Name: TransactionsByCategoryGroup - GET
@@ -46,7 +54,7 @@ class TransactionByCategoryList(APIView):
         :Created by: Lucas Penha de Moura - 15/10/2023
         :Edited by:
         """
-        data = ExpenseGetSerializer(data=self.request.query_params)
+        data = TransactionByCategoryListGetSerializer(data=self.request.query_params)
         if not data.is_valid():
             return Response(data.errors, status=400)
 
@@ -61,6 +69,7 @@ class TransactionByCategoryList(APIView):
 class TransactionsByCategoryAggregated(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(description='Get the aggregated transactions by category', parameters=[TransactionsByCategoryAggregatedGetSerializer], responses={200: None})
     def get(self, *args, **kwargs):
         """
         :Name: TransactionsByCategoryGroup - GET
@@ -68,7 +77,11 @@ class TransactionsByCategoryAggregated(APIView):
         :Created by: Lucas Penha de Moura - 17/10/2023
         :Edited by:
         """
-        period = self.request.GET.get('period')
+        data = TransactionsByCategoryAggregatedGetSerializer(data=self.request.query_params)
+        if not data.is_valid():
+            return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        period = data.validated_data.get('period')
         user = self.request.user.id
 
         response = service.finance.finance.Finance(period=period, owner=user).get_category_transactions_aggregated()

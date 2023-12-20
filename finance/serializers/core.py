@@ -1,9 +1,14 @@
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
-import core.serializers
+from core.serializers import CustomSerializer
 
 
-class ExpenseGetSerializer(core.serializers.CustomSerializer):
+class TransactionByCategoryListGetSerializer(CustomSerializer):
     categoryId = serializers.CharField(required=False)
     period = serializers.IntegerField(required=True)
+
+
+class TransactionsByCategoryAggregatedGetSerializer(CustomSerializer):
+    period = serializers.IntegerField(required=True)
+
+
