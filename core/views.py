@@ -81,9 +81,9 @@ class Version(APIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
-class Swagger(SpectacularSwaggerView):
-    authentication_classes = []
-
-
-class SwaggerSchema(SpectacularAPIView):
-    authentication_classes = []
+# class Swagger(SpectacularSwaggerView):
+#     authentication_classes = []
+#
+#
+# class SwaggerSchema(SpectacularAPIView):
+#     authentication_classes = []

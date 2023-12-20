@@ -34,7 +34,8 @@ class CustomJWTAuthentication(JWTAuthentication):
     def authenticate(self, request):
         header = self.get_header(request)
         if header is None:
-            raise AuthenticationFailed(detail={'success': False, 'message': 'caraio manolo'}, code=status.HTTP_401_UNAUTHORIZED)
+            return None
+            # raise AuthenticationFailed(detail={'success': False, 'message': 'caraio manolo'}, code=status.HTTP_401_UNAUTHORIZED)
 
         raw_token = self.get_raw_token(header)
         if raw_token is None:
