@@ -29,7 +29,7 @@ urlpatterns = [
     # Other
     re_path(r'^currency$', core.Currency.as_view()),
     re_path(r'^cash-flow$', core.CashFlow.as_view()),
-    re_path(r'^bank$', views_deprecated.Bank.as_view()),
+    re_path(r'^bank$', core.Bank.as_view()),
 
     re_path(r'^upload/pdf', views_deprecated.PdfImport.as_view()),
 

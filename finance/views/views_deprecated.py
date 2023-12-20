@@ -34,44 +34,6 @@ class PdfImport(APIView):
         return JsonResponse(response, safe=False)
 
 
-# class ExpensesHistory(View):
-#     permission_classes = [IsAuthenticated]
-#
-#     def get(self, *args, **kwargs):
-#         referencia = self.request.GET.get('referencia')
-#
-#         response = service.finance.finance.Finance(period=referencia).get_category_history()
-#
-#         return Response(response)
-
-
-# class Expense(APIView):
-#     permission_classes = [IsAuthenticated]
-#
-#     def get(self, *args, **kwargs):
-#         period = self.request.GET.get('period')
-#         expense_type = self.request.GET.get('expense_type')
-#         user = self.request.user.id
-#
-#         response = service.finance.finance.Finance(period=period, owner=user).get_expenses(expense_type=expense_type)
-#
-#         return JsonResponse(response, safe=False)
-
-
-# class InvestmentStatement(APIView):
-#     permission_classes = [IsAuthenticated]
-#
-#     def get(self, *args, **kwargs):
-#         period = self.request.GET.get('period')
-#
-#         response = service.finance.finance.Finance(period=period).get_investment_statement()
-#
-#         return JsonResponse(response, safe=False)
-#
-#     def post(self, *args, **kwargs):
-#         period = self.request.query_params.get('period')
-
-
 class InvestmentStatementUpload(View):
     permission_classes = [IsAuthenticated]
 
@@ -112,10 +74,3 @@ class ImportExcelPagBank(APIView):
         response = service.finance.data_import.Pagbank(path=path).excel()
 
         return Response(response)
-
-
-class Bank(APIView):
-    def get(self, *args, **kwargs):
-        bank = service.finance.finance.Finance().get_bank()
-
-        return Response(bank)

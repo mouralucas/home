@@ -76,5 +76,10 @@ class CategoryGetSerializer(CustomSerializer):
 
         return value
 
+
 class CategoryPostSerializer(CustomSerializer):
     pass
+
+
+class StatusGetSerializer(CustomSerializer):
+    statusType = serializers.CharField(required=True, help_text='Indicate the type os status (reading status, item status, etc)')

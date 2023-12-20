@@ -87,7 +87,7 @@ class CustomJWTAuthenticationExtension(OpenApiAuthenticationExtension):
     def get_security_definition(self, auto_schema, **kwargs):
         return {
             'type': 'apiKey',
-            'description': 'Your custom JWT Authentication token',
+            'description': 'Access token authentication',
             'name': 'Authorization',
             'in': OpenApiParameter.HEADER,
         }

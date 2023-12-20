@@ -14,6 +14,7 @@ class Account(APIView):
     permission_classes = [IsAuthenticated]
 
     @extend_schema(
+        summary='Get the user accounts.',
         parameters=[AccountGetSerializer],
         responses={200: None},
     )
@@ -33,7 +34,7 @@ class Account(APIView):
 class Statement(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(parameters=[StatementGetSerializer], responses={200: None})
+    @extend_schema(summary='Get statement entries', parameters=[StatementGetSerializer], responses={200: None})
     def get(self, *args, **kwargs):
         data = StatementGetSerializer(data=self.request.query_params)
         if not data.is_valid():
@@ -47,7 +48,7 @@ class Statement(APIView):
 
         return Response(response, status=200)
 
-    @extend_schema(request=StatementPostSerializer, responses={200: None})
+    @extend_schema(summary='Create a new statement entry', request=StatementPostSerializer, responses={200: None})
     def post(self, *args, **kwargs):
         data = StatementPostSerializer(data=self.request.data)
         if not data.is_valid():
@@ -64,11 +65,13 @@ class Statement(APIView):
 class Balance(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(summary='Get account balance (in test)', parameters=[], responses={200, None})
     def get(self, *args, **kwargs):
         response = service.finance.account.Account(owner=self.request.user.id).get_balance_tests()
 
         return Response(response)
 
+    @extend_schema(summary='Update user statement (in test)', request=[], responses={200: None})
     def post(self, *args, **kwargs):
         data = BalancePostSerializer(data=self.request.data)
         if not data.is_valid():

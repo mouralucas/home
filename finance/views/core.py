@@ -10,6 +10,14 @@ from finance.serializers.core import TransactionByCategoryListGetSerializer, Tra
 from service.security.security import IsAuthenticated
 
 
+class Bank(APIView):
+    @extend_schema(summary='Get the available banks', parameters=[], responses={200:None})
+    def get(self, *args, **kwargs):
+        bank = service.finance.finance.Finance().get_bank()
+
+        return Response(bank)
+
+
 class Summary(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -26,7 +34,7 @@ class Summary(APIView):
 class Currency(APIView):
     serializer_class = None
 
-    @extend_schema(description='Get all available currencies.', responses={200: None})
+    @extend_schema(summary='Get all available currencies.', responses={200: None})
     def get(self, *args, **kwargs):
         response = service.finance.core.Core().get_currency()
 
@@ -36,7 +44,7 @@ class Currency(APIView):
 class CashFlow(APIView):
     serializer_class = None
 
-    @extend_schema(description='Get available cash flow values', responses={200: None})
+    @extend_schema(summary='Get available cash flow values', responses={200: None})
     def get(self, *args, **kwargs):
         response = service.finance.core.Core().get_cash_flow()
 
@@ -46,7 +54,7 @@ class CashFlow(APIView):
 class TransactionByCategoryList(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(description='Get the list of transactions by category', parameters=[TransactionByCategoryListGetSerializer], responses={200: None})
+    @extend_schema(summary='Get the list of transactions by category', parameters=[TransactionByCategoryListGetSerializer], responses={200: None})
     def get(self, *args, **kwargs):
         """
         :Name: TransactionsByCategoryGroup - GET
@@ -69,7 +77,7 @@ class TransactionByCategoryList(APIView):
 class TransactionsByCategoryAggregated(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(description='Get the aggregated transactions by category', parameters=[TransactionsByCategoryAggregatedGetSerializer], responses={200: None})
+    @extend_schema(summary='Get the aggregated transactions by category', parameters=[TransactionsByCategoryAggregatedGetSerializer], responses={200: None})
     def get(self, *args, **kwargs):
         """
         :Name: TransactionsByCategoryGroup - GET

@@ -20,6 +20,6 @@ class DetailDictMixin:
         super().__init__(detail_dict)
 
 
-class CustomAuthenticationFailed(exceptions.AuthenticationFailed):
+class CustomAuthenticationFailed(exceptions.AuthenticationFailed, DetailDictMixin):
     def __init__(self):
-        super().__init__("")
+        super().__init__(detail=None, code=None)

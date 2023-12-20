@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 import service.core.core
 import util.datetime
-from core.serializers import ReferenceGetSerializer, CategoryGetSerializer, CategoryPostSerializer
+from core.serializers import ReferenceGetSerializer, CategoryGetSerializer, CategoryPostSerializer, StatusGetSerializer
 
 
 class Country(APIView):
@@ -81,8 +81,13 @@ class Period(APIView):
 
 
 class Status(APIView):
+    @extend_schema(summary='Get the list of status by type', parameters=[StatusGetSerializer], responses={200: None})
     def get(self, *args, **kwargs):
-        status_type = self.request.GET.get('status_type')
+        data = StatusGetSerializer(data=self.request.query_params)
+        if not data.is_valid():
+            return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        status_type = data.validated_data.get('statusType')
 
         response = service.core.core.Misc().get_status(status_type=status_type)
 
@@ -97,15 +102,8 @@ class State(APIView):
 
 
 class Version(APIView):
+    @extend_schema(summary='Get the current version od the system', parameters=[], responses={200: None})
     def get(self, *args, **kwargs):
         response = service.core.core.Misc().get_version()
 
         return Response(response, status=status.HTTP_200_OK)
-
-
-# class Swagger(SpectacularSwaggerView):
-#     authentication_classes = []
-#
-#
-# class SwaggerSchema(SpectacularAPIView):
-#     authentication_classes = []
