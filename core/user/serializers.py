@@ -87,6 +87,10 @@ class RefreshSerializer(TokenRefreshSerializer):
         return data
 
 
+class AccountGetSerializer(CustomSerializer):
+    caralhosVoadores = serializers.CharField(required=False)
+
+
 class AccountPostSerializer(CustomSerializer):
     username = serializers.CharField(required=True)
     rawPassword = serializers.CharField(required=True)

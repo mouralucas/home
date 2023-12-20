@@ -1,10 +1,9 @@
 from django.http import JsonResponse
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
+from drf_spectacular.views import SpectacularSwaggerView, SpectacularAPIView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.utils.translation import gettext_lazy as _
+
 import service.core.core
 import util.datetime
 from core.serializers import ReferenceGetSerializer
@@ -30,46 +29,6 @@ class Module(APIView):
 
 
 class Category(APIView):
-    @swagger_auto_schema(
-        operation_description='Returns all order based on parameters\nIf orderId is passed, returns a single result in \'orders\' object',
-        manual_parameters=[
-            openapi.Parameter(
-                name='showMode', in_=openapi.IN_QUERY, type=openapi.TYPE_STRING, description=_('Modo de apresentação (all, children, parent)'), required=True,
-            ),
-            openapi.Parameter(
-                name='module', in_=openapi.IN_QUERY, type=openapi.TYPE_STRING, description=_('Modulo da categoria'), required=True,
-            ),
-        ],
-        responses={
-            status.HTTP_200_OK: openapi.Response(
-                description="OK",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'success': openapi.Schema(type=openapi.TYPE_BOOLEAN),
-                        'statusCode': openapi.Schema(type=openapi.TYPE_INTEGER),
-                        'quantity': openapi.Schema(type=openapi.TYPE_INTEGER),
-                        'categories': openapi.Schema(
-                            type=openapi.TYPE_ARRAY,
-                            items=openapi.Schema(
-                                type=openapi.TYPE_OBJECT,
-                                properties={
-                                    'categoryId': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'name': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'description': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'fatherId': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'fatherName': openapi.Schema(type=openapi.TYPE_STRING),
-                                }
-                            ),
-                        ),
-                    },
-                ),
-            ),
-            status.HTTP_403_FORBIDDEN: openapi.Response(
-                description="Acesso proibido",
-            ),
-        },
-    )
     def get(self, *args, **kwargs):
         show_mode = self.request.query_params.get('show_mode')
         module = self.request.query_params.get('module')
@@ -120,3 +79,11 @@ class Version(APIView):
         response = service.core.core.Misc().get_version()
 
         return Response(response, status=status.HTTP_200_OK)
+
+
+class Swagger(SpectacularSwaggerView):
+    authentication_classes = []
+
+
+class SwaggerSchema(SpectacularAPIView):
+    authentication_classes = []
