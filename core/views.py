@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from drf_spectacular.utils import extend_schema
 from drf_spectacular.views import SpectacularSwaggerView, SpectacularAPIView
 from rest_framework import status
 from rest_framework.response import Response
@@ -6,7 +7,7 @@ from rest_framework.views import APIView
 
 import service.core.core
 import util.datetime
-from core.serializers import ReferenceGetSerializer
+from core.serializers import ReferenceGetSerializer, CategoryGetSerializer, CategoryPostSerializer
 
 
 class Country(APIView):
@@ -29,16 +30,37 @@ class Module(APIView):
 
 
 class Category(APIView):
+
+    @extend_schema(
+        description='Get the categories from the selected module.',
+        parameters=[CategoryGetSerializer],
+        responses={200: None, 201: None, 401: None}
+
+    )
     def get(self, *args, **kwargs):
-        show_mode = self.request.query_params.get('show_mode')
-        module = self.request.query_params.get('module')
+        data = CategoryGetSerializer(data=self.request.query_params)
+        if not data.is_valid():
+            return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        show_mode = data.validated_data.get('showMode')
+        module = data.validated_data.get('module')
 
         response = service.core.core.Misc().get_category(show_mode=show_mode, module_id=module)
 
         return Response(response, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        request=CategoryPostSerializer,
+        responses={501: None}
+    )
     def post(self, *args, **kwargs):
-        pass
+        """
+                Not implemented.
+
+                This endpoint was not implemented yet.
+                ---
+                """
+        return Response({'success': False, 'message': 'This endpoint was not implemented yet'}, status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
 class Period(APIView):

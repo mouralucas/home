@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 
 class CustomModelSerializer(serializers.ModelSerializer):
@@ -62,3 +63,18 @@ class ReferenceGetSerializer(CustomSerializer):
     sYear = serializers.IntegerField(required=False, default=2018)
     eMonth = serializers.IntegerField(required=False, min_value=1, max_value=12)
     eYear = serializers.IntegerField(required=False)
+
+
+class CategoryGetSerializer(CustomSerializer):
+    showMode = serializers.CharField(required=True)
+    module = serializers.CharField(required=True)
+
+    def validate_showMode(self, value):
+        choices = ['all', 'father', 'child']
+        if value not in choices:
+            raise ValidationError(f"O valor '{value}' não é válido. Escolha uma das opções: {', '.join(choices)}.")
+
+        return value
+
+class CategoryPostSerializer(CustomSerializer):
+    pass

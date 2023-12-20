@@ -35,20 +35,15 @@ class Refresh(TokenRefreshView):
 
 class Account(APIView):
     @extend_schema(
+        parameters=[AccountGetSerializer],
         responses={201: None},
     )
-    def get_serializer_class(self):
-        # Choose serializer class based on the HTTP method
-        if self.request.method == 'GET':
-            return AccountGetSerializer
-        elif self.request.method == 'POST':
-            return AccountPostSerializer
-
     def get(self, *args, **kwargs):
         data = AccountGetSerializer(data=self.request.query_params)
         return render(self.request, '')
 
     @extend_schema(
+        request=AccountPostSerializer,
         responses={201: None}
     )
     def post(self, *args, **kwargs):
