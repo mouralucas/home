@@ -21,6 +21,12 @@ Some requirements are mandatory in database before running the first migrate.
     - log
     - security
 
+After create the database schemas, open terminal and run the following command:
+
+```bash
+python manage.py migrate
+```
+
 ## Usage
 
 ```python

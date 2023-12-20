@@ -168,6 +168,10 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
+# Swagger customization tutorials
+# https://nelson-souza.medium.com/net-core-swagger-ui-7c484c680f63
+# https://swagger.io/blog/api-documentation/building-a-documentation-portal-for-multiple-apis/
+
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Your Project API',
     'DESCRIPTION': 'Your project description',
