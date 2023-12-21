@@ -4,13 +4,15 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 FINANCE_SWAGGER_SETTINGS = {
     'TITLE': 'Finance Module',
     'DESCRIPTION': 'This page describes all finance URLs',
-    'VERSION': '0.0.1'
+    'VERSION': '0.0.1',
+    'SCHEMA_PATH_PREFIX_INSERT': '/fiance'
 }
 
 LIBRARY_SWAGGER_SETTINGS = {
     'TITLE': 'Library App',
     'DESCRIPTION': 'This page describes all library URLs',
-    'VERSION': '0.0.1'
+    'VERSION': '0.0.1',
+    'SCHEMA_PATH_PREFIX_INSERT': '/library'
 }
 
 urlpatterns = [
