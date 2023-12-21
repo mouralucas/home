@@ -14,7 +14,7 @@ LIBRARY_SWAGGER_SETTINGS = {
 }
 
 urlpatterns = [
-    # Swagger/Schemas URL
+    # Swagger/Schemas URLs
     re_path(r'^schema/$', SpectacularAPIView.as_view(), name='schema'),
     re_path("^$", SpectacularSwaggerView.as_view(template_name='swagger-ui.html', url_name='schema'), name='swagger-ui'),
 

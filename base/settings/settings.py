@@ -109,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'pt-br'
+LANGUAGE_CODE = 'en-gb'
 TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_L10N = True
@@ -142,10 +142,9 @@ DATABASES = {
 }
 
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'core.exception_handler.custom_exception_handler',
+    'EXCEPTION_HANDLER': 'core.exception_handler.custom_exception_handler',  # TODO: verificar uso desse handler
     'COERCE_DECIMAL_TO_STRING': False,
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
         'service.security.security.CustomJWTAuthentication'
     ],
     'DEFAULT_PAGINATION_CLASS':
