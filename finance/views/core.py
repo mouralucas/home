@@ -1,6 +1,4 @@
-from django.utils.translation import gettext_lazy as _
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -8,8 +6,16 @@ from rest_framework.views import APIView
 import service.finance.core
 import service.finance.finance
 import util.datetime
-from finance.serializers.core import ExpenseGetSerializer
+from finance.serializers.core import TransactionByCategoryListGetSerializer, TransactionsByCategoryAggregatedGetSerializer
 from service.security.security import IsAuthenticated
+
+
+class Bank(APIView):
+    @extend_schema(summary='Get the available banks', parameters=[], responses={200:None})
+    def get(self, *args, **kwargs):
+        bank = service.finance.finance.Finance().get_bank()
+
+        return Response(bank)
 
 
 class Summary(APIView):
@@ -26,34 +32,9 @@ class Summary(APIView):
 
 
 class Currency(APIView):
-    @swagger_auto_schema(
-        operation_description='Returns all available currencies',
-        responses={
-            status.HTTP_200_OK: openapi.Response(
-                description="OK",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'success': openapi.Schema(type=openapi.TYPE_BOOLEAN),
-                        'message': openapi.Schema(type=openapi.TYPE_STRING),
-                        'statusCode': openapi.Schema(type=openapi.TYPE_INTEGER),
-                        'quantity': openapi.Schema(type=openapi.TYPE_INTEGER),
-                        'currencies': openapi.Schema(
-                            type=openapi.TYPE_ARRAY,
-                            items=openapi.Schema(
-                                type=openapi.TYPE_OBJECT,
-                                properties={
-                                    'currencyId': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'name': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'symbol': openapi.Schema(type=openapi.TYPE_STRING),
-                                }
-                            ),
-                        ),
-                    },
-                ),
-            ),
-        },
-    )
+    serializer_class = None
+
+    @extend_schema(summary='Get all available currencies.', responses={200: None})
     def get(self, *args, **kwargs):
         response = service.finance.core.Core().get_currency()
 
@@ -61,33 +42,9 @@ class Currency(APIView):
 
 
 class CashFlow(APIView):
-    @swagger_auto_schema(
-        operation_description='Return the cash flow options',
-        responses={
-            status.HTTP_200_OK: openapi.Response(
-                description="OK",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'success': openapi.Schema(type=openapi.TYPE_BOOLEAN),
-                        'message': openapi.Schema(type=openapi.TYPE_STRING),
-                        'statusCode': openapi.Schema(type=openapi.TYPE_INTEGER),
-                        'quantity': openapi.Schema(type=openapi.TYPE_INTEGER),
-                        'cashFlow': openapi.Schema(
-                            type=openapi.TYPE_ARRAY,
-                            items=openapi.Schema(
-                                type=openapi.TYPE_OBJECT,
-                                properties={
-                                    'cashFlowId': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'cashFlowName': openapi.Schema(type=openapi.TYPE_STRING),
-                                }
-                            ),
-                        ),
-                    },
-                ),
-            ),
-        },
-    )
+    serializer_class = None
+
+    @extend_schema(summary='Get available cash flow values', responses={200: None})
     def get(self, *args, **kwargs):
         response = service.finance.core.Core().get_cash_flow()
 
@@ -97,6 +54,7 @@ class CashFlow(APIView):
 class TransactionByCategoryList(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(summary='Get the list of transactions by category', parameters=[TransactionByCategoryListGetSerializer], responses={200: None})
     def get(self, *args, **kwargs):
         """
         :Name: TransactionsByCategoryGroup - GET
@@ -104,7 +62,7 @@ class TransactionByCategoryList(APIView):
         :Created by: Lucas Penha de Moura - 15/10/2023
         :Edited by:
         """
-        data = ExpenseGetSerializer(data=self.request.query_params)
+        data = TransactionByCategoryListGetSerializer(data=self.request.query_params)
         if not data.is_valid():
             return Response(data.errors, status=400)
 
@@ -119,6 +77,7 @@ class TransactionByCategoryList(APIView):
 class TransactionsByCategoryAggregated(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(summary='Get the aggregated transactions by category', parameters=[TransactionsByCategoryAggregatedGetSerializer], responses={200: None})
     def get(self, *args, **kwargs):
         """
         :Name: TransactionsByCategoryGroup - GET
@@ -126,7 +85,11 @@ class TransactionsByCategoryAggregated(APIView):
         :Created by: Lucas Penha de Moura - 17/10/2023
         :Edited by:
         """
-        period = self.request.GET.get('period')
+        data = TransactionsByCategoryAggregatedGetSerializer(data=self.request.query_params)
+        if not data.is_valid():
+            return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        period = data.validated_data.get('period')
         user = self.request.user.id
 
         response = service.finance.finance.Finance(period=period, owner=user).get_category_transactions_aggregated()

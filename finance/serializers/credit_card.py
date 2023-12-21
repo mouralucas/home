@@ -6,7 +6,7 @@ from util.datetime import DateTime
 
 
 class CreditCardGetSerializer(CustomSerializer):
-    pass
+    creditCardStatus = serializers.CharField(required=False, default='active')
 
 
 class CreditCardPostSerializer(CustomSerializer):

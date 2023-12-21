@@ -1,26 +1,10 @@
-import rest_framework_simplejwt
 from django.urls import path, re_path, include
-from drf_yasg import openapi
-from drf_yasg.views import get_schema_view
-from rest_framework_simplejwt.authentication import JWTAuthentication
-
-schema_view = get_schema_view(
-    openapi.Info(
-        title="Simple Finance",
-        default_version='v0.0.1',
-        description="Bem vindo a API do Simple Finance",
-        # terms_of_service="https://www.jaseci.org",
-        contact=openapi.Contact(email="lucaspenha471@gmail.com"),
-        # license=openapi.License(name="Awesome IP"),
-    ),
-    public=True,
-    # permission_classes=(permissions.AllowAny,),
-    authentication_classes=[]
-    # authentication_classes=[None],
-)
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
-    re_path(r'^$', schema_view.with_ui('swagger', cache_timeout=0)),
+    path("schema/", SpectacularAPIView.as_view(), name="schema"),
+    re_path("^$", SpectacularSwaggerView.as_view(template_name="swagger-ui.html", url_name='schema'), name="swagger-ui",),
+
     re_path(r'^core/', include(('core.urls', 'core'), namespace='core')),
     path('user/', include(('core.user.urls', 'core.user'), namespace='user')),
     path('finance/', include(('finance.urls', 'finance'), namespace='finance')),

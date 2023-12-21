@@ -19,7 +19,7 @@ urlpatterns = [
     re_path(r'^investment$', investment.Investment.as_view()),
     re_path(r'^investment/type$', investment.Type.as_view()),
     re_path(r'^investment/allocation$', investment.Allocation.as_view()),
-    re_path(r'^investment/statement$', views_deprecated.InvestmentStatement.as_view()),
+    re_path(r'^investment/statement$', investment.Statement.as_view()),
     re_path(r'^investment/statement/upload$', views_deprecated.InvestmentStatementUpload.as_view()),
     re_path(r'^investment/profit', investment.Profit.as_view()),
 
@@ -29,7 +29,7 @@ urlpatterns = [
     # Other
     re_path(r'^currency$', core.Currency.as_view()),
     re_path(r'^cash-flow$', core.CashFlow.as_view()),
-    re_path(r'^bank$', views_deprecated.Bank.as_view()),
+    re_path(r'^bank$', core.Bank.as_view()),
 
     re_path(r'^upload/pdf', views_deprecated.PdfImport.as_view()),
 

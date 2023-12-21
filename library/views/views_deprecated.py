@@ -1,17 +1,12 @@
 from django.http import JsonResponse
 from django.views import View
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
-from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-import service.library.author
 import service.core.core
+import service.library.author
 import service.library.library
 from service.security.security import IsAuthenticated
-from library.serializers import ItemGetSerializer, ItemPostSerializer
-from django.utils.translation import gettext_lazy as _
 
 
 class ItemAuthor(View):

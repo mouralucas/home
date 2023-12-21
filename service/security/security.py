@@ -1,9 +1,14 @@
 from django.utils.translation import gettext_lazy as _
+from drf_spectacular.extensions import OpenApiAuthenticationExtension
 from rest_framework import status
 from rest_framework.permissions import BasePermission
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken, AuthenticationFailed
 from rest_framework_simplejwt.settings import api_settings
+
+from drf_spectacular.utils import OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.extensions import OpenApiAuthenticationExtension
 
 
 class IsAuthenticated(BasePermission):
@@ -67,3 +72,25 @@ class CustomJWTAuthentication(JWTAuthentication):
                 "messages": messages,
             }
         )
+
+
+class CustomJWTAuthenticationExtension(OpenApiAuthenticationExtension):
+    """
+    :Name: Person
+    :Description: Authenticator Extension for drf_spectacular
+    :Created by: Lucas Penha de Moura - 19/12/2023
+    :Edited by:
+
+        This class contains the specification for the Custom JWT authentication
+        It must be referenced in settings under SPECTACULAR_SETTINGS as part of EXTENSIONS list
+    """
+    target_class = CustomJWTAuthentication
+    name = "Custom JWT Authentication"
+
+    def get_security_definition(self, auto_schema, **kwargs):
+        return {
+            'type': 'apiKey',
+            'description': 'Access token authentication',
+            'name': 'Authorization',
+            'in': OpenApiParameter.HEADER,
+        }

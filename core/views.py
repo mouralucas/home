@@ -1,13 +1,13 @@
 from django.http import JsonResponse
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
+from drf_spectacular.utils import extend_schema
+from drf_spectacular.views import SpectacularSwaggerView, SpectacularAPIView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.utils.translation import gettext_lazy as _
+
 import service.core.core
 import util.datetime
-from core.serializers import ReferenceGetSerializer
+from core.serializers import ReferenceGetSerializer, CategoryGetSerializer, CategoryPostSerializer, StatusGetSerializer
 
 
 class Country(APIView):
@@ -30,56 +30,37 @@ class Module(APIView):
 
 
 class Category(APIView):
-    @swagger_auto_schema(
-        operation_description='Returns all order based on parameters\nIf orderId is passed, returns a single result in \'orders\' object',
-        manual_parameters=[
-            openapi.Parameter(
-                name='showMode', in_=openapi.IN_QUERY, type=openapi.TYPE_STRING, description=_('Modo de apresentação (all, children, parent)'), required=True,
-            ),
-            openapi.Parameter(
-                name='module', in_=openapi.IN_QUERY, type=openapi.TYPE_STRING, description=_('Modulo da categoria'), required=True,
-            ),
-        ],
-        responses={
-            status.HTTP_200_OK: openapi.Response(
-                description="OK",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'success': openapi.Schema(type=openapi.TYPE_BOOLEAN),
-                        'statusCode': openapi.Schema(type=openapi.TYPE_INTEGER),
-                        'quantity': openapi.Schema(type=openapi.TYPE_INTEGER),
-                        'categories': openapi.Schema(
-                            type=openapi.TYPE_ARRAY,
-                            items=openapi.Schema(
-                                type=openapi.TYPE_OBJECT,
-                                properties={
-                                    'categoryId': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'name': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'description': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'fatherId': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'fatherName': openapi.Schema(type=openapi.TYPE_STRING),
-                                }
-                            ),
-                        ),
-                    },
-                ),
-            ),
-            status.HTTP_403_FORBIDDEN: openapi.Response(
-                description="Acesso proibido",
-            ),
-        },
+
+    @extend_schema(
+        description='Get the categories from the selected module.',
+        parameters=[CategoryGetSerializer],
+        responses={200: None, 201: None, 401: None}
+
     )
     def get(self, *args, **kwargs):
-        show_mode = self.request.query_params.get('show_mode')
-        module = self.request.query_params.get('module')
+        data = CategoryGetSerializer(data=self.request.query_params)
+        if not data.is_valid():
+            return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        show_mode = data.validated_data.get('showMode')
+        module = data.validated_data.get('module')
 
         response = service.core.core.Misc().get_category(show_mode=show_mode, module_id=module)
 
         return Response(response, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        request=CategoryPostSerializer,
+        responses={501: None}
+    )
     def post(self, *args, **kwargs):
-        pass
+        """
+                Not implemented.
+
+                This endpoint was not implemented yet.
+                ---
+                """
+        return Response({'success': False, 'message': 'This endpoint was not implemented yet'}, status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
 class Period(APIView):
@@ -100,8 +81,13 @@ class Period(APIView):
 
 
 class Status(APIView):
+    @extend_schema(summary='Get the list of status by type', parameters=[StatusGetSerializer], responses={200: None})
     def get(self, *args, **kwargs):
-        status_type = self.request.GET.get('status_type')
+        data = StatusGetSerializer(data=self.request.query_params)
+        if not data.is_valid():
+            return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        status_type = data.validated_data.get('statusType')
 
         response = service.core.core.Misc().get_status(status_type=status_type)
 
@@ -116,6 +102,7 @@ class State(APIView):
 
 
 class Version(APIView):
+    @extend_schema(summary='Get the current version od the system', parameters=[], responses={200: None})
     def get(self, *args, **kwargs):
         response = service.core.core.Misc().get_version()
 

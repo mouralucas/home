@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -8,8 +9,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 import service.user.account
 import service.security.login
 
-from core.user.serializers import AccountPostSerializer, LoginSerializer, RefreshSerializer
-from service.security.security import IsAuthenticated
+from core.user.serializers import AccountPostSerializer, LoginSerializer, RefreshSerializer, AccountGetSerializer
+from service.security.security import IsAuthenticated, CustomJWTAuthentication
 
 
 class Login(TokenObtainPairView):
@@ -33,9 +34,18 @@ class Refresh(TokenRefreshView):
 
 
 class Account(APIView):
+    @extend_schema(
+        parameters=[AccountGetSerializer],
+        responses={201: None},
+    )
     def get(self, *args, **kwargs):
+        data = AccountGetSerializer(data=self.request.query_params)
         return render(self.request, '')
 
+    @extend_schema(
+        request=AccountPostSerializer,
+        responses={201: None}
+    )
     def post(self, *args, **kwargs):
         data = AccountPostSerializer(data=self.request.data)
         if not data.is_valid():
@@ -50,6 +60,7 @@ class Account(APIView):
 
 
 class TestViewWithoutAuth(APIView):
+
     def get(self, *args, **kwargs):
         return Response({'success': True}, status=status.HTTP_200_OK)
 
