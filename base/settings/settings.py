@@ -127,6 +127,20 @@ MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
+        'TEST': {
+            'NAME': config('DB_TEST_NAME'),
+        }
+    },
+}
+
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'core.exception_handler.custom_exception_handler',
     'COERCE_DECIMAL_TO_STRING': False,
