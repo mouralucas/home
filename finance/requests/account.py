@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from core.serializers import CustomSerializer
+from util.datetime import DateTime
 
 
 class AccountGetRequest(CustomSerializer):
@@ -18,7 +19,7 @@ class AccountPostRequest(CustomSerializer):
 
 
 class StatementGetRequest(CustomSerializer):
-    period = serializers.IntegerField(required=True, help_text='The selected period of the statement')
+    period = serializers.IntegerField(default=DateTime().current_period(), help_text='The selected period of the statement, default is current period (yyyymm)')
     accountId = serializers.UUIDField(required=False, help_text='The account id of the statement')
 
 

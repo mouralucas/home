@@ -6,11 +6,13 @@ import pandas as pd
 import pdfplumber
 from django.db.models import Sum, F
 from django.utils.translation import gettext_lazy as _
+from rest_framework import status
 from tabula import read_pdf
 
 import finance.models
 import finance.requests
 import util.datetime
+from finance.responses.account import StatementGetResponse
 
 
 class Finance:
@@ -53,7 +55,7 @@ class Finance:
                                                  accountId=F('account_id'),
                                                  categoryName=F('category__description'),
                                                  categoryId=F('category_id'),
-                                                 purchasedAt=F('purchase_at'),
+                                                 purchaseAt=F('purchase_at'),
                                                  cashFlowId=F('cash_flow'),
                                                  currencyId=F('currency_id'),
                                                  currencySymbol=F('currency__symbol'),
@@ -62,10 +64,13 @@ class Finance:
                                                  ) \
             .order_by('-purchase_at', '-created_at')
 
-        response = {
+        response = StatementGetResponse({
             'success': True,
-            'statement': list(statement)
-        }
+            'statusCode': status.HTTP_200_OK,
+            'quantity': len(statement),
+            'statement': statement
+        }).data
+
         return response
 
     def get_bill_statistic(self):

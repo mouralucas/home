@@ -8,7 +8,7 @@ import service.finance.account
 import service.finance.finance
 from core.responses import InvalidRequestError, NotImplementedResponse
 from finance.requests.account import StatementPostRequest, StatementGetRequest, BalancePostRequest, AccountGetRequest, AccountPostRequest
-from finance.responses.account import AccountGetResponse
+from finance.responses.account import AccountGetResponse, StatementGetResponse
 from service.security.security import IsAuthenticated
 
 
@@ -41,11 +41,12 @@ class Account(APIView):
 class Statement(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(summary='Get statement entries', parameters=[StatementGetRequest], responses={200: None})
+    @extend_schema(summary='Get statement entries', description='Fetch all entries for an account, if specified. The period can be specified too, if none current period are set',
+                   parameters=[StatementGetRequest], responses={200: StatementGetResponse, 400: InvalidRequestError})
     def get(self, *args, **kwargs):
         data = StatementGetRequest(data=self.request.query_params)
         if not data.is_valid():
-            return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(InvalidRequestError(data.errors), status=status.HTTP_400_BAD_REQUEST)
 
         period = data.validated_data.get('period')
         account_id = data.validated_data.get('accountId')
