@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 import service.finance.account
 import service.finance.finance
 from core.responses import InvalidRequestError, NotImplementedResponse
-from finance.requests.account import StatementPostSerializer, StatementGetSerializer, BalancePostSerializer, AccountGetRequest
+from finance.requests.account import StatementPostRequest, StatementGetRequest, BalancePostRequest, AccountGetRequest, AccountPostRequest
 from finance.responses.account import AccountGetResponse
 from service.security.security import IsAuthenticated
 
@@ -32,7 +32,8 @@ class Account(APIView):
 
         return Response(response, status=response['statusCode'])
 
-    @extend_schema(responses={501: NotImplementedResponse})
+    @extend_schema(summary='Not implemented', description='Create a new account',
+                   request=[AccountPostRequest], responses={501: NotImplementedResponse})
     def post(self, *args, **kwargs):
         return Response(NotImplementedResponse, status=status.HTTP_501_NOT_IMPLEMENTED)
 
@@ -40,9 +41,9 @@ class Account(APIView):
 class Statement(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(summary='Get statement entries', parameters=[StatementGetSerializer], responses={200: None})
+    @extend_schema(summary='Get statement entries', parameters=[StatementGetRequest], responses={200: None})
     def get(self, *args, **kwargs):
-        data = StatementGetSerializer(data=self.request.query_params)
+        data = StatementGetRequest(data=self.request.query_params)
         if not data.is_valid():
             return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -54,9 +55,9 @@ class Statement(APIView):
 
         return Response(response, status=200)
 
-    @extend_schema(summary='Create a new statement entry', request=StatementPostSerializer, responses={200: None})
+    @extend_schema(summary='Create a new statement entry', request=StatementPostRequest, responses={200: None})
     def post(self, *args, **kwargs):
-        data = StatementPostSerializer(data=self.request.data)
+        data = StatementPostRequest(data=self.request.data)
         if not data.is_valid():
             return Response(data.errors, status=400)
 
@@ -79,7 +80,7 @@ class Balance(APIView):
 
     @extend_schema(summary='Update user statement (in test)', request=[], responses={200: None})
     def post(self, *args, **kwargs):
-        data = BalancePostSerializer(data=self.request.data)
+        data = BalancePostRequest(data=self.request.data)
         if not data.is_valid():
             return Response(data.errors, status=400)
 
