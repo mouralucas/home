@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 import service.finance.credit_card
 import service.finance.finance
 import util.datetime
+from core.responses import NotImplementedResponse
 from finance.requests.credit_card import CreditCardBillGetSerializer, BillHistorySerializer, CreditCardBillPostSerializer, CreditCardPostSerializer, CreditCardGetSerializer
 
 
@@ -26,11 +27,11 @@ class CreditCard(APIView):
         return Response(response, status=response['statusCode'])
 
     @extend_schema(description='This endpoint is used to create a new credit card for the user.',
-                   summary='This endpoint was not implemented yet.', request=CreditCardPostSerializer, responses={501: None})
+                   summary='This endpoint was not implemented yet.', request=CreditCardPostSerializer, responses={501: NotImplementedResponse})
     def post(self, *args, **kwargs):
         data = CreditCardPostSerializer(data=self.request.data)
 
-        return Response({'success': False, 'message': 'This endpoint was not implemented yet'}, status=status.HTTP_501_NOT_IMPLEMENTED)
+        return Response(NotImplementedResponse, status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
 class CreditCardBill(APIView):

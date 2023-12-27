@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 import service.finance.investment
+from core.responses import NotImplementedResponse
 from finance.requests.investment import InvestmentGetSerializer, TypeGetSerializer, ProfitGetSerializer, InvestmentPostSerializer
 from service.security.security import IsAuthenticated
 
@@ -59,13 +60,13 @@ class Statement(APIView):
     @extend_schema(summary='This endpoint was not implemented yet',
                    description='This endpoint fetches the statement for every investment registered by the user.\n '
                                'It can by filtered by investment and/or period range',
-                   parameters=[], responses={501: None})
+                   parameters=[], responses={501: NotImplementedResponse})
     def get(self, *args, **kwargs):
         period = self.request.GET.get('period')
 
         # response = service.finance.investment.Investment(period=period).get_investment_statement()
 
-        return Response({'success': False, 'message': 'This endpoint was not implemented yet'}, status=status.HTTP_501_NOT_IMPLEMENTED)
+        return Response(NotImplementedResponse, status=status.HTTP_501_NOT_IMPLEMENTED)
 
     @extend_schema(summary='This endpoint was not implemented yet',
                    description='This endpoint create a new entry for a investment for a specific period',

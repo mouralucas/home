@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 
 import service.finance.account
 import service.finance.finance
-from core.responses import InvalidRequestError
+from core.responses import InvalidRequestError, NotImplementedResponse
 from finance.requests.account import StatementPostSerializer, StatementGetSerializer, BalancePostSerializer, AccountGetRequest
 from finance.responses.account import AccountGetResponse
 from service.security.security import IsAuthenticated
@@ -16,17 +16,14 @@ class Account(APIView):
     permission_classes = [IsAuthenticated]
 
     @extend_schema(
-        summary='Get the user accounts.',
-        parameters=[AccountGetRequest],
-        responses={
-            200: AccountGetResponse,
-            400: InvalidRequestError,
-        },
+        summary='Get the user accounts.', description='Fetch all accounts registered by the user, based on account type',
+        parameters=[AccountGetRequest], responses={200: AccountGetResponse, 400: InvalidRequestError},
     )
     def get(self, *args, **kwargs):
         data = AccountGetRequest(data=self.request.query_params)
         if not data.is_valid():
-            return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
+            pass  # the type is not validated in filter yet
+            # return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
 
         is_investment = data.validated_data.get('isInvestment')
         user = self.request.user.id
@@ -34,6 +31,10 @@ class Account(APIView):
         response = service.finance.account.Account(owner=user).get_accounts(is_investment=is_investment)
 
         return Response(response, status=response['statusCode'])
+
+    @extend_schema(responses={501: NotImplementedResponse})
+    def post(self, *args, **kwargs):
+        return Response(NotImplementedResponse, status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
 class Statement(APIView):

@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 
 import service.core.core
 import util.datetime
+from core.responses import NotImplementedResponse
 from core.serializers import ReferenceGetSerializer, CategoryGetSerializer, CategoryPostSerializer, StatusGetSerializer
 
 
@@ -51,7 +52,7 @@ class Category(APIView):
 
     @extend_schema(
         request=CategoryPostSerializer,
-        responses={501: None}
+        responses={501: NotImplementedResponse}
     )
     def post(self, *args, **kwargs):
         """
@@ -60,7 +61,7 @@ class Category(APIView):
                 This endpoint was not implemented yet.
                 ---
                 """
-        return Response({'success': False, 'message': 'This endpoint was not implemented yet'}, status=status.HTTP_501_NOT_IMPLEMENTED)
+        return Response(NotImplementedResponse, status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
 class Period(APIView):
