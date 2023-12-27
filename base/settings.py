@@ -185,7 +185,16 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'OPENAPI_AUTO_SCHEMA': 'drf_spectacular.openapi.AutoSchema',
-    'EXTENSIONS': [
-        'service.security.security.CustomJWTAuthenticationExtension',
-    ],
+    # 'EXTENSIONS': [
+    #     'service.security.security.CustomJWTAuthenticationExtension',
+    # ],
+    "SWAGGER_UI_SETTINGS": {
+        "deepLinking": True,
+        "persistAuthorization": True,
+        "displayOperationId": False,
+        'showExtensions': True,
+        'displayRequestDuration': True,
+        'docExpansion': 'list',
+        'supportedSubmitMethods': ['get', 'post', 'put', 'patch', 'delete'],
+    },
 }

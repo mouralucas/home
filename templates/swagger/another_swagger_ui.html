@@ -1,0 +1,77 @@
+{% load static %}
+<!-- HTML for static distribution bundle build -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PDV API Doc</title>
+{#    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.24.2/swagger-ui.css">#}
+    <link rel="icon" type="image/png" href="{% static 'swagger/img/favicon-32x32.png' %}" sizes="32x32"/>
+    <link rel="icon" type="image/png" href="{% static 'swagger/img/favicon-16x16.png' %}" sizes="16x16"/>
+    <link rel="stylesheet" href="{% static 'swagger/css/swagger_ui_custom.css' %}">
+    {# TODO: remove this css and embed in swagger/css/swagger_ui_custom.css locally #}
+    <link rel="stylesheet" href="{% static 'swagger/css/swagger-ui.css' %}">
+</head>
+
+<body>
+<div class="top-nav-bar">
+    <a class="nav-bar-icon">
+        <img class="nav-bar-img" src="{% static 'img/logo_lucas.svg' %}" alt="Logo">
+    </a>
+    <a class="nav-bar-title">
+        My company
+    </a>
+    <select class="classic nav-bar-select" id="service-selector" onchange="changeSwaggerUI()">
+        <option value="./swagger.json">Value</option>
+    </select>
+</div>
+<div id="swagger-ui"></div>
+
+{# TODO: add this sidecar js in local js folder and remove sidecar dependency #}
+<script src="{% static 'swagger/js/swagger-ui-bundle.js' %}"></script>
+<script src="{% static 'swagger/js/swagger-ui-standalone-preset.js' %}"></script>
+{# TODO: create new JS file that will contain this code. Edit to serve more than one schema through select #}
+{# TODO: Embed the custom JS from drf_spectacular #}
+<script>
+    function changeSwaggerUI() {
+        let selected_service_swaggerURL = document.getElementById("service-selector").value;
+        loadUI(selected_service_swaggerURL);
+    }
+
+    function loadUI(swaggerJsonURL) {
+        // Begin Swagger UI call region
+        const ui = SwaggerUIBundle({
+            url: "{{ schema_url|escapejs }}",
+            validatorUrl: "",
+            dom_id: '#swagger-ui',
+            deepLinking: true,
+            docExpansion: 'list',
+            presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIStandalonePreset
+            ],
+            plugins: [
+                CustomTopbarPlugin
+            ],
+            layout: "StandaloneLayout"
+        });
+        // End Swagger UI call region
+
+        window.ui = ui
+    }
+
+    function CustomTopbarPlugin() {
+        // this plugin overrides the Topbar component to return nothing
+        return {
+            components: {
+                Topbar: () => null
+            }
+        }
+    }
+
+    window.onload = function () {
+        loadUI("./swagger.json");
+    }
+</script>
+</body>
+</html>
