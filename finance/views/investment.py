@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 import service.finance.investment
-from finance.serializers.investment import InvestmentGetSerializer, TypeGetSerializer, ProfitGetSerializer, InvestmentPostSerializer
+from finance.requests.investment import InvestmentGetSerializer, TypeGetSerializer, ProfitGetSerializer, InvestmentPostSerializer
 from service.security.security import IsAuthenticated
 
 

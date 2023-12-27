@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from tabula import read_pdf
 
 import finance.models
-import finance.serializers
+import finance.requests
 import util.datetime
 
 

@@ -1,13 +1,13 @@
 import pandas as pd
-from django.db.models import Sum, F, Window, Subquery, OuterRef
-from django.db.models.functions import Lag, Coalesce
+from django.db.models import Sum, F, Subquery, OuterRef
+from django.db.models.functions import Coalesce
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
+from rest_framework import status
 
 import finance.models
 import util.datetime
+from finance.responses.account import AccountGetResponse
 from service.finance.finance import Finance
-from rest_framework import status
 
 
 class Account(Finance):
@@ -38,12 +38,12 @@ class Account(Finance):
                               closeAt=F('close_at'))
                     .filter(owner=self.owner).active())
 
-        response = {
+        response = AccountGetResponse({
             'success': True,
             'statusCode': status.HTTP_200_OK,
             'quantity': len(accounts),
             'accounts': list(accounts),
-        }
+        }).data
 
         return response
 

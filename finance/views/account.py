@@ -6,7 +6,9 @@ from rest_framework.views import APIView
 
 import service.finance.account
 import service.finance.finance
-from finance.serializers.account import StatementPostSerializer, StatementGetSerializer, BalancePostSerializer, AccountGetSerializer
+from core.responses import InvalidRequestError
+from finance.requests.account import StatementPostSerializer, StatementGetSerializer, BalancePostSerializer, AccountGetRequest
+from finance.responses.account import AccountGetResponse
 from service.security.security import IsAuthenticated
 
 
@@ -15,11 +17,14 @@ class Account(APIView):
 
     @extend_schema(
         summary='Get the user accounts.',
-        parameters=[AccountGetSerializer],
-        responses={200: None},
+        parameters=[AccountGetRequest],
+        responses={
+            200: AccountGetResponse,
+            400: InvalidRequestError,
+        },
     )
     def get(self, *args, **kwargs):
-        data = AccountGetSerializer(data=self.request.query_params)
+        data = AccountGetRequest(data=self.request.query_params)
         if not data.is_valid():
             return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
 

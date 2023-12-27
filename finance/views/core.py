@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 import service.finance.core
 import service.finance.finance
 import util.datetime
-from finance.serializers.core import TransactionByCategoryListGetSerializer, TransactionsByCategoryAggregatedGetSerializer
+from finance.requests.core import TransactionByCategoryListGetSerializer, TransactionsByCategoryAggregatedGetSerializer
 from service.security.security import IsAuthenticated
 
 

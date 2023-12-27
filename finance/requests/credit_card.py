@@ -28,9 +28,9 @@ class CreditCardBillGetSerializer(CustomSerializer):
 class CreditCardBillPostSerializer(CustomSerializer):
     creditCardBillId = serializers.IntegerField(required=False)
     amount = serializers.DecimalField(required=True, max_digits=14, decimal_places=2)
-    # amountCurrency = serializers.DecimalField(required=False)
-    # priceDollar = serializers.DecimalField(required=False)
-    # amountTax = serializers.DecimalField(required=False)
+    # amountCurrency = requests.DecimalField(required=False)
+    # priceDollar = requests.DecimalField(required=False)
+    # amountTax = requests.DecimalField(required=False)
     dollarCurrencyQuote = serializers.DecimalField(required=False, max_digits=14, decimal_places=5, default=0)
     purchaseAt = serializers.DateField(required=True)
     paymentAt = serializers.DateField(required=True)
