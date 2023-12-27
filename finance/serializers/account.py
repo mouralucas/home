@@ -3,12 +3,12 @@ from rest_framework import serializers
 
 
 class AccountSerializer(CustomSerializer):
-    accountId = serializers.UUIDField(required=True)
-    nickname = serializers.CharField(max_length=100)
-    branch = serializers.CharField(max_length=30)
-    number = serializers.CharField(max_length=150)
-    openAt = serializers.DateField()
-    closeAt = serializers.DateField()
+    accountId = serializers.UUIDField(required=True, help_text='The account identifier')
+    nickname = serializers.CharField(max_length=100, help_text='The name of the account, given by the user')
+    branch = serializers.CharField(max_length=30, help_text='The branch number of the account')
+    number = serializers.CharField(max_length=150, help_text='The number of the account')
+    openAt = serializers.DateField(help_text='The date that the account was opened')
+    closeAt = serializers.DateField(help_text='The date that the account was closed')
 
 
 class StatementSerializer(CustomSerializer):
