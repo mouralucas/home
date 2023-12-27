@@ -28,6 +28,14 @@ class Login(TokenObtainPairView):
     """
     serializer_class = LoginSerializer
 
+    @extend_schema(summary='Validate credential and return token pair', responses={200: LoginSerializer})
+    def post(self, *args, **kwargs):
+        credentials = self.get_serializer(data=self.request.data)
+        if not credentials.is_valid():
+            return Response(credentials.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(credentials.validated_data, status=status.HTTP_200_OK)
+
 
 class Refresh(TokenRefreshView):
     serializer_class = RefreshSerializer
