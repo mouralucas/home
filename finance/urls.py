@@ -1,6 +1,6 @@
 from django.urls import re_path
 
-from finance.views import account, credit_card, investment, views_deprecated, integration, core
+from finance.views import account, credit_card, investment, views_deprecated, integration, core, pos
 
 
 urlpatterns = [
@@ -22,6 +22,9 @@ urlpatterns = [
     re_path(r'^investment/statement$', investment.Statement.as_view()),
     re_path(r'^investment/statement/upload$', views_deprecated.InvestmentStatementUpload.as_view()),
     re_path(r'^investment/profit', investment.Profit.as_view()),
+
+    # Point os Sales (PagSeguro)
+    # re_path(r'^pos/import/pag-seguro', pos.PagSeguro.as_view()),
 
     # Dashboard
     re_path(r'summary', core.Summary.as_view()),

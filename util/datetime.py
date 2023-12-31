@@ -5,7 +5,49 @@ import pytz
 from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 
+MONTH_NAMES = {
+    1: 'January'
+}
 
+
+def current_period(self):
+    """
+   :Name: current_period
+   :Description: Return te current "monthyear" period (mmyyyy)
+   :Created by: Lucas Penha de Moura - 18/04/2022
+   :Edited by:
+   """
+    month = timezone.localtime().month
+    year = timezone.localtime().year
+
+    return year * 100 + month
+
+
+def validate_period(value, raise_exception=False):
+    """
+    :Name: logout
+    :Created by: Lucas Penha de Moura - 30/12/2023
+    :Edited by:
+
+    Explicit params:
+    :param value: the value of period to validation
+    :param raise_exception: raise an exception instead of returning False
+
+        Check if the integer value passed contains valid year and month values
+    """
+    try:
+        date_str = str(value)
+        datetime.strptime(date_str, '%Y%m')
+
+        return True
+    except ValueError as e:
+        if raise_exception:
+            raise ValueError
+
+        return False
+
+
+##### OLDER FUNCTIONS REVIEW AND REMOVE UNUSED #####
 def format_data(date, mask='____-__-__'):
     """
     :Name: format_data
@@ -194,6 +236,8 @@ def current_yearmonth():
 
 
 class DateTime:
+    # TODO: Utils function show not be in classes, that was an error
+    # Review the methods outside the class, remove not used and than remove the class
     def __init__(self):
         self.localtime = timezone.localtime()
         self.monthname_pt = (('jan', 'Janeiro', '01'), ('fev', 'Fevereiro', '02'), ('mar', 'Março', '03'),
