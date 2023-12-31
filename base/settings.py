@@ -12,11 +12,8 @@ LOGIN_URL = 'user:login'
 LOGOUT_REDIRECT_URL = 'user:login'
 LOGIN_REDIRECT_URL = 'user:login'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG')
 ALLOWED_HOSTS = ['*']
-
-# Application definition
 
 INSTALLED_APPS = [
     'core',
@@ -82,9 +79,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'base.wsgi.application'
 
-# Password validation
-# https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -100,21 +94,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/3.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-gb'
 TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_ROOT = os.sep.join([os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'media'])
 MEDIA_URL = '/media/'
@@ -136,7 +124,7 @@ DATABASES = {
 }
 
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'core.exception_handler.custom_exception_handler',  # TODO: verificar uso desse handler
+    'EXCEPTION_HANDLER': 'service.exception.handlers.custom_exception_handler',
     'COERCE_DECIMAL_TO_STRING': False,
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'service.security.security.CustomJWTAuthentication'

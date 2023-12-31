@@ -13,10 +13,19 @@ def custom_exception_handler(exception: Exception, context: dict):
 
     # Only alter the response when it's a validation error
     if not isinstance(exception, exceptions.ValidationError):
+        # TODO: rewrite this block to return all kinds of messages in project default
+        # if response is not None:
+        #     r = {
+        #         'success': False,
+        #         'statusCode': response.status_code,
+        #         'message': ''
+        #     }
+        #     response.data = r
+
         return response
 
     # It's a validation error, there should be a Serializer
-    view = context.get("view", None)
+    view = context.get("view")
     serializer = view.get_serializer_class()()
 
     errors_list = []
@@ -41,7 +50,7 @@ def custom_exception_handler(exception: Exception, context: dict):
     http_code_to_message = {v.value: v.description for v in HTTPStatus}
 
     error_payload = {
-        "status_code": 0,
+        "statusCode": 0,
         "type": "ValidationError",
         "message": "",
         "errors": [],
@@ -50,7 +59,7 @@ def custom_exception_handler(exception: Exception, context: dict):
     #  error = error_payload["error"]
     status_code = response.status_code
 
-    error_payload["status_code"] = status_code
+    error_payload["statusCode"] = status_code
     error_payload["message"] = http_code_to_message[status_code]
     error_payload["errors"] = errors_list
 

@@ -1,5 +1,4 @@
-from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -24,7 +23,7 @@ class Account(APIView):
         if not data.is_valid():
             pass  # the type is not validated in filter yet
             # return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        a = 1/0
         is_investment = data.validated_data.get('isInvestment')
         user = self.request.user.id
 
@@ -33,7 +32,7 @@ class Account(APIView):
         return Response(response, status=response['statusCode'])
 
     @extend_schema(summary='Not implemented', description='Create a new account',
-                   request=[AccountPostRequest], responses={501: NotImplementedResponse})
+                   request=AccountPostRequest, responses={501: NotImplementedResponse})
     def post(self, *args, **kwargs):
         return Response(NotImplementedResponse, status=status.HTTP_501_NOT_IMPLEMENTED)
 
