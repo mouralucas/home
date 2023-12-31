@@ -4,6 +4,7 @@ from rest_framework import status
 
 import finance.models
 import util.datetime
+from finance.responses.credit_card import CreditCardGetResponse, CreditCardBillGetResponse
 from service.finance.finance import Finance
 
 
@@ -34,13 +35,12 @@ class CreditCard(Finance):
                                   dueAt=F('due_at'))
                         .filter(owner=self.owner).active().order_by('-status', 'id'))
 
-        response = {
+        response = CreditCardGetResponse({
             'success': True,
-            'message': None,
             'statusCode': status.HTTP_200_OK,
             'quantity': len(credit_cards),
-            'creditCards': list(credit_cards),
-        }
+            'creditCards': credit_cards,
+        }).data
 
         return response
 
@@ -58,28 +58,30 @@ class CreditCard(Finance):
             if credit_card_id:
                 filters['credit_card_id'] = credit_card_id
 
-        bills = finance.models.CreditCardBill.objects \
-            .values('id', 'period',
-                    'installment', 'description') \
+        bill_entries = finance.models.CreditCardBill.objects \
+            .values('period', 'installment', 'description') \
             .filter(**filters) \
-            .annotate(amount=F('amount'),
+            .annotate(creditCardBillEntryId=F('id'),
+                      amount=F('amount'),
                       purchaseAt=F('purchase_at'),
                       paymentAt=F('payment_at'),
                       creditCardId=F('credit_card_id'),
                       creditCardName=F('credit_card__name'),
                       categoryId=F('category_id'),
                       categoryName=F('category__description'),
+                      currencyReferenceId=F('currency_reference_id'),
+                      currencyReferenceSymbol=F('currency_reference__symbol'),
                       createdAt=F('created_at'),
                       lastEditedAt=F('edited_at'),
                       totalInstallment=F('tot_installment')
                       ).order_by('-purchase_at', '-created_at')
 
-        response = {
+        response = CreditCardBillGetResponse({
             'success': True,
             'statusCode': status.HTTP_200_OK,
-            'quantity': len(bills) if not credit_card_bill_id else 1,
-            'bill': list(bills) if not credit_card_bill_id else bills
-        }
+            'quantity': len(bill_entries),
+            'billEntries': bill_entries
+        }).data
 
         return response
 

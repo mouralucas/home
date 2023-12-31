@@ -23,7 +23,6 @@ class Account(APIView):
         if not data.is_valid():
             pass  # the type is not validated in filter yet
             # return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
-        a = 1/0
         is_investment = data.validated_data.get('isInvestment')
         user = self.request.user.id
 

@@ -2,14 +2,14 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from core.serializers import CustomSerializer
-from util.datetime import DateTime
+from util import datetime
 
 
 class CreditCardGetSerializer(CustomSerializer):
     creditCardStatus = serializers.CharField(required=False, default='active')
 
 
-class CreditCardPostSerializer(CustomSerializer):
+class CreditCardPostRequest(CustomSerializer):
     name = serializers.CharField(max_length=100, required=True)
     account = serializers.UUIDField(required=False)
     description = serializers.CharField(required=False)
@@ -19,13 +19,13 @@ class CreditCardPostSerializer(CustomSerializer):
     closingAt = serializers.IntegerField(required=True)
 
 
-class CreditCardBillGetSerializer(CustomSerializer):
+class CreditCardBillGetRequest(CustomSerializer):
     creditCardBillId = serializers.IntegerField(required=False)
     creditCardId = serializers.CharField(required=False)
-    period = serializers.IntegerField(required=False, default=DateTime().current_period())
+    period = serializers.IntegerField(required=False, default=datetime.current_period())
 
 
-class CreditCardBillPostSerializer(CustomSerializer):
+class CreditCardBillPostRequest(CustomSerializer):
     creditCardBillId = serializers.IntegerField(required=False)
     amount = serializers.DecimalField(required=True, max_digits=14, decimal_places=2)
     # amountCurrency = requests.DecimalField(required=False)
@@ -43,7 +43,7 @@ class CreditCardBillPostSerializer(CustomSerializer):
     cashFlowId = serializers.CharField(required=False, default='OUTGOING')
 
 
-class BillHistorySerializer(CustomSerializer):
+class BillHistoryRequest(CustomSerializer):
     startAt = serializers.IntegerField(required=True)
     endAt = serializers.IntegerField(required=True)
     type = serializers.CharField(required=True)

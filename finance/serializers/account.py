@@ -23,3 +23,4 @@ class StatementSerializer(CustomSerializer):
     currencySymbol = serializers.CharField(max_length=5, help_text='The currency symbol')
     createdAt = serializers.DateTimeField(help_text='Date and time when the register was created')
     lastEditedAt = serializers.DateTimeField(help_text='Date and time when the register was last edited')
+    description = serializers.CharField()

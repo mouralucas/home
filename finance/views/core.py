@@ -5,9 +5,9 @@ from rest_framework.views import APIView
 
 import service.finance.core
 import service.finance.finance
-import util.datetime
 from finance.requests.core import TransactionByCategoryListGetSerializer, TransactionsByCategoryAggregatedGetSerializer
 from service.security.security import IsAuthenticated
+from util import datetime
 
 
 class Bank(APIView):
@@ -23,7 +23,7 @@ class Summary(APIView):
 
     def get(self, *args, **kwargs):
         # TODO: add serializer
-        period = self.request.query_params.get('period', util.datetime.DateTime().current_period())
+        period = self.request.query_params.get('period', datetime.current_period())
         user = self.request.user.id
 
         response = service.finance.finance.Finance(period=period, owner=user).get_summary()

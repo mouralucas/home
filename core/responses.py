@@ -6,7 +6,6 @@ from core.serializers import CustomSerializer
 class DefaultSuccessResponse(serializers.Serializer):
     success = serializers.BooleanField(default=True)
     statusCode = serializers.IntegerField(required=True)
-    quantity = serializers.IntegerField(required=False)
 
 
 class DefaultErrorResponse(serializers.Serializer):

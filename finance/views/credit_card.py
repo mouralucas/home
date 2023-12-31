@@ -6,15 +6,16 @@ from rest_framework.views import APIView
 
 import service.finance.credit_card
 import service.finance.finance
-import util.datetime
-from core.responses import NotImplementedResponse
-from finance.requests.credit_card import CreditCardBillGetSerializer, BillHistorySerializer, CreditCardBillPostSerializer, CreditCardPostSerializer, CreditCardGetSerializer
+from core.responses import NotImplementedResponse, InvalidRequestError
+from finance.requests.credit_card import CreditCardBillGetRequest, BillHistoryRequest, CreditCardBillPostRequest, CreditCardPostRequest, CreditCardGetSerializer
+from finance.responses.credit_card import CreditCardBillGetResponse, CreditCardGetResponse
 
 
 class CreditCard(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(summary='Get all the active credit cards from user.', parameters=[CreditCardGetSerializer], responses={201: None})
+    @extend_schema(summary='Get all the active credit cards from user.', description='',
+                   parameters=[CreditCardGetSerializer], responses={200: CreditCardGetResponse, 400: InvalidRequestError})
     def get(self, *args, **kwargs):
         data = CreditCardGetSerializer(data=self.request.query_params)
         if not data.is_valid():
@@ -26,10 +27,10 @@ class CreditCard(APIView):
 
         return Response(response, status=response['statusCode'])
 
-    @extend_schema(description='This endpoint is used to create a new credit card for the user.',
-                   summary='This endpoint was not implemented yet.', request=CreditCardPostSerializer, responses={501: NotImplementedResponse})
+    @extend_schema(summary='This endpoint was not implemented yet.', description='This endpoint is used to create a new credit card for the user.',
+                   request=CreditCardPostRequest, responses={501: NotImplementedResponse})
     def post(self, *args, **kwargs):
-        data = CreditCardPostSerializer(data=self.request.data)
+        data = CreditCardPostRequest(data=self.request.data)
 
         return Response(NotImplementedResponse, status=status.HTTP_501_NOT_IMPLEMENTED)
 
@@ -37,9 +38,10 @@ class CreditCard(APIView):
 class CreditCardBill(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(summary='Get the entries from the credit card bill.', parameters=[CreditCardBillGetSerializer], responses={200: None})
+    @extend_schema(summary='Get the entries from the credit card bill.',
+                   parameters=[CreditCardBillGetRequest], responses={200: CreditCardBillGetResponse, 400: InvalidRequestError})
     def get(self, *args, **kwargs):
-        validator = CreditCardBillGetSerializer(data=self.request.query_params)
+        validator = CreditCardBillGetRequest(data=self.request.query_params)
         if not validator.is_valid():
             return Response(validator.errors, status=400)
 
@@ -53,9 +55,9 @@ class CreditCardBill(APIView):
 
         return Response(response, status=response['statusCode'])
 
-    @extend_schema(summary='Create a new entry in credit card bill statement.', request=CreditCardBillPostSerializer, responses={200: None})
+    @extend_schema(summary='Create a new entry in credit card bill statement.', request=CreditCardBillPostRequest, responses={201: None})
     def post(self, *args, **kwargs):
-        data = CreditCardBillPostSerializer(data=self.request.data)
+        data = CreditCardBillPostRequest(data=self.request.data)
         if not data.is_valid():
             return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -68,9 +70,9 @@ class CreditCardBill(APIView):
 
 
 class BillHistory(APIView):
-    @extend_schema(summary='Get the history of the credit card bills.', parameters=[BillHistorySerializer], responses={200: None})
+    @extend_schema(summary='Get the history of the credit card bills.', parameters=[BillHistoryRequest], responses={200: None})
     def get(self, *args, **kwargs):
-        data = BillHistorySerializer(data=self.request.query_params)
+        data = BillHistoryRequest(data=self.request.query_params)
         if not data.is_valid():
             return Response(data.errors, status=400)
 
