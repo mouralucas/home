@@ -8,8 +8,8 @@ class TestDateUtil(APITestCase):
         self.invalid_period = 202313
 
     def test_get_period_from_date(self):
-        response = datetime.get_period_from_date(date='2020-01-25')
-        self.assertEqual(202005, response)
+        response = datetime.get_period_from_date(date='2020-01-25', is_date_str=True)
+        self.assertEqual(202001, response)
 
     def test_validate_period_success(self):
         response = datetime.validate_period(self.valid_period)
