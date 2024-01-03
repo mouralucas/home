@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from core.serializers import CustomSerializer
+from base.serializers import CustomSerializer
 from core.responses import DefaultSuccessResponse
 from finance.serializers.credit_card import CreditCardSerializer, CreditCardBill
 

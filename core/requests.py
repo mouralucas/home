@@ -1,6 +1,6 @@
 from rest_framework.exceptions import ValidationError
 
-from core.serializers import CustomSerializer
+from base.serializers import CustomSerializer
 from rest_framework import serializers
 
 

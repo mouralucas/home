@@ -5,7 +5,7 @@ from rest_framework_simplejwt.serializers import TokenObtainSerializer, TokenRef
 from rest_framework_simplejwt.settings import api_settings
 
 import service.core.cache
-from core.serializers import CustomSerializer
+from base.serializers import CustomSerializer
 from service.security.login import CustomRefreshToken
 
 

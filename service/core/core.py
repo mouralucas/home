@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 
 import core.models
-import core.serializers
+import base.serializers
 from decouple import config
 
 
@@ -49,7 +49,7 @@ class Misc:
 
         response = {
             'status': True,
-            'countries': core.serializers.PaisSerializer(contries, many=True, fields=campos).data
+            'countries': base.serializers.PaisSerializer(contries, many=True, fields=campos).data
         }
 
         return response

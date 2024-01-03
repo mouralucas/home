@@ -2,7 +2,6 @@ from django.db.models import F, Case, When, BooleanField
 from django.utils.translation import gettext_lazy as _
 
 import core.models
-import core.serializers
 import library.models
 import util.Format
 import util.datetime

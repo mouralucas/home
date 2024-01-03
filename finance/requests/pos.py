@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.serializers import CustomSerializer
+from base.serializers import CustomSerializer
 
 
 class PagSeguroStatementPostRequest(CustomSerializer):

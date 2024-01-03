@@ -1,6 +1,6 @@
 from rest_framework import serializers, status
 
-from core.serializers import CustomSerializer
+from base.serializers import CustomSerializer
 
 
 # Default responses for the system

@@ -1,11 +1,11 @@
 from rest_framework import serializers
 
-import core.serializers
+import base.serializers
 from rest_framework.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 
-class InvestmentGetSerializer(core.serializers.CustomSerializer):
+class InvestmentGetSerializer(base.serializers.CustomSerializer):
     investmentId = serializers.UUIDField(required=False)
     showMode = serializers.CharField(required=True)
 
@@ -17,7 +17,7 @@ class InvestmentGetSerializer(core.serializers.CustomSerializer):
         return value
 
 
-class InvestmentPostSerializer(core.serializers.CustomSerializer):
+class InvestmentPostSerializer(base.serializers.CustomSerializer):
     parentId = serializers.UUIDField(required=False)
     name = serializers.CharField(required=True)
     date = serializers.DateField(required=True)
@@ -43,13 +43,13 @@ class TypeGetSerializer(serializers.Serializer):
         return value
 
 
-class ProfitGetSerializer(core.serializers.CustomSerializer):
+class ProfitGetSerializer(base.serializers.CustomSerializer):
     startAt = serializers.IntegerField(required=True)
     investmentId = serializers.UUIDField(required=False)
     indexId = serializers.UUIDField(required=False, help_text=_('A qual indexador a rentabilidade será comparada'))
 
 
-class AllocationSerializer(core.serializers.CustomSerializer):
+class AllocationSerializer(base.serializers.CustomSerializer):
     showMode = serializers.CharField()
 
     def validate_showMode(self, value):
