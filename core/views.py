@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 import service.core.core
 import util.datetime
-from core.responses import NotImplementedResponse
+from core.responses import NotImplementedResponse, CategoryGetResponse, InvalidRequestError
 from core.requests import ReferenceGetRequest, CategoryGetRequest, CategoryPostRequest, StatusGetRequest
 
 
@@ -33,7 +33,7 @@ class Module(APIView):
 class Category(APIView):
 
     @extend_schema(summary='Get all categories by module', description='Get the categories from the selected module.',
-                   parameters=[CategoryGetRequest], responses={200: None, 201: None, 401: None}
+                   parameters=[CategoryGetRequest], responses={200: CategoryGetResponse, 401: InvalidRequestError}
 
                    )
     def get(self, *args, **kwargs):
@@ -59,7 +59,7 @@ class Category(APIView):
                 This endpoint was not implemented yet.
                 ---
                 """
-        return Response(NotImplementedResponse, status=status.HTTP_501_NOT_IMPLEMENTED)
+        return Response(NotImplementedResponse({}).data, status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
 class Period(APIView):
@@ -73,7 +73,7 @@ class Period(APIView):
         e_month = data.validated_data.get('eMonth')
         e_year = data.validated_data.get('eYear')
 
-        response = util.datetime.DateTime().list_period(s_month=s_month, s_year=s_year,
+        response = util.datetime.list_period(s_month=s_month, s_year=s_year,
                                                         e_month=e_month, e_year=e_year)
 
         return Response(response, status=200)

@@ -1,6 +1,7 @@
 from rest_framework import serializers, status
 
 from base.serializers import CustomSerializer
+from core.serializers import CategorySerializer
 
 
 # Default responses for the system
@@ -23,12 +24,11 @@ class InvalidRequestError(CustomSerializer, DefaultErrorResponse):
     errors = serializers.DictField(help_text='A dict with the errors. The key is the error field and the value is the description')
 
 
-class NotImplementedResponse(CustomSerializer, DefaultErrorResponse):
+class NotImplementedResponse(DefaultErrorResponse, CustomSerializer):
     message = serializers.CharField(default='Not implemented yet')
     statusCode = serializers.IntegerField(default=status.HTTP_501_NOT_IMPLEMENTED)
 
 
 ## Responses for core module
-class CategoryGetResponse(CustomSerializer):
-    pass
-
+class CategoryGetResponse(DefaultSuccessResponse, CustomSerializer):
+    categories = CategorySerializer(many=True)

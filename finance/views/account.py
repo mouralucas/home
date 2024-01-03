@@ -33,7 +33,7 @@ class Account(APIView):
     @extend_schema(summary='Not implemented', description='Create a new account',
                    request=AccountPostRequest, responses={501: NotImplementedResponse})
     def post(self, *args, **kwargs):
-        return Response(NotImplementedResponse, status=status.HTTP_501_NOT_IMPLEMENTED)
+        return Response(NotImplementedResponse({}).data, status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
 class Statement(APIView):

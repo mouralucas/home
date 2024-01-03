@@ -32,7 +32,7 @@ class CreditCard(APIView):
     def post(self, *args, **kwargs):
         data = CreditCardPostRequest(data=self.request.data)
 
-        return Response(NotImplementedResponse, status=status.HTTP_501_NOT_IMPLEMENTED)
+        return Response(NotImplementedResponse({}).data, status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
 class CreditCardBill(APIView):

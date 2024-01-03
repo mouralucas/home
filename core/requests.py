@@ -13,7 +13,7 @@ class ReferenceGetRequest(CustomSerializer):
 
 class CategoryGetRequest(CustomSerializer):
     showMode = serializers.CharField(required=True, help_text='How categories are fetched from the database [all, parent, child]')
-    module = serializers.CharField(required=True)
+    module = serializers.CharField(required=True, help_text='The module of the categories.')
 
     def validate_showMode(self, value):
         choices = ['all', 'parent', 'child']

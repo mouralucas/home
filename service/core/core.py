@@ -8,6 +8,8 @@ import core.models
 import base.serializers
 from decouple import config
 
+from core.responses import CategoryGetResponse
+
 
 class Misc:
     def __init__(self):
@@ -104,12 +106,12 @@ class Misc:
                       parentId=F('parent_id'),
                       parentName=F('parent__name')).filter(**filters).order_by('order')
 
-        response = {
+        response = CategoryGetResponse({
             'success': True,
             'statusCode': status.HTTP_200_OK,
             'quantity': len(categories),
             'categories': list(categories)
-        }
+        }).data
 
         return response
 

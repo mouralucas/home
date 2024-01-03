@@ -66,7 +66,7 @@ class Statement(APIView):
 
         # response = service.finance.investment.Investment(period=period).get_investment_statement()
 
-        return Response(NotImplementedResponse, status=status.HTTP_501_NOT_IMPLEMENTED)
+        return Response(NotImplementedResponse({}).data, status=status.HTTP_501_NOT_IMPLEMENTED)
 
     @extend_schema(summary='This endpoint was not implemented yet',
                    description='This endpoint create a new entry for a investment for a specific period',
