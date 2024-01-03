@@ -1,4 +1,4 @@
-from core.responses import DefaultSuccessResponse
+from base.responses import DefaultSuccessResponse
 from base.serializers import CustomSerializer
 from finance.serializers.account import AccountSerializer, StatementSerializer
 

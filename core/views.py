@@ -1,14 +1,14 @@
 from django.http import JsonResponse
 from drf_spectacular.utils import extend_schema
-from drf_spectacular.views import SpectacularSwaggerView, SpectacularAPIView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import service.core.core
 import util.datetime
-from core.responses import NotImplementedResponse, CategoryGetResponse, InvalidRequestError
+from base.responses import NotImplementedResponse, InvalidRequestError
 from core.requests import ReferenceGetRequest, CategoryGetRequest, CategoryPostRequest, StatusGetRequest
+from core.responses import CategoryGetResponse
 
 
 class Country(APIView):
@@ -74,7 +74,7 @@ class Period(APIView):
         e_year = data.validated_data.get('eYear')
 
         response = util.datetime.list_period(s_month=s_month, s_year=s_year,
-                                                        e_month=e_month, e_year=e_year)
+                                             e_month=e_month, e_year=e_year)
 
         return Response(response, status=200)
 

@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 import service.finance.investment
-from core.responses import NotImplementedResponse
+from base.responses import NotImplementedResponse
 from finance.requests.investment import InvestmentGetSerializer, TypeGetSerializer, ProfitGetSerializer, InvestmentPostSerializer
 from service.security.security import IsAuthenticated
 
@@ -62,9 +62,6 @@ class Statement(APIView):
                                'It can by filtered by investment and/or period range',
                    parameters=[], responses={501: NotImplementedResponse})
     def get(self, *args, **kwargs):
-        period = self.request.GET.get('period')
-
-        # response = service.finance.investment.Investment(period=period).get_investment_statement()
 
         return Response(NotImplementedResponse({}).data, status=status.HTTP_501_NOT_IMPLEMENTED)
 

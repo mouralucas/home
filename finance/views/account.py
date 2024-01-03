@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 
 import service.finance.account
 import service.finance.finance
-from core.responses import InvalidRequestError, NotImplementedResponse
+from base.responses import InvalidRequestError, NotImplementedResponse
 from finance.requests.account import StatementPostRequest, StatementGetRequest, BalancePostRequest, AccountGetRequest, AccountPostRequest
 from finance.responses.account import AccountGetResponse, StatementGetResponse
 from service.security.security import IsAuthenticated

@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 
 import service.finance.credit_card
 import service.finance.finance
-from core.responses import NotImplementedResponse, InvalidRequestError
+from base.responses import NotImplementedResponse, InvalidRequestError
 from finance.requests.credit_card import CreditCardBillGetRequest, BillHistoryRequest, CreditCardBillPostRequest, CreditCardPostRequest, CreditCardGetSerializer
 from finance.responses.credit_card import CreditCardBillGetResponse, CreditCardGetResponse
 
