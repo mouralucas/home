@@ -5,11 +5,15 @@ django==4.2.7
 pyjwt==2.7.0
 djangorestframework-simplejwt==5.2.2
 
+# Documentation
+drf-spectacular==0.27.0
+
 # PDF table reader
 tabula-py
+pdfplumber
 
 # Cv2
-opencv-python==4.8.0.74
+opencv-python==4.9.0.80
 
 # Database
 psycopg2-binary

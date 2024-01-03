@@ -24,7 +24,7 @@ urlpatterns = [
     re_path(r'^investment/profit', investment.Profit.as_view()),
 
     # Point os Sales (PagSeguro)
-    # re_path(r'^pos/import/pag-seguro', pos.PagSeguro.as_view()),
+    re_path(r'^pos/import/pag-seguro', pos.PagSeguroStatement.as_view()),
 
     # Dashboard
     re_path(r'summary', core.Summary.as_view()),
