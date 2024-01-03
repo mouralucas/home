@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 import service.core.core
 import util.datetime
 from core.responses import NotImplementedResponse
-from core.serializers import ReferenceGetSerializer, CategoryGetSerializer, CategoryPostSerializer, StatusGetSerializer
+from core.requests import ReferenceGetRequest, CategoryGetRequest, CategoryPostRequest, StatusGetRequest
 
 
 class Country(APIView):
@@ -32,14 +32,12 @@ class Module(APIView):
 
 class Category(APIView):
 
-    @extend_schema(
-        description='Get the categories from the selected module.',
-        parameters=[CategoryGetSerializer],
-        responses={200: None, 201: None, 401: None}
+    @extend_schema(summary='Get all categories by module', description='Get the categories from the selected module.',
+                   parameters=[CategoryGetRequest], responses={200: None, 201: None, 401: None}
 
-    )
+                   )
     def get(self, *args, **kwargs):
-        data = CategoryGetSerializer(data=self.request.query_params)
+        data = CategoryGetRequest(data=self.request.query_params)
         if not data.is_valid():
             return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -51,7 +49,7 @@ class Category(APIView):
         return Response(response, status=status.HTTP_200_OK)
 
     @extend_schema(
-        request=CategoryPostSerializer,
+        request=CategoryPostRequest,
         responses={501: NotImplementedResponse}
     )
     def post(self, *args, **kwargs):
@@ -66,7 +64,7 @@ class Category(APIView):
 
 class Period(APIView):
     def get(self, *args, **kwargs):
-        data = ReferenceGetSerializer(data=self.request.query_params)
+        data = ReferenceGetRequest(data=self.request.query_params)
         if not data.is_valid():
             return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -82,9 +80,9 @@ class Period(APIView):
 
 
 class Status(APIView):
-    @extend_schema(summary='Get the list of status by type', parameters=[StatusGetSerializer], responses={200: None})
+    @extend_schema(summary='Get the list of status by type', parameters=[StatusGetRequest], responses={200: None})
     def get(self, *args, **kwargs):
-        data = StatusGetSerializer(data=self.request.query_params)
+        data = StatusGetRequest(data=self.request.query_params)
         if not data.is_valid():
             return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
 

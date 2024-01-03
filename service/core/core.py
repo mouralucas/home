@@ -84,10 +84,10 @@ class Misc:
         Implicit params (passed in the class instance or set by other functions):
         None
         """
-        if show_mode not in ['all', 'father', 'child']:
+        if show_mode not in ['all', 'parent', 'child']:
             return {
                 'status': False,
-                'description': _('Show mode dever ser uma das três opções: all, father ou child')
+                'description': _('Show mode dever ser uma das três opções: all, parent ou child')
             }
 
         filters = {
@@ -95,13 +95,14 @@ class Misc:
         }
 
         if show_mode != 'all':
-            filters['father_id__isnull'] = True if show_mode == 'father' else False
+            filters['parent_id__isnull'] = True if show_mode == 'parent' else False
 
-        categories = core.models.Category.objects.values('name', 'description', 'comments').active() \
+        categories = core.models.Category.objects.values('description', 'comments').active() \
             .filter(parent__status=True) \
             .annotate(categoryId=F('id'),
-                      fatherId=F('parent_id'),
-                      fatherName=F('parent__name')).filter(**filters).order_by('order')
+                      categoryName=F('name'),
+                      parentId=F('parent_id'),
+                      parentName=F('parent__name')).filter(**filters).order_by('order')
 
         response = {
             'success': True,

@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 
+# Default serializers for the system
 class CustomModelSerializer(serializers.ModelSerializer):
     """
     :Name: CustomSerializer
@@ -56,30 +57,3 @@ class CustomSerializer(serializers.Serializer):
                 custom_error_dict['errors'][key] = error_string
 
             raise serializers.ValidationError(custom_error_dict)
-
-
-class ReferenceGetSerializer(CustomSerializer):
-    sMonth = serializers.IntegerField(required=False, min_value=1, max_value=12, default=1)
-    sYear = serializers.IntegerField(required=False, default=2018)
-    eMonth = serializers.IntegerField(required=False, min_value=1, max_value=12)
-    eYear = serializers.IntegerField(required=False)
-
-
-class CategoryGetSerializer(CustomSerializer):
-    showMode = serializers.CharField(required=True)
-    module = serializers.CharField(required=True)
-
-    def validate_showMode(self, value):
-        choices = ['all', 'father', 'child']
-        if value not in choices:
-            raise ValidationError(f"O valor '{value}' não é válido. Escolha uma das opções: {', '.join(choices)}.")
-
-        return value
-
-
-class CategoryPostSerializer(CustomSerializer):
-    pass
-
-
-class StatusGetSerializer(CustomSerializer):
-    statusType = serializers.CharField(required=True, help_text='Indicate the type os status (reading status, item status, etc)')
