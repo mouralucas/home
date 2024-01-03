@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>PDV API Doc</title>
-{#    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.24.2/swagger-ui.css">#}
+    {#    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.24.2/swagger-ui.css">#}
     <link rel="icon" type="image/png" href="{% static 'swagger/img/favicon-32x32.png' %}" sizes="32x32"/>
     <link rel="icon" type="image/png" href="{% static 'swagger/img/favicon-16x16.png' %}" sizes="16x16"/>
     <link rel="stylesheet" href="{% static 'swagger/css/swagger_ui_custom.css' %}">
@@ -22,7 +22,9 @@
         My company
     </a>
     <select class="classic nav-bar-select" id="service-selector" onchange="changeSwaggerUI()">
-        <option value="./swagger.json">Value</option>
+        <option value="{% url 'schema' %}">Geral</option>
+        <option value="{% url 'schema-core' %}">Core</option>
+        <option value="{% url 'schema-finance' %}">Finance</option>
     </select>
 </div>
 <div id="swagger-ui"></div>
@@ -39,9 +41,8 @@
     }
 
     function loadUI(swaggerJsonURL) {
-        // Begin Swagger UI call region
         const ui = SwaggerUIBundle({
-            url: "{{ schema_url|escapejs }}",
+            url: swaggerJsonURL,
             validatorUrl: "",
             dom_id: '#swagger-ui',
             deepLinking: true,
@@ -70,7 +71,7 @@
     }
 
     window.onload = function () {
-        loadUI("./swagger.json");
+        loadUI("{% url 'schema' %}");
     }
 </script>
 </body>
