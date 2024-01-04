@@ -62,7 +62,7 @@ class TestAccount(APITestCase):
         self.assertTrue(response.data['success'])
         self.assertIn('statementEntry', response.data)
 
-        # Assert all required response keys
+        # Assert all required response keys in statementEntry
         self.assertIn('statementEntryId', response.data['statementEntry'])
         self.assertIn('amount', response.data['statementEntry'])
         self.assertIn('accountId', response.data['statementEntry'])
@@ -75,7 +75,7 @@ class TestAccount(APITestCase):
         self.assertIn('currencySymbol', response.data['statementEntry'])
 
         # Assert if all sent values are returned correctly
-        self.assertEquals(response.data['statementEntry']['amount'], amount * -1)  # Its outgoing, so multiply by -1 in back-end
+        self.assertEquals(float(response.data['statementEntry']['amount']), amount * -1)  # Its outgoing, so multiply by -1 in back-end
         self.assertEquals(response.data['statementEntry']['accountId'], account_id)
         self.assertEquals(response.data['statementEntry']['categoryId'], category_id)
         self.assertEquals(response.data['statementEntry']['purchaseAt'], purchase_at)
@@ -84,7 +84,16 @@ class TestAccount(APITestCase):
         self.assertEquals(response.data['statementEntry']['currencySymbol'], 'R$')
 
     def test_post_statement_missing_param(self):
-        pass
+        response = self.client.post(self.url_statement)
+
+        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('errors', response.data)
+        self.assertIn('amount', response.data['errors'])
+        self.assertIn('purchaseAt', response.data['errors'])
+        self.assertIn('categoryId', response.data['errors'])
+        self.assertIn('accountId', response.data['errors'])
+        self.assertIn('currencyId', response.data['errors'])
+        self.assertIn('cashFlowId', response.data['errors'])
 
     def tearDown(self):
         pass

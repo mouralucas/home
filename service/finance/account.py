@@ -109,13 +109,26 @@ class Account(Finance):
         statement.owner_id = self.owner
         statement.save(request_=request)
 
-        # TODO: the statement object has different names that the ones used in serializer, it may need to query
-
+        # TODO: the statement entry may be upgraded
         response = StatementPostResponse({
             'success': True,
             'statusCode': status.HTTP_201_CREATED,
-            'statementEntry': statement
-        })
+            'statementEntry': {
+                'statementEntryId': statement.id,
+                'amount': statement.amount,
+                'accountName': statement.account.nickname,
+                'accountId': statement.account_id,
+                'categoryName': statement.category.name,
+                'categoryId': statement.category_id,
+                'purchaseAt': statement.purchase_at,
+                'cashFlowId': statement.cash_flow,
+                'currencyId': statement.currency_id,
+                'currencySymbol': statement.currency.symbol,
+                'createdAt': statement.created_at,
+                'lastEditedAt': statement.edited_at,
+                'description': statement.description
+            }
+        }).data
 
         return response
 
