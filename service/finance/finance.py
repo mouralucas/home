@@ -22,69 +22,10 @@ class Finance:
                  description=None, category_id=None, currency_id=None, cash_flow_id=None, owner=None):
         self.mes = mes
         self.ano = ano
-
-        # self.statement_id = statement_id
         self.period = period
-        # self.amount = amount
-        # self.amount_currency = amount_currency
-        # self.price_currency_dollar = price_currency_dollar
-        # self.amount_tax = amount_tax
-        # self.instalment = installment
-        # self.tot_installment = tot_installment
         self.purchase_at = purchase_at
-        # self.payment_at = payment_at
-        # self.description = description
-        # self.category_id = category_id
-        # self.account_id = account_id
-        # self.currency_id = currency_id
-        # self.cash_flow_id = cash_flow_id
         self.owner = owner
 
-    def get_statement(self, account_id=None, period=None):
-        filters = {
-            'owner_id': self.owner
-        }
-
-        if account_id:
-            filters['account_id'] = account_id
-
-        statement = finance.models.AccountStatement.objects.values('period', 'description') \
-            .filter(**filters).active().annotate(statementId=F('id'),
-                                                 amount=F('amount'),
-                                                 accountName=F('account__nickname'),
-                                                 accountId=F('account_id'),
-                                                 categoryName=F('category__description'),
-                                                 categoryId=F('category_id'),
-                                                 purchaseAt=F('purchase_at'),
-                                                 cashFlowId=F('cash_flow'),
-                                                 currencyId=F('currency_id'),
-                                                 currencySymbol=F('currency__symbol'),
-                                                 createdAt=F('created_at'),
-                                                 lastEditedAt=F('edited_at'),
-                                                 ) \
-            .order_by('-purchase_at', '-created_at')
-
-        response = StatementGetResponse({
-            'success': True,
-            'statusCode': status.HTTP_200_OK,
-            'quantity': len(statement),
-            'statement': statement
-        }).data
-
-        return response
-
-    def get_bill_statistic(self):
-        bills = finance.models.CreditCardBill.objects.filter(owner_id=self.owner)
-        qtd_total = bills.count()
-        qtd_period = bills.filter(period=self.period).count()
-
-        response = {
-            'status': True,
-            'qtd_total': qtd_total,
-            'qtd_period': qtd_period,
-        }
-
-        return response
 
     def get_expenses(self, category_id=None):
         pass

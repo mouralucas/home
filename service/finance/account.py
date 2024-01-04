@@ -6,7 +6,7 @@ from rest_framework import status
 
 import finance.models
 from util import datetime
-from finance.responses.account import AccountGetResponse
+from finance.responses.account import AccountGetResponse, StatementPostResponse, StatementGetResponse
 from service.finance.finance import Finance
 
 
@@ -47,6 +47,39 @@ class Account(Finance):
 
         return response
 
+    def get_statement(self, account_id=None, period=None):
+        filters = {
+            'owner_id': self.owner
+        }
+
+        if account_id:
+            filters['account_id'] = account_id
+
+        statement = finance.models.AccountStatement.objects.values('period', 'description') \
+            .filter(**filters).active().annotate(statementEntryId=F('id'),
+                                                 amount=F('amount'),
+                                                 accountName=F('account__nickname'),
+                                                 accountId=F('account_id'),
+                                                 categoryName=F('category__description'),
+                                                 categoryId=F('category_id'),
+                                                 purchaseAt=F('purchase_at'),
+                                                 cashFlowId=F('cash_flow'),
+                                                 currencyId=F('currency_id'),
+                                                 currencySymbol=F('currency__symbol'),
+                                                 createdAt=F('created_at'),
+                                                 lastEditedAt=F('edited_at'),
+                                                 ) \
+            .order_by('-purchase_at', '-created_at')
+
+        response = StatementGetResponse({
+            'success': True,
+            'statusCode': status.HTTP_200_OK,
+            'quantity': len(statement),
+            'statementEntry': statement
+        }).data
+
+        return response
+
     def set_statement(self, data, request=None):
         if data.get('statementId'):
             statement = finance.models.AccountStatement.objects.filter(pk=data.get('statementId')).first()
@@ -76,7 +109,13 @@ class Account(Finance):
         statement.owner_id = self.owner
         statement.save(request_=request)
 
-        response = self.get_statement()
+        # TODO: the statement object has different names that the ones used in serializer, it may need to query
+
+        response = StatementPostResponse({
+            'success': True,
+            'statusCode': status.HTTP_201_CREATED,
+            'statementEntry': statement
+        })
 
         return response
 
@@ -198,6 +237,19 @@ class Account(Finance):
         response = {
             'success': True,
             'balance': list(query)
+        }
+
+        return response
+
+    def get_bill_statistic(self):
+        bills = finance.models.CreditCardBill.objects.filter(owner_id=self.owner)
+        qtd_total = bills.count()
+        qtd_period = bills.filter(period=self.period).count()
+
+        response = {
+            'status': True,
+            'qtd_total': qtd_total,
+            'qtd_period': qtd_period,
         }
 
         return response

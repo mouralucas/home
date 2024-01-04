@@ -25,7 +25,7 @@ class StatementGetRequest(CustomSerializer):
 
 
 class StatementPostRequest(CustomSerializer):
-    statementId = serializers.IntegerField(required=False, help_text='The id of the statement')
+    statementId = serializers.IntegerField(required=False, help_text='The id of the statement') # Change to a PUT ou PATCH
     amount = serializers.DecimalField(max_digits=14, decimal_places=2, required=True)
     purchaseAt = serializers.DateField(required=True)
     description = serializers.CharField(required=False)

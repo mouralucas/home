@@ -7,7 +7,7 @@ import service.finance.account
 import service.finance.finance
 from base.responses import InvalidRequestError, NotImplementedResponse
 from finance.requests.account import StatementPostRequest, StatementGetRequest, BalancePostRequest, AccountGetRequest, AccountPostRequest
-from finance.responses.account import AccountGetResponse, StatementGetResponse
+from finance.responses.account import AccountGetResponse, StatementGetResponse, StatementPostResponse
 from service.security.security import IsAuthenticated
 
 
@@ -54,7 +54,7 @@ class Statement(APIView):
 
         return Response(response, status=200)
 
-    @extend_schema(summary='Create a new statement entry', request=StatementPostRequest, responses={200: None})
+    @extend_schema(summary='Create a new statement entry', request=StatementPostRequest, responses={201: StatementPostResponse, 400: InvalidRequestError})
     def post(self, *args, **kwargs):
         data = StatementPostRequest(data=self.request.data)
         if not data.is_valid():
@@ -65,7 +65,7 @@ class Statement(APIView):
         response = service.finance.account.Account(owner=user) \
             .set_statement(data=data.validated_data, request=self.request)
 
-        return Response(response, status=200)
+        return Response(response, status=response['statusCode'])
 
 
 class Balance(APIView):

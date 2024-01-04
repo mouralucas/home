@@ -12,8 +12,8 @@ class AccountPostResponse(DefaultSuccessResponse, CustomSerializer):
 
 
 class StatementGetResponse(DefaultSuccessResponse, CustomSerializer):
-    statement = StatementSerializer(many=True)
+    statementEntry = StatementSerializer(many=True)
 
 
 class StatementPostResponse(DefaultSuccessResponse, CustomSerializer):
-    pass
+    statementEntry = StatementSerializer()
