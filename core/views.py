@@ -8,10 +8,12 @@ import service.core.core
 import util.datetime
 from base.responses import NotImplementedResponse, InvalidRequestError
 from core.requests import ReferenceGetRequest, CategoryGetRequest, CategoryPostRequest, StatusGetRequest
-from core.responses import CategoryGetResponse
+from core.responses import CategoryGetResponse, CountryPostResponse
 
 
 class Country(APIView):
+    @extend_schema(summary='Get all countries', description='Get all countries',
+                   parameters=[], responses={200: CountryPostResponse})
     def get(self, *args, **kwargs):
         response = service.core.core.Misc().get_country()
 
@@ -24,18 +26,13 @@ class Module(APIView):
 
         response = service.core.core.Misc().get_module(id_selected=selected_id)
 
-        return Response(response, status=status.HTTP_200_OK)
-
-    def post(self, *args, **kwargs):
-        pass
+        return Response(response, status=response['statusCode'])
 
 
 class Category(APIView):
 
     @extend_schema(summary='Get all categories by module', description='Get the categories from the selected module.',
-                   parameters=[CategoryGetRequest], responses={200: CategoryGetResponse, 401: InvalidRequestError}
-
-                   )
+                   parameters=[CategoryGetRequest], responses={200: CategoryGetResponse, 401: InvalidRequestError})
     def get(self, *args, **kwargs):
         data = CategoryGetRequest(data=self.request.query_params)
         if not data.is_valid():
@@ -48,17 +45,10 @@ class Category(APIView):
 
         return Response(response, status=status.HTTP_200_OK)
 
-    @extend_schema(
-        request=CategoryPostRequest,
-        responses={501: NotImplementedResponse}
-    )
+    @extend_schema(summary='', description='Not yet implemented',
+                   request=CategoryPostRequest, responses={501: NotImplementedResponse})
     def post(self, *args, **kwargs):
-        """
-                Not implemented.
 
-                This endpoint was not implemented yet.
-                ---
-                """
         return Response(NotImplementedResponse({}).data, status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
@@ -80,7 +70,8 @@ class Period(APIView):
 
 
 class Status(APIView):
-    @extend_schema(summary='Get the list of status by type', parameters=[StatusGetRequest], responses={200: None})
+    @extend_schema(summary='Get the list of status by type',
+                   parameters=[StatusGetRequest], responses={200: None})
     def get(self, *args, **kwargs):
         data = StatusGetRequest(data=self.request.query_params)
         if not data.is_valid():

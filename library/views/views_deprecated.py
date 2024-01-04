@@ -202,16 +202,16 @@ class Language(View):
         return JsonResponse(response, safe=False)
 
 
-class Country(View):
-    """
-    :Nome da classe/função: Language
-    :descrição: View to handle informations about countries
-    :Criação: Lucas Penha de Moura - 20/02/2022
-    :Edições:
-    :return
-    """
-
-    def get(self, *args, **kwargs):
-        response = service.core.core.Misc().get_country()
-
-        return JsonResponse(response, safe=False)
+# class Country(View):
+#     """
+#     :Nome da classe/função: Language
+#     :descrição: View to handle informations about countries
+#     :Criação: Lucas Penha de Moura - 20/02/2022
+#     :Edições:
+#     :return
+#     """
+#
+#     def get(self, *args, **kwargs):
+#         response = service.core.core.Misc().get_country()
+#
+#         return JsonResponse(response, safe=False)

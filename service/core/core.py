@@ -8,7 +8,7 @@ import core.models
 import base.serializers
 from decouple import config
 
-from core.responses import CategoryGetResponse
+from core.responses import CategoryGetResponse, CountryPostResponse
 
 
 class Misc:
@@ -37,22 +37,24 @@ class Misc:
         return response
 
     def get_country(self, campos=None):
-        if campos is None:
-            campos = ['id', 'name']
+        countries = core.models.Country.objects \
+            .annotate(countryId=F('id'),
+                      countryName=F('name')).values('countryId', 'countryName') \
+            .order_by('id')
 
-        contries = core.models.Country.objects.order_by('id')
-
-        if not contries:
+        if not countries:
             response = {
-                'status': False,
-                'description': _('Nenhum país encontrado')
+                'success': False,
+                'statusCode': status.HTTP_404_NOT_FOUND,
+                'message': _('Nenhum país encontrado')
             }
             return response
 
-        response = {
-            'status': True,
-            'countries': base.serializers.PaisSerializer(contries, many=True, fields=campos).data
-        }
+        response = CountryPostResponse({
+            'success': True,
+            'statusCode': status.HTTP_200_OK,
+            'countries': countries
+        }).data
 
         return response
 

@@ -29,3 +29,7 @@ class CategoryPostRequest(CustomSerializer):
 
 class StatusGetRequest(CustomSerializer):
     statusType = serializers.CharField(required=True, help_text='Indicate the type os status (reading status, item status, etc)')
+
+
+class CountryGetRequest(CustomSerializer):
+    pass

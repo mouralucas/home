@@ -9,3 +9,8 @@ class CategorySerializer(CustomSerializer):
     parentId = serializers.CharField(max_length=200, required=False, help_text="The id of the parent category, if exists")
     parentName = serializers.CharField(max_length=250, required=False, help_text="The name of the parent category, if exists")
     comments = serializers.CharField(required=False, help_text="Comments about the category")
+
+
+class CountrySerializer(CustomSerializer):
+    countryId = serializers.CharField(max_length=50, required=True, help_text='The id of the country')
+    countryName = serializers.CharField(max_length=250, required=True, help_text='The name of the country')
