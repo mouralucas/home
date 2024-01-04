@@ -143,14 +143,14 @@ class Account(Finance):
             'statement': list(statement)
         }
 
-    def set_balance(self, start_period=None):
+    def set_balance(self, account_id=None, start_period=None):
         filters = {}
 
         if start_period:
             filters['period__gte'] = start_period
 
         account_registers = finance.models.AccountStatement.objects.values('period') \
-            .filter(account_id=self.account_id, status=True).filter(**filters).order_by('period')
+            .filter(account_id=account_id, status=True).filter(**filters).order_by('period')
 
         incoming = pd.DataFrame(account_registers.exclude(category_id__in=['rendimento']).filter(cash_flow='INCOMING').annotate(incoming=Sum('amount')))
         outgoing = pd.DataFrame(account_registers.exclude(category_id__in=['rendimento']).filter(cash_flow='OUTGOING').annotate(outgoing=Sum('amount')))
@@ -171,7 +171,7 @@ class Account(Finance):
         merged_df['balance'] = merged_df['transaction_balance'].cumsum()
 
         # Set min and max periods for each account
-        account = finance.models.Account.objects.filter(pk=self.account_id).first()
+        account = finance.models.Account.objects.filter(pk=account_id).first()
         min_period = merged_df['reference'].min()
         max_period = datetime.get_period_from_date(account.close_at) if account.close_at else datetime.current_period()
         all_periods = list(range(min_period, max_period + 1))
@@ -202,7 +202,7 @@ class Account(Finance):
         for idx, balance in merged_df.iterrows():
             aux = finance.models.AccountBalance(
                 created_at=timezone.now(),
-                account_id=self.account_id,
+                account_id=account_id,
                 reference=balance['reference'],
                 previous_balance=0,
                 incoming=balance['incoming'],
@@ -213,7 +213,7 @@ class Account(Finance):
                 balance=balance['balance']
             )
             balance_list.append(aux)
-        finance.models.AccountBalance.objects.filter(account_id=self.account_id).filter(**filters).delete()
+        finance.models.AccountBalance.objects.filter(account_id=account_id).filter(**filters).delete()
         balance = finance.models.AccountBalance.objects.bulk_create(balance_list)
 
         response = {

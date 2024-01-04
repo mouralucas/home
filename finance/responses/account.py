@@ -17,3 +17,7 @@ class StatementGetResponse(DefaultSuccessResponse, CustomSerializer):
 
 class StatementPostResponse(DefaultSuccessResponse, CustomSerializer):
     statementEntry = StatementSerializer()
+
+
+class BalanceGetResponse(DefaultSuccessResponse, CustomSerializer):
+    pass

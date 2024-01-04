@@ -6,8 +6,8 @@ from rest_framework.views import APIView
 import service.finance.account
 import service.finance.finance
 from base.responses import InvalidRequestError, NotImplementedResponse
-from finance.requests.account import StatementPostRequest, StatementGetRequest, BalancePostRequest, AccountGetRequest, AccountPostRequest
-from finance.responses.account import AccountGetResponse, StatementGetResponse, StatementPostResponse
+from finance.requests.account import StatementPostRequest, StatementGetRequest, BalancePostRequest, AccountGetRequest, AccountPostRequest, BalanceGetRequest
+from finance.responses.account import AccountGetResponse, StatementGetResponse, StatementPostResponse, BalanceGetResponse
 from service.security.security import IsAuthenticated
 
 
@@ -71,20 +71,20 @@ class Statement(APIView):
 class Balance(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(summary='Get account balance (in test)', parameters=[], responses={200, None})
+    @extend_schema(summary='Get account balance (in test)', parameters=[], responses={200: BalanceGetResponse})
     def get(self, *args, **kwargs):
         response = service.finance.account.Account(owner=self.request.user.id).get_balance_tests()
 
         return Response(response)
 
-    @extend_schema(summary='Update user statement (in test)', request=[], responses={200: None})
+    @extend_schema(summary='Update user statement (in test)', request=BalancePostRequest, responses={200: None, 400: InvalidRequestError})
     def post(self, *args, **kwargs):
         data = BalancePostRequest(data=self.request.data)
         if not data.is_valid():
-            return Response(data.errors, status=400)
+            return Response(InvalidRequestError(data.errors).data, status=400)
 
         account_id = data.validated_data.get('accountId')
 
-        response = service.finance.account.Account(account_id=account_id).set_balance()
+        response = service.finance.account.Account().set_balance(account_id=account_id)
 
         return Response(response, status=200)
