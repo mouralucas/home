@@ -3,11 +3,11 @@ import uuid
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-import core.models
+from core.models import Log
 import finance.choices
 
 
-class Bank(core.models.Log):
+class Bank(Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     code = models.SmallIntegerField(null=True)
     name = models.CharField(max_length=150)
@@ -16,7 +16,7 @@ class Bank(core.models.Log):
         db_table = 'finance"."bank'
 
 
-class AccountType(core.models.Log):
+class AccountType(Log):
     name = models.CharField(max_length=150)
     description = models.CharField(max_length=500)
 
@@ -24,7 +24,7 @@ class AccountType(core.models.Log):
         db_table = 'finance"."account_type'
 
 
-class Account(core.models.Log):
+class Account(Log):
     # TODO: add a type to replace is_investment to the type of the account (investment, checking, business, etc)
     # TODO: another field to indicate if is a single or joint account (maybe the ownership must be a mxn table)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
@@ -46,7 +46,7 @@ class Account(core.models.Log):
 
 
 # Deprecated
-class BankAccount(core.models.Log):
+class BankAccount(Log):
     """
         Essa tabela deve mudar para só contar dados básicos de uma conta bancária/banco (ver como salvar tickets)
         Uma nova tabela Account deve ser criada para lincar user e banco
@@ -72,7 +72,7 @@ class BankAccount(core.models.Log):
         db_table = 'finance"."bank_account'
 
 
-class CreditCard(core.models.Log):
+class CreditCard(Log):
     id = models.CharField(max_length=100, primary_key=True)
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=100)
@@ -88,7 +88,7 @@ class CreditCard(core.models.Log):
         db_table = 'finance"."credit_card'
 
 
-class InvestmentType(core.models.Log):
+class InvestmentType(Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=600, null=True)
@@ -104,7 +104,7 @@ class InvestmentType(core.models.Log):
         db_table = 'finance"."investment_type'
 
 
-class Investment(core.models.Log):
+class Investment(Log):
     """
         Model para registrar todos os investimentos feitos
         Caso seja um investimento recorrente, como cofrinhos do Picpay ou o Ultravioleta do Nubank cada depósito é criado uma linha
@@ -136,35 +136,36 @@ class Investment(core.models.Log):
         db_table = 'finance"."investment'
 
 
-class InvestmentStatement(core.models.Log):
+class InvestmentStatement(Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     investment = models.ForeignKey('finance.Investment', on_delete=models.DO_NOTHING)
     period = models.IntegerField()
     currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING)
+    previous_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0)
     gross_amount = models.DecimalField(max_digits=15, decimal_places=2)
-    earnings = models.DecimalField(max_digits=15, decimal_places=2)
+    tax = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    fee = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    net_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    # The detail fields saves a dict with each specific amount, the total is persisted in tax and fee fields
+    tax_detail = models.JSONField(null=True)
+    fee_detail = models.JSONField(null=True)
 
     class Meta:
         db_table = 'finance"."investment_statement'
 
 
-class InvestmentBalance(core.models.Log):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    investment = models.ForeignKey('finance.Investment', on_delete=models.DO_NOTHING)
-    period = models.IntegerField(help_text=_('Período de referência'))
-    previous_balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo dos investimentos no período anterior'))
-    incoming = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Todas as entradas no período'))
-    outgoing = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Todas as saídas no período'))
-    transactions = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo de entradas e saídas'))
-    earnings = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Soma de todos os rendimentos investimentos no período'))
-    transactions_balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Soma das entradas e saídas mais os rendimentos'))
-    balance = models.DecimalField(max_digits=14, decimal_places=2, help_text=_('Saldo do investimento no período'))
+class TaxFeeType(Log):
+    id = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=150, unique=True)
+    description = models.CharField(max_length=250, null=True)
+    country = models.ForeignKey('core.Country', on_delete=models.DO_NOTHING, help_text='The country of the the fee or tax')
+    type = models.CharField(max_length=3, help_text='Indicate if it is a tax or a fee')
 
     class Meta:
-        db_table = 'finance"."investment_balance'
+        db_table = 'finance"."tax_fee_type'
 
 
-# class InvestmentObjective(core.models.Log):
+# class InvestmentObjective(Log):
 #     name = models.CharField(max_length=150)
 #     goal_amount = models.DecimalField(max_length=12, decimal_places=2, null=True)
 #     goal_at = models.DateField(null=True, help_text='Date to achieve the goal')
@@ -175,11 +176,11 @@ class InvestmentBalance(core.models.Log):
 #         db_table = 'finance.investment_objective'
 
 
-# class InvestmentObjectiveInvestment(core.models.Log):
+# class InvestmentObjectiveInvestment(Log):
 #     investment_objective = models.ForeignKey('finance.InvestmentObjective', on_delete=models.DO_NOTHING)
 #     investment = models.ForeignKey('finance.Investment', on_delete=models.DO_NOTHING)
 
-class AccountStatement(core.models.Log):
+class AccountStatement(Log):
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING, related_name='bank_statement_account')
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     period = models.IntegerField(help_text=_('Período de referência'))
@@ -213,7 +214,7 @@ class AccountStatement(core.models.Log):
         db_table = 'finance"."account_statement'
 
 
-class AccountBalance(core.models.Log):
+class AccountBalance(Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING)
     period = models.IntegerField(help_text=_('Período de referência'))
@@ -229,7 +230,7 @@ class AccountBalance(core.models.Log):
         db_table = 'finance"."account_balance'
 
 
-class CreditCardBill(core.models.Log):
+class CreditCardBill(Log):
     credit_card = models.ForeignKey('finance.CreditCard', on_delete=models.DO_NOTHING, null=True)
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     period = models.IntegerField(null=True, help_text=_('Período de referência'))
@@ -260,7 +261,7 @@ class CreditCardBill(core.models.Log):
         db_table = 'finance"."credit_card_bill'
 
 
-class CategoryGroup(core.models.Log):
+class CategoryGroup(Log):
     class GroupType(models.TextChoices):
         FIXED_EXPENSES = ('fixed_expenses', _('Despesas fixas'))
         VARIABLE_EXPENSES = ('variable_expenses', _('Despesas variáveis'))
@@ -273,7 +274,7 @@ class CategoryGroup(core.models.Log):
         db_table = 'finance"."category_group'
 
 
-class Currency(core.models.Log):
+class Currency(Log):
     id = models.CharField(max_length=5, primary_key=True)
     name = models.CharField(max_length=50)
     symbol = models.CharField(max_length=5)
@@ -283,7 +284,7 @@ class Currency(core.models.Log):
         db_table = 'finance"."currency'
 
 
-class CurrencyRate(core.models.Log):
+class CurrencyRate(Log):
     date = models.DateField()
     base = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING,
                              related_name='%(app_label)s_%(class)s_base')
@@ -296,7 +297,7 @@ class CurrencyRate(core.models.Log):
 
 
 ##### STOCK MARKET TABLES ######
-# class Ticker(core.models.Log):
+# class Ticker(Log):
 #     id = models.CharField(max_length=10, primary_key=True)
 #     short_name = models.CharField(max_length=200, null=True)
 #     long_name = models.CharField(max_length=200, null=True)
@@ -307,7 +308,7 @@ class CurrencyRate(core.models.Log):
 #         db_table = 'finance"."ticker'
 #
 #
-# class TikerHistoricalPrice(core.models.Log):
+# class TikerHistoricalPrice(Log):
 #     date = models.DateField()
 #     open = models.DecimalField(max_digits=28, decimal_places=14)
 #     high = models.DecimalField(max_digits=28, decimal_places=14)
@@ -318,7 +319,7 @@ class CurrencyRate(core.models.Log):
 #     class Meta:
 #         db_table = 'finance"."ticker_historical_price'
 
-class FinanceData(core.models.Log):
+class FinanceData(Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=100)
     index = models.ForeignKey('finance.Index', on_delete=models.DO_NOTHING)
@@ -337,7 +338,7 @@ class FinanceData(core.models.Log):
         db_table = 'finance"."finance_data'
 
 
-class Index(core.models.Log):
+class Index(Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=250, null=True)
@@ -346,7 +347,7 @@ class Index(core.models.Log):
         db_table = 'finance"."index'
 
 
-class Liquidity(core.models.Log):
+class Liquidity(Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=250, null=True)
@@ -355,7 +356,7 @@ class Liquidity(core.models.Log):
         db_table = 'finance"."liquidity'
 
 
-class CashFlow(core.models.Log):
+class CashFlow(Log):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=50)
 
