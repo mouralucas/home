@@ -4,17 +4,18 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 import service.finance.investment
-from base.responses import NotImplementedResponse
-from finance.requests.investment import InvestmentGetSerializer, TypeGetSerializer, ProfitGetSerializer, InvestmentPostSerializer
+from base.responses import NotImplementedResponse, InvalidRequestError
+from finance.requests.investment import InvestmentGetRequest, TypeGetRequest, ProfitGetRequest, InvestmentPostRequest, StatementGetRequest, StatementPostRequest, AllocationGetRequest
+from finance.responses.investment import StatementGetResponse, StatementPostResponse, TypeGetResponse, AllocationGetResponse
 from service.security.security import IsAuthenticated
 
 
 class Investment(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(summary='Get investments of the user', parameters=[InvestmentGetSerializer], responses={200: None})
+    @extend_schema(summary='Get investments of the user', parameters=[InvestmentGetRequest], responses={200: None})
     def get(self, *args, **kwargs):
-        validators = InvestmentGetSerializer(data=self.request.query_params)
+        validators = InvestmentGetRequest(data=self.request.query_params)
         if not validators.is_valid():
             return Response(validators.errors, status=400)
 
@@ -26,9 +27,9 @@ class Investment(APIView):
 
         return Response(response)
 
-    @extend_schema(summary='Create a new investment', request=InvestmentPostSerializer, responses={200: None})
+    @extend_schema(summary='Create a new investment', request=InvestmentPostRequest, responses={200: None})
     def post(self, *args, **kwargs):
-        validators = InvestmentPostSerializer(data=self.request.data)
+        validators = InvestmentPostRequest(data=self.request.data)
         if not validators.is_valid():
             return Response(validators.errors, status=400)
 
@@ -60,38 +61,50 @@ class Statement(APIView):
     @extend_schema(summary='This endpoint was not implemented yet',
                    description='This endpoint fetches the statement for every investment registered by the user.\n '
                                'It can by filtered by investment and/or period range',
-                   parameters=[], responses={501: NotImplementedResponse})
+                   parameters=[StatementGetRequest],
+                   responses={200: StatementGetResponse, 400: InvalidRequestError, 501: NotImplementedResponse})
     def get(self, *args, **kwargs):
+        data = StatementGetRequest(data=self.request.query_params)
+        if not data.is_valid():
+            return Response(InvalidRequestError(data.errors).data, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(NotImplementedResponse({}).data, status=status.HTTP_501_NOT_IMPLEMENTED)
 
     @extend_schema(summary='This endpoint was not implemented yet',
                    description='This endpoint create a new entry for a investment for a specific period',
-                   request=[], responses={501: None})
+                   request=StatementPostRequest,
+                   responses={200: StatementPostResponse, 400: InvalidRequestError, 501: NotImplementedResponse})
     def post(self, *args, **kwargs):
-        period = self.request.query_params.get('period')
+        data = StatementPostRequest(data=self.request.data)
+        if not data.is_valid():
+            return Response(InvalidRequestError(data.errors).data, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({}, status=200)
+        investment_id = data.validated_data.get('investmentId')
+        period = data.validated_data.get('period')
+
+        return Response(NotImplementedResponse({}).data, status=200)
 
 
 class Type(APIView):
-    @extend_schema(summary='Get investment types', parameters=[TypeGetSerializer], responses={200: None})
+    @extend_schema(summary='Get investment types',
+                   parameters=[TypeGetRequest], responses={200: TypeGetResponse, 400: InvalidRequestError})
     def get(self, *args, **kwargs):
-        data = TypeGetSerializer(data=self.request.query_params)
+        data = TypeGetRequest(data=self.request.query_params)
         if not data.is_valid():
-            return Response(data.errors, status=400)
+            return Response(InvalidRequestError(data.errors).data, status=status.HTTP_400_BAD_REQUEST)
 
         show_mode = data.validated_data.get('show_mode')
 
         response = service.finance.investment.Investment().get_investment_type(show_mode=show_mode)
 
-        return Response(response)
+        return Response(response, status=response['statusCode'])
 
 
 class Allocation(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(summary='Get the current investment allocation by investment type', parameters=[], responses={200: None})
+    @extend_schema(summary='Get the current investment allocation by investment type',
+                   parameters=[AllocationGetRequest], responses={200: AllocationGetResponse, 400: InvalidRequestError})
     def get(self, *args, **kwargs):
         user = self.request.user.id
 
@@ -115,11 +128,11 @@ class Profit(APIView):
 
     @extend_schema(summary='This endpoint was not implemented yet',
                    description='This endpoint returns the accumulated profit based in periodicity and start date',
-                   parameters=[], responses={501: None})
+                   parameters=[ProfitGetRequest], responses={400: InvalidRequestError})
     def get(self, *args, **kwargs):
-        data = ProfitGetSerializer(data=self.request.query_params)
+        data = ProfitGetRequest(data=self.request.query_params)
         if not data.is_valid():
-            return Response(data.errors, status=400)
+            return Response(InvalidRequestError(data.errors).data, status=status.HTTP_400_BAD_REQUEST)
 
         start_at = data.validated_data.get('startAt')
         investment_id = data.validated_data.get('investmentId')
@@ -129,7 +142,7 @@ class Profit(APIView):
         response = service.finance.investment.Investment(investment_id=investment_id, owner_id=user) \
             .get_profit(start_at=start_at, index_id=index_id)
 
-        return Response(response, status=200)
+        return Response(response, status=response['statusCode'])
 
 
 class InterestAccumulated(APIView):

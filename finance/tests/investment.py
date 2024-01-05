@@ -39,3 +39,8 @@ class TestInvestment(APITestCase):
         response = self.client.get(self.investment_type_url)
 
         self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+
+class TestInvestment(APITestCase):
+    def setUp(self):
+        pass
