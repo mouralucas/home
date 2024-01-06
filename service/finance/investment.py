@@ -5,8 +5,10 @@ from django.utils.translation import gettext_lazy as _
 
 import pandas as pd
 from django.db.models import F, Sum
+from rest_framework import status
 
 import finance.models
+from finance.responses.investment import TypeGetResponse
 from service.finance.finance import Finance
 from django.utils import timezone
 
@@ -81,6 +83,8 @@ class Investment(Finance):
             maturityAt=F('maturity_at'),
             interestRate=F('interest_rate'),
             interestIndex=F('interest_index'),
+            currencyId=F('currency_id'),
+            currencySymbol=F('currency__symbol'),
             custodianName=F('custodian__name'),
             custodianId=F('custodian_id'),
             investmentTypeId=F('type_id'),
@@ -113,16 +117,19 @@ class Investment(Finance):
         if show_mode != 'all':
             filters['parent_id__isnull'] = True if show_mode == 'father' else False
 
-        investment_type = (finance.models.InvestmentType.objects.values('id', 'name', 'description')
-                           .annotate(parentId=F('parent_id'),
+        investment_type = (finance.models.InvestmentType.objects.values('description')
+                           .annotate(investmentTypeId=F('id'),
+                                     investmentTypeName=F('name'),
+                                     parentId=F('parent_id'),
                                      parentName=F('parent__name'))
                            .filter(**filters).order_by('name'))
 
-        response = {
+        response = TypeGetResponse({
             'success': True,
-            'description': None,
-            'investmentType': list(investment_type)
-        }
+            'statusCode': status.HTTP_200_OK,
+            'quantity': len(investment_type),
+            'investmentTypes': investment_type
+        }).data
 
         return response
 
@@ -308,5 +315,6 @@ class Investment(Finance):
         investment.index_id = '2a2b100f-17d9-4c61-b3b4-f06662113953'  # TODO: adjust to get from request
         investment.liquidity_id = '4f0a614b-3e11-46ab-817e-36f3a6de87f8'  # TODO: adjust to get from request
         investment.owner_id = self.owner_id
+        investment.currency_id = 'BRL'  # TODO: adjust to get from request
 
         return investment

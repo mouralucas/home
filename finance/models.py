@@ -123,6 +123,7 @@ class Investment(Log):
     price = models.DecimalField(max_digits=15, decimal_places=5, null=True, help_text=_('Preço do título no momento da compra'))
     amount = models.DecimalField(max_digits=15, decimal_places=5)
     cash_flow = models.CharField(max_length=100, choices=finance.choices.CashFlow.choices)
+    currency = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING)
     interest_rate = models.CharField(max_length=100, choices=finance.choices.InterestRate.choices)
     index = models.ForeignKey('finance.Index', on_delete=models.DO_NOTHING)
     interest_index = models.CharField(max_length=50)
@@ -131,6 +132,7 @@ class Investment(Log):
     liquidity = models.ForeignKey('finance.Liquidity', on_delete=models.DO_NOTHING)
     is_liquidated = models.BooleanField(default=False)
     liquidated_at = models.DateField(null=True)
+    liquidated_amount = models.DecimalField(max_digits=15, decimal_places=5, null=True)
 
     class Meta:
         db_table = 'finance"."investment'

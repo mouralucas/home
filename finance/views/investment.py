@@ -23,7 +23,8 @@ class Investment(APIView):
         show_mode = validators.validated_data.get('showMode')
         user = self.request.user.id
 
-        response = service.finance.investment.Investment(investment_id=investment_id, owner_id=user).get_investment(show_mode=show_mode)
+        response = (service.finance.investment.Investment(investment_id=investment_id, owner_id=user)
+                    .get_investment(show_mode=show_mode))
 
         return Response(response)
 

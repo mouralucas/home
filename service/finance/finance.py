@@ -25,7 +25,7 @@ class Finance:
         self.period = period
         self.purchase_at = purchase_at
         self.owner = owner
-
+        self.amount = amount
 
     def get_expenses(self, category_id=None):
         pass

@@ -9,11 +9,15 @@ class Files:
 
         self.__validate_file_extension()
 
-    def open_csv(self):
+    def open_csv(self, separator=','):
         """
         Open a csv file and import into a DataFrame and return
         """
-        pass
+        df = pd.read_csv(self.file, sep=separator, encoding='None')
+        df['Valor_Bruto'] = df['Valor_Bruto'].apply(lambda x: x.replace(',', '.'))
+        df['Valor_Bruto'] = df['Valor_Bruto'].apply(lambda x: float(x))
+        df = df[df['Valor_Bruto'] <= 10.00]
+        print(df)
 
     def open_excel(self, sheet_name):
         """
@@ -22,7 +26,7 @@ class Files:
         df = pd.read_excel(self.file, sheet_name=sheet_name)
         print(df)
 
-    def open_xml(self, separator=','):
+    def open_xml(self):
         """
         Open a xml file and import into a DataFrame and return
         """

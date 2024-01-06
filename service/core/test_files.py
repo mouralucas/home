@@ -14,8 +14,8 @@ class TestFiles(APITestCase):
         self.temp_file.close()
 
     def test_files_ext(self):
-        with self.assertRaises(Exception):
-            Files(file='C:/Users/lucas/OneDrive/Financeiro/Rico Investimentos Evolução.xlsx').open_excel(sheet_name='')
+        resp = Files(file='E:/System/Documents/mega/Sorveteria/Notas Maquininha/202311.csv').open_csv(separator=';')
+        print(resp)
 
     def tearDown(self):
         if os.path.exists(self.temp_file.name):

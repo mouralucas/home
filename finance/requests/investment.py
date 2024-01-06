@@ -18,7 +18,6 @@ class InvestmentGetRequest(CustomSerializer):
 
 
 class InvestmentPostRequest(CustomSerializer):
-    parentId = serializers.UUIDField(required=False)
     name = serializers.CharField(required=True)
     date = serializers.DateField(required=True)
     quantity = serializers.DecimalField(max_digits=15, decimal_places=5, required=True)
