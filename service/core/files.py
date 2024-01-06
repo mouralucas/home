@@ -9,11 +9,11 @@ class Files:
 
         self.__validate_file_extension()
 
-    def open_csv(self, separator=','):
+    def open_csv(self, separator=',', encoding='utf-8', index_col=True):
         """
         Open a csv file and import into a DataFrame and return
         """
-        df = pd.read_csv(self.file, sep=separator, encoding='None')
+        df = pd.read_csv(self.file, sep=separator, encoding='latin1', index_col=False)
         df['Valor_Bruto'] = df['Valor_Bruto'].apply(lambda x: x.replace(',', '.'))
         df['Valor_Bruto'] = df['Valor_Bruto'].apply(lambda x: float(x))
         df = df[df['Valor_Bruto'] <= 10.00]
