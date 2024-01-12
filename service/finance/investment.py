@@ -35,32 +35,20 @@ class Investment(Finance):
         self.request = request
 
     def set_investment(self):
-
+        # Rewrite this method
+        # TODO: Need to include missing parameters that are hard coded rn, like index_id and liquidity_id
+        # The Investment serializer are created, but need to check it all fields are mapped
         self.amount = decimal.Decimal(self.amount) * -1 if self.cash_flow == 'OUTGOING' else self.amount
 
-        if not self.parent_id:
-            # The first entry of the investment contains 2 rows, the first (without parent_id) is the total of the investment
-            #   Any other row (with parent_id) representes each transaction in the investment, and changes the amount of the parent
-            investment = self.__set_investment()
-            investment.save(request_=self.request)
-
-            # child_investment = finance.models.Investment.objects.filter(pk=investment.pk).first()
-            # child_investment.pk = None
-            # child_investment.parent_id = investment.pk
-            # child_investment.save(request_=self.request)
-
-        else:
-            parent_investment = finance.models.Investment.objects.filter(pk=self.parent_id).first()
-            parent_investment.amount += decimal.Decimal(self.amount)
-            parent_investment.interest_index = 'Variable' if self.interest_index.strip() != parent_investment.interest_index else parent_investment.interest_index
-            parent_investment.save(request_=self.request)
-
-            child_investment = self.__set_investment()
-            child_investment.liquidity_id = '4f0a614b-3e11-46ab-817e-36f3a6de87f8'
-            child_investment.save(request_=self.request)
+        investment = self.__set_investment()
+        investment.save(request_=self.request)
 
         response = {
             'success': True,
+            'statusCode': status.HTTP_201_CREATED,
+            'investment': {
+                'investmentId': investment.pk
+            }
         }
         return response
 
@@ -311,7 +299,6 @@ class Investment(Finance):
         investment.type_id = self.type_id
         investment.maturity_at = self.dat_maturity if self.dat_maturity not in ('', 'null') else None
         investment.custodian_id = self.custodian_id
-        investment.parent_id = self.parent_id
         investment.index_id = '2a2b100f-17d9-4c61-b3b4-f06662113953'  # TODO: adjust to get from request
         investment.liquidity_id = '4f0a614b-3e11-46ab-817e-36f3a6de87f8'  # TODO: adjust to get from request
         investment.owner_id = self.owner_id

@@ -1,4 +1,5 @@
 import uuid
+from builtins import max
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -364,3 +365,21 @@ class CashFlow(Log):
 
     class Meta:
         db_table = 'finance"."cash_flow'
+
+
+class PosStatement(Log):
+    transaction_id = models.CharField(max_length=200, null=True, unique=True)
+    cash_flow = models.ForeignKey('finance.CashFlow', on_delete=models.DO_NOTHING)
+    transaction_status = models.CharField(max_length=300, null=True)
+    method = models.CharField(max_length=200, null=True)
+    amount_gross = models.DecimalField(max_digits=14, decimal_places=2)
+    amount_discount = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    amount_fee = models.DecimalField(max_digits=14, decimal_places=2)
+    amount_net = models.DecimalField(max_digits=14, decimal_places=2)
+    transaction_date = models.DateTimeField()
+    settlement_date = models.DateTimeField()
+    credit_card_brand = models.CharField(max_length=150, null=True)
+    fee_detail = models.JSONField(null=True, help_text='Json tha contain all fees separately, the key is the name and value the amount')
+
+    class Meta:
+        db_table = 'finance"."pos_statement'

@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class InvestmentGetRequest(CustomSerializer):
-    investmentId = serializers.UUIDField(required=False)
+    investmentId = serializers.UUIDField(required=False)  # Remove and create put/patch endpoint
     showMode = serializers.CharField(required=True)
 
     def validate_showMode(self, value):

@@ -3,21 +3,29 @@ import pandas as pd
 
 
 class Files:
+    """
+    :Name: CustomSerializer
+    :Created by: Lucas Penha de Moura - 04/01/2024
+    :Edited by:
+
+    This service is used when a file need to be validated before used.
+    """
+
     def __init__(self, file):
         self.file = file
         self.allowed_extensions = ['.txt', '.csv', '.xml', '.yaml', '.xlsx']
 
         self.__validate_file_extension()
+        # TODO: after validate ext, call the function that opens the file, maybe use a param that asks
+        # if the user want the return automatically, something like 'return_df'
 
     def open_csv(self, separator=',', encoding='utf-8', index_col=True):
         """
         Open a csv file and import into a DataFrame and return
+        It only apply the specified values in parameters
         """
-        df = pd.read_csv(self.file, sep=separator, encoding='latin1', index_col=False)
-        df['Valor_Bruto'] = df['Valor_Bruto'].apply(lambda x: x.replace(',', '.'))
-        df['Valor_Bruto'] = df['Valor_Bruto'].apply(lambda x: float(x))
-        df = df[df['Valor_Bruto'] <= 10.00]
-        print(df)
+        df = pd.read_csv(self.file, sep=separator, encoding=encoding, index_col=index_col)
+        return df
 
     def open_excel(self, sheet_name):
         """

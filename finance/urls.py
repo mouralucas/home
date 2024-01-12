@@ -21,20 +21,19 @@ urlpatterns = [
     re_path(r'^investment/allocation$', investment.Allocation.as_view()),
     re_path(r'^investment/statement$', investment.Statement.as_view()),
     re_path(r'^investment/statement/upload$', views_deprecated.InvestmentStatementUpload.as_view()),
-    re_path(r'^investment/profit', investment.Profit.as_view()),
+    re_path(r'^investment/profit$', investment.Profit.as_view()),
 
-    # Point os Sales (PagSeguro)
-    re_path(r'^pos/import/pag-seguro', pos.PagSeguroImportStatement.as_view()),
+    # Point os Sales
+    re_path(r'^pos/providers$', pos.Providers.as_view()),
+    re_path(r'^pos/statement/import$', pos.ImportStatement.as_view()),
 
     # Dashboard
-    re_path(r'summary', core.Summary.as_view()),
+    re_path(r'^summary$', core.Summary.as_view()),
 
     # Other
     re_path(r'^currency$', core.Currency.as_view()),
     re_path(r'^cash-flow$', core.CashFlow.as_view()),
     re_path(r'^bank$', core.Bank.as_view()),
-
-    re_path(r'^upload/pdf', views_deprecated.PdfImport.as_view()),
 
     re_path(r'^transaction/category/list$', core.TransactionByCategoryList.as_view()),
     re_path(r'^transaction/category/aggregated$', core.TransactionsByCategoryAggregated.as_view()),
