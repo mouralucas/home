@@ -93,7 +93,7 @@ class CreditCard(Finance):
 
         self.purchase_at = data.get('purchaseAt')
         year = data.get('paymentAt').year
-        month = data.get('paymentAt').year
+        month = data.get('paymentAt').month
         self.period = year * 100 + month
 
         # Basic

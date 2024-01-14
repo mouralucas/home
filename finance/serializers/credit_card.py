@@ -12,7 +12,7 @@ class CreditCardSerializer(CustomSerializer):
 
 
 class CreditCardBill(CustomSerializer):
-    creditCardBillEntryId = serializers.IntegerField(help_text='The id of the bill entry')  # TODO change to entryId?
+    creditCardBillEntryId = serializers.IntegerField(help_text='The id of the bill entry')
     period = serializers.IntegerField(help_text='The period of the purchase')
     amount = serializers.DecimalField(max_digits=14, decimal_places=2, help_text='Tha amount of the purchase')
     purchaseAt = serializers.DateField(help_text='The purchase date')
@@ -27,5 +27,6 @@ class CreditCardBill(CustomSerializer):
     totalInstallment = serializers.IntegerField(help_text='The total installments made')
     createdAt = serializers.DateTimeField(help_text='The date that the entry was created')
     lastEditedAt = serializers.DateTimeField(help_text='The date that the entry was last edited')
+    description = serializers.CharField(required=False, help_text='Description of the purchase')
 
 
