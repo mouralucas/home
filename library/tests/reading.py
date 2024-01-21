@@ -31,7 +31,16 @@ class TestItemReading(APITestCase):
             Reading.objects.create(
                 id=self.first_reading_id,
                 item_id=self.item_id,
-                end_at=timezone.now(),
+                start_at=timezone.now() - timezone.timedelta(days=120),
+                end_at=timezone.now() - timezone.timedelta(days=60),
+            )
+
+        if self._testMethodName in ['test_set_second_reading_fail']:
+            self.first_reading_id = uuid.uuid4()
+            Reading.objects.create(
+                id=self.first_reading_id,
+                item_id=self.item_id,
+                start_at=timezone.now() - timezone.timedelta(days=15),
             )
 
     def test_set_first_reading_success(self):
@@ -50,17 +59,28 @@ class TestItemReading(APITestCase):
         self.assertIn('isDropped', response.data['reading'])
         self.assertFalse(response.data['reading']['isDropped'])
 
-    # def test_set_second_reading_success(self):
-    #     payload = {
-    #         'itemId': self.item_id,
-    #         'startAt': timezone.now()
-    #     }
-    #     response = self.client.post(self.url, data=payload)
-    #
-    #     self.assertEquals(status.HTTP_200_OK, response.status_code)
-    #     self.assertTrue(response.data['success'])
-    #     self.assertIn('reading', response.data)
-    #     self.assertIn('number', response.data['reading'])
-    #     self.assertEquals(2, response.data['reading']['number'])
-    #     self.assertIn('isDropped', response.data['reading'])
-    #     self.assertFalse(response.data['reading']['isDropped'])
+    def test_set_second_reading_success(self):
+        payload = {
+            'itemId': self.item_id,
+            'startAt': timezone.localdate()
+        }
+        response = self.client.post(self.url_reading, data=payload)
+
+        self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+        self.assertTrue(response.data['success'])
+
+        self.assertIn('reading', response.data)
+        self.assertIn('number', response.data['reading'])
+        self.assertEquals(2, response.data['reading']['number'])
+        self.assertIn('isDropped', response.data['reading'])
+        self.assertFalse(response.data['reading']['isDropped'])
+
+    def test_set_second_reading_fail(self):
+        payload = {
+            'itemId': self.item_id,
+            'startAt': timezone.localdate()
+        }
+        response = self.client.post(self.url_reading, data=payload)
+
+        self.assertEquals(status.HTTP_409_CONFLICT, response.status_code)
+        self.assertFalse(response.data['success'])

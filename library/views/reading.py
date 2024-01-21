@@ -2,7 +2,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.views import APIView, Response
 from rest_framework import status
 
-from base.responses import InvalidRequestError
+from base.responses import InvalidRequestError, DefaultErrorResponse
 from library.requests.reading import ReadingGetRequest, ReadingPostRequest
 from library.responses.reading import ReadingPostResponse, ReadingGetResponse
 from service.library.reading import Reading as ReadingService
@@ -20,7 +20,7 @@ class Reading(APIView):
             return Response(InvalidRequestError(data.errors).data, status=status.HTTP_400_BAD_REQUEST)
 
     @extend_schema(summary='Create a new reading for a item',
-                   request=ReadingPostRequest, responses={201: ReadingPostResponse, 400: InvalidRequestError})
+                   request=ReadingPostRequest, responses={201: ReadingPostResponse, 400: InvalidRequestError, 409: DefaultErrorResponse})
     def post(self, *args, **kwargs):
         data = ReadingPostRequest(data=self.request.data)
         if not data.is_valid():

@@ -1,8 +1,9 @@
+from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 
 import library.models
+from base.responses import DefaultErrorResponse
 from library.responses.reading import ReadingPostResponse
-from library.serializers.reading import ReadingSerializer
 from service.library.library import Library
 
 
@@ -15,10 +16,11 @@ class Reading(Library):
 
         if past_readings and not past_readings.first().end_at:
             # Add error return that current reading is not done
-            return {
+            return DefaultErrorResponse({
                 'status': False,
-                'statusCOde': status.HTTP_400_BAD_REQUEST
-            }
+                'statusCode': status.HTTP_409_CONFLICT,
+                'message': _('Já existe uma leitura em andamento para este item')
+            }).data
 
         total_readings = past_readings.count()
 
