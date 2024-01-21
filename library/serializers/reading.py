@@ -8,5 +8,5 @@ class ReadingSerializer(CustomSerializer):
     itemTitle = serializers.CharField(required=True)
     startAt = serializers.DateField(required=True)
     endAt = serializers.DateField(required=False)
-    number = serializers.IntegerField(required=True)
+    readingNumber = serializers.IntegerField(required=True)
     isDropped = serializers.BooleanField(required=False)

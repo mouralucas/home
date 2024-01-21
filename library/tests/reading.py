@@ -26,7 +26,7 @@ class TestItemReading(APITestCase):
             title='Item de teste'
         )
 
-        if self._testMethodName in ['test_set_second_reading_success']:
+        if self._testMethodName in ['test_set_second_reading_success', 'test_get_reading_success']:
             self.first_reading_id = uuid.uuid4()
             Reading.objects.create(
                 id=self.first_reading_id,
@@ -54,8 +54,8 @@ class TestItemReading(APITestCase):
         self.assertTrue(response.data['success'])
 
         self.assertIn('reading', response.data)
-        self.assertIn('number', response.data['reading'])
-        self.assertEquals(1, response.data['reading']['number'])
+        self.assertIn('readingNumber', response.data['reading'])
+        self.assertEquals(1, response.data['reading']['readingNumber'])
         self.assertIn('isDropped', response.data['reading'])
         self.assertFalse(response.data['reading']['isDropped'])
 
@@ -70,8 +70,8 @@ class TestItemReading(APITestCase):
         self.assertTrue(response.data['success'])
 
         self.assertIn('reading', response.data)
-        self.assertIn('number', response.data['reading'])
-        self.assertEquals(2, response.data['reading']['number'])
+        self.assertIn('readingNumber', response.data['reading'])
+        self.assertEquals(2, response.data['reading']['readingNumber'])
         self.assertIn('isDropped', response.data['reading'])
         self.assertFalse(response.data['reading']['isDropped'])
 
@@ -84,3 +84,15 @@ class TestItemReading(APITestCase):
 
         self.assertEquals(status.HTTP_409_CONFLICT, response.status_code)
         self.assertFalse(response.data['success'])
+
+    def test_get_reading_success(self):
+        payload = {
+            'itemId': self.item_id
+        }
+        response = self.client.get(self.url_reading, data=payload)
+
+        self.assertEquals(status.HTTP_200_OK, response.status_code)
+        self.assertTrue(response.data['success'])
+
+        self.assertIn('readings', response.data)
+        self.assertIsInstance(response.data['readings'], list)

@@ -24,6 +24,8 @@ class Reading(APIView):
 
         response = ReadingService(owner=user, item_id=item_id).get_reading()
 
+        return Response(response, status=response['statusCode'])
+
     @extend_schema(summary='Create a new reading for a item',
                    request=ReadingPostRequest, responses={201: ReadingPostResponse, 400: InvalidRequestError, 409: DefaultErrorResponse})
     def post(self, *args, **kwargs):

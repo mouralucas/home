@@ -42,7 +42,7 @@ class Reading(Library):
                 'itemTitle': new_reading.item.title,
                 'startAt': new_reading.start_at,
                 'endAt': new_reading.end_at,
-                'number': new_reading.number,
+                'readingNumber': new_reading.number,
                 'isDropped': new_reading.is_dropped
             }
         }).data
@@ -56,10 +56,10 @@ class Reading(Library):
             itemTitle=F('item__title'),
             startAt=F('start_at'),
             endAt=F('end_at'),
-            number=F('number'),
+            readingNumber=F('number'),
             isDropped=F('is_dropped')
-        ).values('readingId', 'itemId', 'itemTitle', 'startAt', 'endAt', 'number', 'isDropped')
-                    .filter(item_id=self.item_id)).order_br('number')
+        ).values('readingId', 'itemId', 'itemTitle', 'startAt', 'endAt', 'readingNumber', 'isDropped')
+                    .filter(item_id=self.item_id)).order_by('number')
 
         response = ReadingGetResponse({
             'success': True,
