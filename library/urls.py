@@ -1,13 +1,14 @@
 from django.urls import re_path
 
 # from library import ajax
-from library.views import views_deprecated, item
+from library.views import views_deprecated, item, reading
 
 urlpatterns = [
     # Items
     re_path('^item$', item.Item.as_view(), name='item'),
     re_path('^item/author$', views_deprecated.ItemAuthor.as_view(), name='item_author'),
-    re_path('^item/reading$', views_deprecated.ItemReading.as_view()),
+    re_path('^item/reading$', reading.Reading.as_view()),
+    re_path(r'^item/reading/progress', reading.Progress.as_view()),
 
     # Others
     re_path('^author$', views_deprecated.Author.as_view(), name='author'),

@@ -18,17 +18,17 @@ class InvestmentGetRequest(CustomSerializer):
 
 
 class InvestmentPostRequest(CustomSerializer):
-    name = serializers.CharField(required=True)
-    date = serializers.DateField(required=True)
-    quantity = serializers.DecimalField(max_digits=15, decimal_places=5, required=True)
-    price = serializers.DecimalField(max_digits=15, decimal_places=5, required=True)
-    amount = serializers.DecimalField(max_digits=15, decimal_places=5, required=True)
-    cashFlowId = serializers.CharField(required=True)
-    interestRate = serializers.CharField(required=True)
-    interestIndex = serializers.CharField(required=True)
-    investmentTypeId = serializers.UUIDField(required=True)
-    maturityDate = serializers.DateField(required=False)
-    custodianId = serializers.UUIDField(required=True)
+    name = serializers.CharField(required=True, help_text='The name of the investment')
+    date = serializers.DateField(required=True, help_text='The data that the investment was made')
+    quantity = serializers.DecimalField(max_digits=15, decimal_places=5, required=True, help_text='The quantity bought')
+    price = serializers.DecimalField(max_digits=15, decimal_places=5, required=True, help_text='The price of the paper')
+    amount = serializers.DecimalField(max_digits=15, decimal_places=5, required=True, help_text='The amount of money invested')
+    cashFlowId = serializers.CharField(required=True, help_text='The flow of the cash, incoming or outgoing')
+    interestRate = serializers.CharField(required=True, help_text='The interest rate of the investment, fixed/floating')
+    interestIndex = serializers.CharField(required=True, help_text='The interest index, how much the investment will grow')
+    investmentTypeId = serializers.UUIDField(required=True, help_text='The type of investment, e.g bonds, stocks, etc')
+    maturityDate = serializers.DateField(required=False, help_text='The maturity date of the investment')
+    custodianId = serializers.UUIDField(required=True, help_text='The custodian of the investment')
 
 
 class TypeGetRequest(CustomSerializer):

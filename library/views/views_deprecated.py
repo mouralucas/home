@@ -18,12 +18,6 @@ class ItemAuthor(View):
         return JsonResponse(response, safe=False)
 
 
-class ItemReading(APIView):
-    def get(self, *args, **kwargs):
-        pass
-
-    def post(self, *args, **kwargs):
-        pass
 
 
 class Author(APIView):

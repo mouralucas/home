@@ -1,22 +1,10 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from base.serializers import CustomSerializer
+
+from base.responses import CustomSerializer
 
 
-class ItemGetSerializer(CustomSerializer):
-    itemId = serializers.IntegerField(required=False)
-    itemType = serializers.CharField(required=True)
-    isUnique = serializers.BooleanField(required=False, default=False)
-
-    def validate_itemType(self, value):
-        choices = ['all', 'book', 'manga']
-        if value not in choices or not value:
-            raise ValidationError(f"O valor '{value}' não é válido. Escolha uma das opções: {', '.join(choices)}.")
-
-        return value
-
-
-class ItemPostSerializer(CustomSerializer):
+class ItemPostRequest(CustomSerializer):
     itemId = serializers.IntegerField(required=False)
     lastStatusId = serializers.CharField(required=True)
     lastStatusAt = serializers.DateField(required=True)
@@ -48,16 +36,14 @@ class ItemPostSerializer(CustomSerializer):
     summary = serializers.CharField(required=False)
 
 
-class ItemReadingPostSerializer(CustomSerializer):
-    itemId = serializers.IntegerField(required=True)
-    startAt = serializers.DateField(required=False)
-    endAt = serializers.DateField(required=False)
-    isDropped = serializers.BooleanField(default=False)
+class ItemGetRequest(CustomSerializer):
+    itemId = serializers.IntegerField(required=False)
+    itemType = serializers.CharField(required=True)
+    isUnique = serializers.BooleanField(required=False, default=False)
 
+    def validate_itemType(self, value):
+        choices = ['all', 'book', 'manga']
+        if value not in choices or not value:
+            raise ValidationError(f"O valor '{value}' não é válido. Escolha uma das opções: {', '.join(choices)}.")
 
-class AuthorGetSerializer(CustomSerializer):
-    pass
-
-
-class AuthorPostSerializer(CustomSerializer):
-    pass
+        return value

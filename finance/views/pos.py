@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.views import Response, APIView
 
 from base.responses import NotImplementedResponse, InvalidRequestError
-from finance.requests.pos import AvailableProvidersGetRequest, StatementPostRequest
+from finance.requests.pos import StatementPostRequest
 from service.finance.pos import PointOfSales
 
 
@@ -25,6 +25,6 @@ class ImportStatement(APIView):
 
 class Providers(APIView):
     @extend_schema(summary='Get available POS providers', description='Not implemented yet',
-                   parameters=[AvailableProvidersGetRequest], responses={200: None, 501: NotImplementedResponse})
+                   parameters=None, responses={200: None, 501: NotImplementedResponse})
     def get(self, *args, **kwargs):
         return Response(NotImplementedResponse({}).data, status=status.HTTP_501_NOT_IMPLEMENTED)

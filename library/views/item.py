@@ -1,11 +1,12 @@
 from django.http import JsonResponse
+from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import service.core.core
 import service.library.author
 import service.library.library
-from library.serializers import ItemGetSerializer, ItemPostSerializer
+from library.requests.item import ItemPostRequest, ItemGetRequest
 from service.security.security import IsAuthenticated
 
 
@@ -20,8 +21,10 @@ class Item(APIView):
     :return
     """
 
+    @extend_schema(summary='Get items',
+                   parameters=[ItemGetRequest], responses={200: None, 400: None})
     def get(self, *args, **kwargs):
-        data = ItemGetSerializer(data=self.request.query_params)
+        data = ItemGetRequest(data=self.request.query_params)
         if not data.is_valid():
             return Response(data.errors, status=400)
 
@@ -34,8 +37,10 @@ class Item(APIView):
 
         return Response(response)
 
+    @extend_schema(summary='Create a new item',
+                   request=ItemPostRequest, responses={201: None, 400: None})
     def post(self, *args, **kwargs):
-        data = ItemPostSerializer(data=self.request.data)
+        data = ItemPostRequest(data=self.request.data)
         if not data.is_valid():
             return Response(data.errors, status=400)
 
@@ -44,9 +49,3 @@ class Item(APIView):
         response = service.library.library.Library(item_id=data.validated_data.get('itemId'), owner=user).set_item(data=data, request=self.request)
 
         return JsonResponse(response, safe=False)
-
-    def get_serializer_class(self):
-        if self.request.method == 'GET':
-            return ItemGetSerializer
-        elif self.request.method == 'POST':
-            return ItemPostSerializer

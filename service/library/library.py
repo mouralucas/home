@@ -5,7 +5,7 @@ import core.models
 import library.models
 import util.Format
 import util.datetime
-from library.serializers import ItemPostSerializer
+from library.requests.item import ItemPostRequest
 
 
 class Library:
@@ -15,15 +15,15 @@ class Library:
         self.item_type = item_type
         self.owner = owner
 
-    def set_item(self, data: ItemPostSerializer = None, request=None):
+    def set_item(self, data: ItemPostRequest = None, request=None):
         """
         :Name: set_item
-        :descrição: Atualiza o status do item
+        :description: Atualiza o status do item
         :Created by: Lucas Penha de Moura - 23/07/2022
         :Edited by:
 
         Explicit params:
-        :param data: The request data, describe in ItemPostSerializer
+        :param data: The request data, describe in ItemPostRequest
         :param request: Request
 
         Implicit params (passed in the class instance or set by other functions):
@@ -35,7 +35,6 @@ class Library:
             item = library.models.Item.objects.filter(pk=self.item_id).first()
             if not item:
                 item = library.models.Item()
-
 
         item.main_author_id = data.validated_data.get('mainAuthorId')
         item.title = data.validated_data.get('title')
