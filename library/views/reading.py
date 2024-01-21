@@ -19,6 +19,11 @@ class Reading(APIView):
         if not data.is_valid():
             return Response(InvalidRequestError(data.errors).data, status=status.HTTP_400_BAD_REQUEST)
 
+        item_id = data.validated_data.get('itemId')
+        user = self.request.user.id
+
+        response = ReadingService(owner=user, item_id=item_id).get_reading()
+
     @extend_schema(summary='Create a new reading for a item',
                    request=ReadingPostRequest, responses={201: ReadingPostResponse, 400: InvalidRequestError, 409: DefaultErrorResponse})
     def post(self, *args, **kwargs):

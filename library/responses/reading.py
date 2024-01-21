@@ -6,8 +6,9 @@ from library.serializers.reading import ReadingSerializer
 
 
 class ReadingGetResponse(CustomSerializer, DefaultSuccessResponse):
+    quantity = serializers.IntegerField(read_only=True)
     readings = ReadingSerializer(many=True, read_only=True)
 
 
 class ReadingPostResponse(CustomSerializer, DefaultSuccessResponse):
-    reading = ReadingSerializer()
+    reading = ReadingSerializer(read_only=True)

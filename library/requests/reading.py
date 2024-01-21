@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 
 class ReadingGetRequest(CustomSerializer):
-    pass
+    itemId = serializers.IntegerField(required=True)
 
 
 class ReadingPostRequest(CustomSerializer):

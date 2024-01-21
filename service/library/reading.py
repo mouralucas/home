@@ -1,9 +1,10 @@
+from django.db.models import F
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 
 import library.models
 from base.responses import DefaultErrorResponse
-from library.responses.reading import ReadingPostResponse
+from library.responses.reading import ReadingPostResponse, ReadingGetResponse
 from service.library.library import Library
 
 
@@ -38,6 +39,7 @@ class Reading(Library):
             'reading': {
                 'readingId': new_reading.pk,
                 'itemId': new_reading.item_id,
+                'itemTitle': new_reading.item.title,
                 'startAt': new_reading.start_at,
                 'endAt': new_reading.end_at,
                 'number': new_reading.number,
@@ -48,8 +50,22 @@ class Reading(Library):
         return response
 
     def get_reading(self):
-        readings = library.models.Reading.objects.filter(item_id=self.item_id)
+        readings = (library.models.Reading.objects.annotate(
+            readingId=F('pk'),
+            itemId=F('item_id'),
+            itemTitle=F('item__title'),
+            startAt=F('start_at'),
+            endAt=F('end_at'),
+            number=F('number'),
+            isDropped=F('is_dropped')
+        ).values('readingId', 'itemId', 'itemTitle', 'startAt', 'endAt', 'number', 'isDropped')
+                    .filter(item_id=self.item_id)).order_br('number')
 
-    def __set_reading_number(self):
-        # TODO: read the model filtering by item and owner and count to return number
-        pass
+        response = ReadingGetResponse({
+            'success': True,
+            'statusCode': status.HTTP_200_OK,
+            'quantity': len(readings),
+            'readings': readings
+        }).data
+
+        return response
