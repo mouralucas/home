@@ -65,6 +65,7 @@ class Progress(APIView):
 
         user = self.request.user.id
 
-        response = ReadingService(owner=user).set_progress()
+        response = ReadingService(owner=user).set_progress(reading_id=reading_id, page=page, percentage=percentage,
+                                                           rate=rate, comment=comment)
 
         return Response(response, status=response['statusCode'])

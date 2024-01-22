@@ -6,7 +6,7 @@ from rest_framework import status
 import library.models
 from base.responses import DefaultErrorResponse
 from library.models import (Reading as ReadingModel, ReadingProgress as ReadingProgressModel)
-from library.responses.reading import ReadingPostResponse, ReadingGetResponse
+from library.responses.reading import ReadingPostResponse, ReadingGetResponse, ProgressPostResponse
 from service.library.library import Library
 
 
@@ -99,6 +99,25 @@ class Reading(Library):
             new_progress_entry.page = page
             new_progress_entry.percentage = percentage
 
+        if percentage is not None:
+            page = 0
+            new_progress_entry.page = page
+            new_progress_entry.percentage = percentage
 
+        new_progress_entry.save(request_=self.request)
 
+        response = ProgressPostResponse({
+            'success': True,
+            'statusCode': status.HTTP_201_CREATED,
+            'readingProgress': {
+                'readingProgressEntryId': new_progress_entry.pk,
+                'readingId': new_progress_entry.reading_id,
+                'page': new_progress_entry.page,
+                'percentage': new_progress_entry.percentage,
+                'rate': new_progress_entry.rate,
+                'comment': new_progress_entry.comment
+            }
+        }).data
+
+        return response
 

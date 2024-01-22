@@ -2,7 +2,7 @@ from base.serializers import CustomSerializer
 from base.responses import DefaultSuccessResponse
 from rest_framework import serializers
 
-from library.serializers.reading import ReadingSerializer
+from library.serializers.reading import ReadingSerializer, ProgressSerializer
 
 
 class ReadingGetResponse(CustomSerializer, DefaultSuccessResponse):
@@ -12,3 +12,7 @@ class ReadingGetResponse(CustomSerializer, DefaultSuccessResponse):
 
 class ReadingPostResponse(CustomSerializer, DefaultSuccessResponse):
     reading = ReadingSerializer(read_only=True)
+
+
+class ProgressPostResponse(CustomSerializer, DefaultSuccessResponse):
+    readingProgress = ProgressSerializer(read_only=True)

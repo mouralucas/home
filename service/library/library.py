@@ -14,6 +14,7 @@ class Library:
         self.item = item
         self.item_type = item_type
         self.owner = owner
+        self.request = None
 
     def set_item(self, data: ItemPostRequest = None, request=None):
         """
