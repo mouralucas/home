@@ -19,7 +19,7 @@ class Files:
         # TODO: after validate ext, call the function that opens the file, maybe use a param that asks
         # if the user want the return automatically, something like 'return_df'
 
-    def open_csv(self, separator=',', encoding='utf-8', index_col=True):
+    def open_csv(self, separator=',', encoding='utf-8', index_col=None):
         """
         Open a csv file and import into a DataFrame and return
         It only apply the specified values in parameters

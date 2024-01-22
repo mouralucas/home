@@ -11,6 +11,7 @@ class TestFiles(APITestCase):
     def setUp(self):
         csv_content_semicolon = b"Username;Identifier;First name;Last name\nbooker12;9012;Rachel;Booker"
         self.temp_file = create_temp_file(csv_content_semicolon)
+        self.temp_file_not_allowed = create_temp_file(csv_content_semicolon, suffix='.tsv')
 
     def test_file_ext_success(self):
         """
@@ -24,7 +25,7 @@ class TestFiles(APITestCase):
 
     def test_files_ext_fail(self):
         with self.assertRaises(Exception):
-            response = Files(file=self.temp_file.name)
+            response = Files(file=self.temp_file_not_allowed.name)
 
     def test_open_csv(self):
         response = Files(self.temp_file.name).open_csv()
@@ -33,10 +34,11 @@ class TestFiles(APITestCase):
 
     def tearDown(self):
         delete_temp_file(self.temp_file.name)
+        delete_temp_file(self.temp_file_not_allowed.name)
 
 
-def create_temp_file(file_bytes):
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.csv')
+def create_temp_file(file_bytes, suffix=".csv"):
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
     temp_file.write(file_bytes)
     temp_file.close()
 

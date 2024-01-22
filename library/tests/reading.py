@@ -7,7 +7,7 @@ from rest_framework import status
 from library.models import Reading, Item
 
 
-class TestItemReading(APITestCase):
+class TestReading(APITestCase):
     def setUp(self):
         self.credentials = {
             'username': config('TEST_USER'),
@@ -17,7 +17,6 @@ class TestItemReading(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Bearer {}'.format(self.response.data['access']))
 
         self.url_reading = '/library/item/reading'
-        self.url_reading_progress = '/library/reading/progress'
         self.item_id = 100000
 
         Item.objects.create(
@@ -96,3 +95,18 @@ class TestItemReading(APITestCase):
 
         self.assertIn('readings', response.data)
         self.assertIsInstance(response.data['readings'], list)
+
+
+class TestReadingProgress(APITestCase):
+    def setUp(self):
+        self.credentials = {
+            'username': config('TEST_USER'),
+            'password': config('TEST_USER_PASS'),
+        }
+        self.response = self.client.post('/user/login', data=self.credentials)
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer {}'.format(self.response.data['access']))
+
+        self.url_reading_progress = '/library/item/reading/progress'
+
+    def test_set_progress(self):
+        pass

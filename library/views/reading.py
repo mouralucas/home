@@ -3,7 +3,7 @@ from rest_framework.views import APIView, Response
 from rest_framework import status
 
 from base.responses import InvalidRequestError, DefaultErrorResponse
-from library.requests.reading import ReadingGetRequest, ReadingPostRequest
+from library.requests.reading import ReadingGetRequest, ReadingPostRequest, ProgressPostRequest
 from library.responses.reading import ReadingPostResponse, ReadingGetResponse
 from service.library.reading import Reading as ReadingService
 from service.security.security import IsAuthenticated
@@ -45,8 +45,26 @@ class Reading(APIView):
 
 
 class Progress(APIView):
+
+    @extend_schema(summary='Get all reading progress from an item')
     def get(self, *args, **kwargs):
         pass
 
+    @extend_schema(summary='Save current progress from a reading',
+                   request=ProgressPostRequest, responses={200: None, 400: InvalidRequestError})
     def post(self, *args, **kwargs):
-        pass
+        data = ProgressPostRequest(data=self.request.data)
+        if not data.is_valid():
+            return Response(InvalidRequestError(data.errors).data, status=status.HTTP_400_BAD_REQUEST)
+
+        reading_id = data.validated_data.get('readingId')
+        page = data.validated_data.get('page')
+        percentage = data.validated_data.get('percentage')
+        rate = data.validated_data.get('rate')
+        comment = data.validated_data.get('comment')
+
+        user = self.request.user.id
+
+        response = ReadingService(owner=user).set_progress()
+
+        return Response(response, status=response['statusCode'])
