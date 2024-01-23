@@ -9,12 +9,12 @@ from library.requests.item import ItemPostRequest
 
 
 class Library:
-    def __init__(self, item_id=None, item=None, item_type=None, owner=None):
+    def __init__(self, item_id=None, item=None, item_type=None, owner=None, request=None):
         self.item_id = item_id
         self.item = item
         self.item_type = item_type
         self.owner = owner
-        self.request = None
+        self.request = request
 
     def set_item(self, data: ItemPostRequest = None, request=None):
         """

@@ -1,5 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from base.serializers import CustomSerializer
 
@@ -16,7 +17,7 @@ class ReadingPostRequest(CustomSerializer):
 
 
 class ProgressGetRequest(CustomSerializer):
-    pass
+    readingId = serializers.UUIDField(required=True)
 
 
 class ProgressPostRequest(CustomSerializer):
@@ -31,9 +32,10 @@ class ProgressPostRequest(CustomSerializer):
         percentage = data.get('percentage')
 
         if page is not None and percentage is not None:
-            raise serializers.ValidationError(_('Ambos \'page\' e \'percentage\' não podem ser fornecidos simultaneamente.'))
+            raise ValidationError(_('Ambos \'page\' e \'percentage\' não podem ser fornecidos simultaneamente.'))
 
         if page is None and percentage is None:
-            raise serializers.ValidationError(_('Um dos campos \'page\' ou \'percentage\' deve ser fornecido.'))
+            raise ValidationError(_('Um dos campos \'page\' ou \'percentage\' deve ser fornecido.'))
 
         return data
+

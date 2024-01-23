@@ -120,6 +120,14 @@ class TestReadingProgress(APITestCase):
         self.assertEquals(str(self.reading_id), response.data['readingProgress']['readingId'])
         self.assertEquals(self.page, response.data['readingProgress']['page'])
 
+    def test_set_progress_fail(self):
+        payload = {
+            'readingId': self.reading_id,
+        }
+        response = self.client.post(self.url_reading_progress, data=payload)
+
+        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+
 
 def create_item(item_id):
     Item.objects.create(

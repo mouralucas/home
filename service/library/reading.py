@@ -6,13 +6,13 @@ from rest_framework import status
 import library.models
 from base.responses import DefaultErrorResponse
 from library.models import (Reading as ReadingModel, ReadingProgress as ReadingProgressModel)
-from library.responses.reading import ReadingPostResponse, ReadingGetResponse, ProgressPostResponse
+from library.responses.reading import ReadingPostResponse, ReadingGetResponse, ProgressPostResponse, ProgressGetResponse
 from service.library.library import Library
 
 
 class Reading(Library):
-    def __init__(self, owner, item_id=None):
-        super().__init__(owner=owner, item_id=item_id)
+    def __init__(self, owner, item_id=None, request=None):
+        super().__init__(owner=owner, item_id=item_id, request=request)
 
     def get_reading(self):
         readings = (library.models.Reading.objects.annotate(
@@ -48,13 +48,14 @@ class Reading(Library):
 
         total_readings = past_readings.count()
 
-        new_reading = library.models.Reading.objects.create(
+        new_reading = library.models.Reading(
             owner_id=self.owner,
             item_id=self.item_id,
             start_at=start_at,
             end_at=end_at,
             number=total_readings + 1
         )
+        new_reading.save(request=self.request)
 
         response = ReadingPostResponse({
             'success': True,
@@ -73,7 +74,18 @@ class Reading(Library):
         return response
 
     def get_progress(self, reading_id):
-        pass
+        entries = (ReadingProgressModel.objects.values('date', 'page', 'percentage', 'rate', 'comment')
+                   .annotate(readingProgressEntryId=F('pk'),
+                             readingId=F('reading_id')).filter(reading_id=reading_id))
+
+        response = ProgressGetResponse({
+            'success': True,
+            'statusCode': status.HTTP_200_OK,
+            'quantity': len(entries),
+            'readingProgressEntries': entries
+        }).data
+
+        return response
 
     def set_progress(self, reading_id, page=None, percentage=None, rate=None, comment=None):
         reading = ReadingModel.objects.filter(pk=reading_id).first()
@@ -94,10 +106,10 @@ class Reading(Library):
             comment=comment
         )
         if page is not None:
-            perc = ((page/item_pages)*100) if item_pages else 0
+            perc = ((page / item_pages) * 100) if item_pages else 0
 
             new_progress_entry.page = page
-            new_progress_entry.percentage = percentage
+            new_progress_entry.percentage = perc
 
         if percentage is not None:
             page = 0
@@ -112,6 +124,7 @@ class Reading(Library):
             'readingProgress': {
                 'readingProgressEntryId': new_progress_entry.pk,
                 'readingId': new_progress_entry.reading_id,
+                'date': new_progress_entry.date,
                 'page': new_progress_entry.page,
                 'percentage': new_progress_entry.percentage,
                 'rate': new_progress_entry.rate,
@@ -120,4 +133,3 @@ class Reading(Library):
         }).data
 
         return response
-

@@ -3,7 +3,7 @@ from rest_framework.views import APIView, Response
 from rest_framework import status
 
 from base.responses import InvalidRequestError, DefaultErrorResponse
-from library.requests.reading import ReadingGetRequest, ReadingPostRequest, ProgressPostRequest
+from library.requests.reading import ReadingGetRequest, ReadingPostRequest, ProgressPostRequest, ProgressGetRequest
 from library.responses.reading import ReadingPostResponse, ReadingGetResponse
 from service.library.reading import Reading as ReadingService
 from service.security.security import IsAuthenticated
@@ -39,16 +39,26 @@ class Reading(APIView):
 
         user = self.request.user.id
 
-        response = ReadingService(owner=user, item_id=item_id).set_reading(start_at=start_at, end_at=end_at)
+        response = ReadingService(owner=user, item_id=item_id, request=self.request).set_reading(start_at=start_at, end_at=end_at)
 
         return Response(response, status=response['statusCode'])
 
 
 class Progress(APIView):
+    permission_classes = [IsAuthenticated]
 
     @extend_schema(summary='Get all reading progress from an item')
     def get(self, *args, **kwargs):
-        pass
+        data = ProgressGetRequest(data=self.request.query_params)
+        if not data.is_valid():
+            return Response(InvalidRequestError(data.errors).data, status=status.HTTP_400_BAD_REQUEST)
+
+        reading_id = data.validated_data.get('readingId')
+        user = self.request.user.id
+
+        response = ReadingService(owner=user).get_progress(reading_id=reading_id)
+
+        return Response(response, status=response['statusCode'])
 
     @extend_schema(summary='Save current progress from a reading',
                    request=ProgressPostRequest, responses={200: None, 400: InvalidRequestError})
@@ -65,7 +75,7 @@ class Progress(APIView):
 
         user = self.request.user.id
 
-        response = ReadingService(owner=user).set_progress(reading_id=reading_id, page=page, percentage=percentage,
-                                                           rate=rate, comment=comment)
+        response = ReadingService(owner=user, request=self.request).set_progress(reading_id=reading_id, page=page, percentage=percentage,
+                                                                                 rate=rate, comment=comment)
 
         return Response(response, status=response['statusCode'])

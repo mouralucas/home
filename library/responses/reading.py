@@ -6,13 +6,18 @@ from library.serializers.reading import ReadingSerializer, ProgressSerializer
 
 
 class ReadingGetResponse(CustomSerializer, DefaultSuccessResponse):
-    quantity = serializers.IntegerField(read_only=True)
-    readings = ReadingSerializer(many=True, read_only=True)
+    quantity = serializers.IntegerField(required=True)
+    readings = ReadingSerializer(many=True, required=True)
 
 
 class ReadingPostResponse(CustomSerializer, DefaultSuccessResponse):
     reading = ReadingSerializer(read_only=True)
 
 
+class ProgressGetResponse(CustomSerializer, DefaultSuccessResponse):
+    quantity = serializers.IntegerField(required=True)
+    readingProgressEntries = ProgressSerializer(many=True, required=True)
+
+
 class ProgressPostResponse(CustomSerializer, DefaultSuccessResponse):
-    readingProgress = ProgressSerializer(read_only=True)
+    readingProgress = ProgressSerializer(required=True)

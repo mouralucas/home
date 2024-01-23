@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from django.core.exceptions import ValidationError as DjangoValidationError
+from rest_framework.fields import empty
 
 
 # Default serializers for the system
@@ -44,16 +46,45 @@ class CustomSerializer(serializers.Serializer):
         try:
             return super().to_internal_value(data)
         except serializers.ValidationError as exc:
+            custom_error_dict = self.customize_errors(exc)
+            raise serializers.ValidationError(custom_error_dict)
 
-            custom_error_dict = {
-                'success': False,
-                'statusCode': exc.status_code,
-                'errors': exc.detail,
-            }
+    def run_validation(self, data=empty):
+        """
+        We override the default `run_validation`, because the validation
+        performed by validators and the `.validate()` method should
+        be coerced into an error dictionary with a 'non_fields_error' key.
+        """
+        (is_empty_value, data) = self.validate_empty_values(data)
+        if is_empty_value:
+            return data
 
+        value = self.to_internal_value(data)
+        try:
+            self.run_validators(value)
+            value = self.validate(value)
+            assert value is not None, '.validate() should return the validated data'
+        except (ValidationError, DjangoValidationError) as exc:
+            custom_error_dict = self.customize_errors(exc)
+            raise serializers.ValidationError(custom_error_dict)
+
+        return value
+
+    def customize_errors(self, exc):
+        custom_error_dict = {
+            'success': False,
+            'statusCode': exc.status_code,
+            'errors': {},
+        }
+
+        if isinstance(exc.detail, dict):
             for key, value in exc.detail.items():
                 # Extract the string value using str() for each error message
                 error_string = str(value[0])
                 custom_error_dict['errors'][key] = error_string
+        else:
+            custom_error_dict['errors'] = {
+                'non_field_errors': exc.detail
+            }
 
-            raise serializers.ValidationError(custom_error_dict)
+        return custom_error_dict
