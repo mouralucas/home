@@ -4,7 +4,7 @@ from decouple import config
 from django.utils import timezone
 from rest_framework.test import APITestCase
 from rest_framework import status
-from library.models import Reading, Item
+from library.models import Reading, Item, ReadingProgress
 
 
 class TestReading(APITestCase):
@@ -105,6 +105,13 @@ class TestReadingProgress(APITestCase):
         create_reading(reading_id=self.reading_id, item_id=self.item_id, start_at=timezone.now())
 
         self.page = 32
+        self.page_second_entry = 50
+        self.page_third_entry = 80
+
+        if self._testMethodName in ['test_get_progress_success']:
+            create_progress(self.reading_id, self.page)
+            create_progress(self.reading_id, self.page_second_entry)
+            create_progress(self.reading_id, self.page_third_entry)
 
     def test_set_progress_success(self):
         payload = {
@@ -128,12 +135,28 @@ class TestReadingProgress(APITestCase):
 
         self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
 
+    def test_get_progress_success(self):
+        payload = {
+            'readingId': self.reading_id
+        }
+        response = self.client.get(self.url_reading_progress, data=payload)
+
+        self.assertEquals(status.HTTP_200_OK, response.status_code)
+        self.assertTrue(response.data['success'])
+
+        self.assertIn('readingProgressEntries', response.data)
+        self.assertIsInstance(response.data['readingProgressEntries'], list)
+        self.assertIn('quantity', response.data)
+        self.assertEquals(3, response.data['quantity'])
+        self.assertEquals(str(self.reading_id), response.data['readingProgressEntries'][0]['readingId'])
+
 
 def create_item(item_id):
     Item.objects.create(
         owner_id='adf52a1e-7a19-11ed-a1eb-0242ac120002',
         id=item_id,
-        title='Item de teste'
+        title='Item de teste',
+        pages=100
     )
 
 
@@ -143,4 +166,15 @@ def create_reading(reading_id, item_id, start_at, end_at=None):
         item_id=item_id,
         start_at=start_at,
         end_at=end_at,
+    )
+
+
+def create_progress(reading_id, page):
+    tot_pages = 100
+    ReadingProgress.objects.create(
+        id=uuid.uuid4(),
+        reading_id=reading_id,
+        date=timezone.now(),
+        page=page,
+        percentage=(page / tot_pages) * 100
     )

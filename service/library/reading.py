@@ -55,7 +55,7 @@ class Reading(Library):
             end_at=end_at,
             number=total_readings + 1
         )
-        new_reading.save(request=self.request)
+        new_reading.save(request_=self.request)
 
         response = ReadingPostResponse({
             'success': True,
@@ -88,6 +88,8 @@ class Reading(Library):
         return response
 
     def set_progress(self, reading_id, page=None, percentage=None, rate=None, comment=None):
+        # TODO: if the current page = item pages set status to read and set endAt at reading
+        # TODO: if a a second progress in add in the same day, only updates the entry, not create another
         reading = ReadingModel.objects.filter(pk=reading_id).first()
         if not reading:
             return DefaultErrorResponse({
