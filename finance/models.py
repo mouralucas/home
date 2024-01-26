@@ -1,11 +1,10 @@
 import uuid
-from builtins import max
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from core.models import Log
 import finance.choices
+from core.models import Log
 
 
 class Bank(Log):
@@ -166,6 +165,24 @@ class TaxFeeType(Log):
 
     class Meta:
         db_table = 'finance"."tax_fee_type'
+
+
+class InvestmentGoal(Log):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4())
+    name = models.CharField(max_length=150)
+    description = models.TextField(null=True)
+    target_date = models.DateField(null=True)
+
+    class Meta:
+        db_table = 'finance"."investment_goal'
+
+
+class InvestmentGoalAllocation(Log):
+    investment = models.ForeignKey('finance.Investment', on_delete=models.DO_NOTHING)
+    goal = models.ForeignKey('finance.InvestmentGoal', on_delete=models.DO_NOTHING)
+
+    class Meta:
+        db_table = 'finance"."investment_goal_allocation'
 
 
 # class InvestmentObjective(Log):

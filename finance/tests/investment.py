@@ -83,3 +83,24 @@ class TestInvestmentRelations(APITestCase):
 class TestInvestmentStatement(APITestCase):
     def setUp(self):
         pass
+
+
+class TestGoal(APITestCase):
+    def setUp(self):
+        self.url_goal = '/finance/investment/goal'
+
+    def test_set_goal_success(self):
+        payload = {
+            'name': 'Comprar uma casa',
+            'description': 'Quero uma casa com 6 andares e churrasqueira',
+            'targetDate': '2030-01-30'
+        }
+        response = self.client.post(self.url_goal, data=payload)
+
+        self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+        self.assertTrue(response.data['success'])
+
+        # Assert required values
+        self.assertIn('goal', response.data)
+        self.assertIn('goalId', response.data['goal'])
+        self.assertIn('goalName', response.data['goal'])

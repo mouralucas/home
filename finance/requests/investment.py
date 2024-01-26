@@ -68,3 +68,14 @@ class AllocationGetRequest(CustomSerializer):
             raise ValidationError(f"O valor '{value}' não é válido. Escolha uma das opções: {', '.join(choices)}.")
 
         return value
+
+
+class GoalGetRequest(CustomSerializer):
+    pass
+
+
+class GoalPostRequest(CustomSerializer):
+    name = serializers.CharField(max_length=150, required=True, help_text='The name of the goal')
+    description = serializers.CharField(required=False, help_text='The description of the goal')
+    targetDate = serializers.DateField(required=False, help_text='The date to achieve the goal')
+
