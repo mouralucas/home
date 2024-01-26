@@ -29,3 +29,10 @@ class InvestmentTypeSerializer(CustomSerializer):
     parentId = serializers.UUIDField(required=False)
     parentName = serializers.CharField(max_length=200)
     description = serializers.CharField(max_length=600, required=False)
+
+
+class GoalSerializer(CustomSerializer):
+    goalId = serializers.UUIDField(required=True, help_text='The id of the goal')
+    goalName = serializers.CharField(max_length=150, required=True)
+    description = serializers.CharField(required=False)
+    targetDate = serializers.DateField(required=False)

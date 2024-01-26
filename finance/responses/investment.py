@@ -1,8 +1,8 @@
-from base.serializers import CustomSerializer
-from base.responses import DefaultSuccessResponse
 from rest_framework import serializers
 
-from finance.serializers.investment import InvestmentTypeSerializer
+from base.responses import DefaultSuccessResponse
+from base.serializers import CustomSerializer
+from finance.serializers.investment import InvestmentTypeSerializer, GoalSerializer
 
 
 class InvestmentGetResponse(DefaultSuccessResponse, CustomSerializer):
@@ -28,3 +28,11 @@ class StatementPostResponse(DefaultSuccessResponse, CustomSerializer):
 
 class AllocationGetResponse(DefaultSuccessResponse, CustomSerializer):
     pass
+
+
+class GoalGetResponse(DefaultSuccessResponse, CustomSerializer):
+    goals = GoalSerializer(many=True, required=True)
+
+
+class GoalPostResponse(DefaultSuccessResponse, CustomSerializer):
+    goal = GoalSerializer(required=True)

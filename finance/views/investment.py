@@ -1,12 +1,12 @@
 from drf_spectacular.utils import extend_schema
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
 
 import service.finance.investment
 from base.responses import NotImplementedResponse, InvalidRequestError
-from finance.requests.investment import InvestmentGetRequest, TypeGetRequest, ProfitGetRequest, InvestmentPostRequest, StatementGetRequest, StatementPostRequest, AllocationGetRequest
-from finance.responses.investment import StatementGetResponse, StatementPostResponse, TypeGetResponse, AllocationGetResponse
+from finance.requests.investment import InvestmentGetRequest, TypeGetRequest, ProfitGetRequest, InvestmentPostRequest, StatementGetRequest, StatementPostRequest, AllocationGetRequest, GoalPostRequest
+from finance.responses.investment import StatementGetResponse, StatementPostResponse, TypeGetResponse, AllocationGetResponse, GoalPostResponse
 from service.security.security import IsAuthenticated
 
 
@@ -114,6 +114,39 @@ class Allocation(APIView):
         return Response(response)
 
 
+class Goal(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(summary='Get the goals defined by the user', description='Not yet implemented',
+                   responses={501: NotImplementedResponse})
+    def get(self, *args, **kwargs):
+        return Response(NotImplementedResponse({}).data, status=status.HTTP_501_NOT_IMPLEMENTED)
+
+    @extend_schema(summary='Create a new goal', description='Not yet implemented',
+                   responses={501: NotImplementedResponse})
+    def post(self, *args, **kwargs):
+        return Response(NotImplementedResponse({}).data, status=status.HTTP_501_NOT_IMPLEMENTED)
+
+
+class GoalAllocation(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(summary='Get the investment allocated in a goal', description='Not yet implemented',
+                   responses={501: NotImplementedResponse})
+    def get(self, *args, **kwargs):
+        return Response(NotImplementedResponse({}).data, status=status.HTTP_501_NOT_IMPLEMENTED)
+
+    @extend_schema(summary='Allocate a new investment to a goal', description='Not yet implemented',
+                   request=GoalPostRequest, responses={201: GoalPostResponse, 400: InvalidRequestError, 501: NotImplementedResponse})
+    def post(self, *args, **kwargs):
+        data = GoalPostRequest(data=self.request.data)
+        if not data.is_valid():
+            return Response(InvalidRequestError(data.errors).data, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(NotImplementedResponse({}).data, status=status.HTTP_501_NOT_IMPLEMENTED)
+
+
+# In construction
 class Interest(APIView):
     @extend_schema(summary='This endpoint was not implemented yet',
                    description='This endpoint returns the interest rate based in periodicity and start date',
