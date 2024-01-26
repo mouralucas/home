@@ -8,7 +8,7 @@ class TestCreditCard(APITestCase):
         self.credit_card_url = '/finance/credit-card'
 
         # All tests are made with the assumption that there is data in database, if not the setUp function must create the necessary inserts
-        if self._testMethodName not in ['test_get_User_credit_card_without_login']:
+        if self._testMethodName not in ['test_get_user_credit_card_without_login']:
             self.credentials = {
                 'username': config('TEST_USER'),
                 'password': config('TEST_USER_PASS'),
@@ -25,7 +25,7 @@ class TestCreditCard(APITestCase):
         self.assertIn('creditCards', response.data)
         self.assertIsInstance(response.data['creditCards'], list)
 
-    def test_get_User_credit_card_without_login(self):
+    def test_get_user_credit_card_without_login(self):
         response = self.client.get(self.credit_card_url)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

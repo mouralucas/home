@@ -155,16 +155,16 @@ class Account(Finance):
         incoming = pd.DataFrame(account_registers.exclude(category_id__in=['rendimento']).filter(cash_flow='INCOMING').annotate(incoming=Sum('amount')))
         outgoing = pd.DataFrame(account_registers.exclude(category_id__in=['rendimento']).filter(cash_flow='OUTGOING').annotate(outgoing=Sum('amount')))
         transactions = pd.DataFrame(account_registers.exclude(category_id__in=['rendimento']).annotate(transactions=Sum('amount')))
-        transactions = pd.merge(transactions, incoming, on='reference', how='outer')
-        transactions = pd.merge(transactions, outgoing, on='reference', how='outer')
+        transactions = pd.merge(transactions, incoming, on='period', how='outer')
+        transactions = pd.merge(transactions, outgoing, on='period', how='outer')
         if transactions.empty:
             transactions = pd.DataFrame(columns=['period', 'transactions'])
 
         earnings = pd.DataFrame(account_registers.filter(category_id='rendimento').annotate(earnings=Sum('amount')))
         if earnings.empty:
-            earnings = pd.DataFrame(columns=['reference', 'earnings'])
+            earnings = pd.DataFrame(columns=['period', 'earnings'])
 
-        merged_df = pd.merge(transactions, earnings, on='reference', how='outer')
+        merged_df = pd.merge(transactions, earnings, on='period', how='outer')
         merged_df = merged_df.fillna(0)
         merged_df['transaction_balance'] = merged_df['transactions'] + merged_df['earnings']
 
@@ -172,19 +172,19 @@ class Account(Finance):
 
         # Set min and max periods for each account
         account = finance.models.Account.objects.filter(pk=account_id).first()
-        min_period = merged_df['reference'].min()
+        min_period = merged_df['period'].min()
         max_period = datetime.get_period_from_date(account.close_at) if account.close_at else datetime.current_period()
         all_periods = list(range(min_period, max_period + 1))
-        missing_periods = [p for p in all_periods if p not in merged_df['reference'].tolist() and 12 >= p % 100 > 1]
+        missing_periods = [p for p in all_periods if p not in merged_df['period'].tolist() and 12 >= p % 100 > 1]
 
         # Create row with missing reference
         new_rows = []
         for missing_period in missing_periods:
-            prev_period = merged_df[merged_df['reference'] < missing_period]['reference'].max()
-            prev_balance = merged_df[merged_df['reference'] == prev_period]['balance'].values[0]
+            prev_period = merged_df[merged_df['period'] < missing_period]['period'].max()
+            prev_balance = merged_df[merged_df['period'] == prev_period]['balance'].values[0]
 
             new_row = {
-                'reference': missing_period,
+                'period': missing_period,
                 'transactions': 0,
                 'earnings': 0,
                 'transaction_balance': 0,
@@ -194,7 +194,7 @@ class Account(Finance):
 
         # Add missing reference to existing DF
         merged_df = pd.concat([merged_df] + new_rows, ignore_index=True)
-        merged_df = merged_df.sort_values(by='reference')
+        merged_df = merged_df.sort_values(by='period')
         merged_df['balance'] = merged_df['transaction_balance'].cumsum()
         merged_df = merged_df.fillna(0)
 
@@ -203,8 +203,8 @@ class Account(Finance):
             aux = finance.models.AccountBalance(
                 created_at=timezone.now(),
                 account_id=account_id,
-                reference=balance['reference'],
-                previous_balance=0,
+                period=balance['period'],
+                previous_balance=merged_df.at[idx - 1, 'balance'] if idx > 0 else 0,
                 incoming=balance['incoming'],
                 outgoing=balance['outgoing'],
                 transactions=balance['transactions'],
