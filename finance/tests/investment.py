@@ -10,6 +10,13 @@ class TestInvestment(APITestCase):
     def setUp(self):
         self.url_investment = '/finance/investment'
 
+        user_info = {
+            'username': config('TEST_USER'),
+            'password': config('TEST_USER_PASS'),
+        }
+        response = self.client.post('/user/login', data=user_info)
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer {}'.format(response.data['access']))
+
     def test_set_investment_success(self):
         date = timezone.localdate()
         maturity = date + timedelta(days=700)
@@ -89,6 +96,13 @@ class TestGoal(APITestCase):
     def setUp(self):
         self.url_goal = '/finance/investment/goal'
 
+        user_info = {
+            'username': config('TEST_USER'),
+            'password': config('TEST_USER_PASS'),
+        }
+        response = self.client.post('/user/login', data=user_info)
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer {}'.format(response.data['access']))
+
     def test_set_goal_success(self):
         payload = {
             'name': 'Comprar uma casa',
@@ -104,3 +118,7 @@ class TestGoal(APITestCase):
         self.assertIn('goal', response.data)
         self.assertIn('goalId', response.data['goal'])
         self.assertIn('goalName', response.data['goal'])
+
+
+def authenticate():
+    pass

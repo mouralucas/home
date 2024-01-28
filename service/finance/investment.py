@@ -8,7 +8,8 @@ from django.db.models import F, Sum
 from rest_framework import status
 
 import finance.models
-from finance.responses.investment import TypeGetResponse
+from finance.requests.investment import GoalPostRequest
+from finance.responses.investment import TypeGetResponse, GoalPostResponse
 from service.finance.finance import Finance
 from django.utils import timezone
 
@@ -282,6 +283,32 @@ class Investment(Finance):
                 }
             ]
         }
+
+        return response
+
+    def get_goals(self):
+        pass
+
+    def set_goals(self, goals: GoalPostRequest):
+        new_goal = finance.models.InvestmentGoal()
+
+        new_goal.owner_id = self.request.user.id
+        new_goal.name = goals.validated_data.get('name')
+        new_goal.description = goals.validated_data.get('description')
+        new_goal.target_date = goals.validated_data.get('targetDate')
+
+        new_goal.save(request_=self.request)
+
+        response = GoalPostResponse({
+            'success': True,
+            'statusCode': status.HTTP_201_CREATED,
+            'goal': {
+                'goalId': new_goal.pk,
+                'goalName': new_goal.name,
+                'description': new_goal.description,
+                'targetDate': new_goal.target_date
+            }
+        }).data
 
         return response
 

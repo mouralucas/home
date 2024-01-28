@@ -125,7 +125,13 @@ class Goal(APIView):
     @extend_schema(summary='Create a new goal', description='Not yet implemented',
                    responses={501: NotImplementedResponse})
     def post(self, *args, **kwargs):
-        return Response(NotImplementedResponse({}).data, status=status.HTTP_501_NOT_IMPLEMENTED)
+        data = GoalPostRequest(data=self.request.data)
+        if not data.is_valid():
+            return Response(InvalidRequestError(data.errors).data, status=status.HTTP_400_BAD_REQUEST)
+
+        response = service.finance.investment.Investment(request=self.request).set_goals(data)
+
+        return Response(response, status=response['statusCode'])
 
 
 class GoalAllocation(APIView):

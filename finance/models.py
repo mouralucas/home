@@ -169,6 +169,7 @@ class TaxFeeType(Log):
 
 class InvestmentGoal(Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4())
+    owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=150)
     description = models.TextField(null=True)
     target_date = models.DateField(null=True)
