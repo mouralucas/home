@@ -10,8 +10,8 @@ class CreditCardGetResponse(DefaultSuccessResponse, CustomSerializer):
     creditCards = CreditCardSerializer(many=True, required=True)
 
 
-class CreditCardPostResponse(CustomSerializer):
-    pass
+class CreditCardPostResponse(DefaultSuccessResponse, CustomSerializer):
+    creditCard = CreditCardSerializer(required=True)
 
 
 class CreditCardBillGetResponse(DefaultSuccessResponse, CustomSerializer):

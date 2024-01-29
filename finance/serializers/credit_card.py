@@ -7,8 +7,10 @@ class CreditCardSerializer(CustomSerializer):
     creditCardId = serializers.CharField(max_length=100, help_text='The id of the credit card')
     name = serializers.CharField(max_length=100, help_text='Name of the credit card')
     description = serializers.CharField(max_length=500, help_text='Description of the credit card')
-    closingAt = serializers.IntegerField(help_text='The closing date')
-    dueAt = serializers.IntegerField(help_text='The due date')
+    startAt = serializers.DateField(required=False, help_text='The data that the credit card was requested')
+    endAt = serializers.DateField(required=False, help_text='The data that the credit card cancelled')
+    closingAt = serializers.IntegerField(required=True, help_text='The closing date')
+    dueAt = serializers.IntegerField(required=True, help_text='The due date')
 
 
 class CreditCardBill(CustomSerializer):

@@ -19,7 +19,8 @@ class Finance:
     # TODO: this must have only abstract methods, remove all others
     def __init__(self, mes=None, ano=None, statement_id=None, period=None, account_id=None, credit_card_id=None, amount=None,
                  amount_currency=None, price_currency_dollar=None, amount_tax=None, installment=None, tot_installment=None, purchase_at=None, payment_at=None,
-                 description=None, category_id=None, currency_id=None, cash_flow_id=None, owner=None):
+                 description=None, category_id=None, currency_id=None, cash_flow_id=None, owner=None, request=None):
+        self.request = request
         self.mes = mes
         self.ano = ano
         self.period = period

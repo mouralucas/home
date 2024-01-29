@@ -17,7 +17,7 @@ from django.utils import timezone
 class Investment(Finance):
     def __init__(self, investment_id=None, parent_id=None, name=None, date=None, quantity=None, price=None, amount=None, cash_flow=None, interest_rate=None, interest_index=None, investment_type_id=None, dat_maturity=None, custodian_id=None,
                  owner_id=None, period=None, request=None):
-        super().__init__(period=period, amount=amount)
+        super().__init__(period=period, amount=amount, request=request)
 
         # TODO: clean code with parent class
         self.investment_id = investment_id
@@ -33,7 +33,7 @@ class Investment(Finance):
         self.dat_maturity = dat_maturity
         self.custodian_id = custodian_id
         self.owner_id = owner_id
-        self.request = request
+
 
     def set_investment(self):
         # Rewrite this method

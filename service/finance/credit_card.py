@@ -1,17 +1,20 @@
+from imp import new_module
+
 from django.db.models import F, Sum
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 
 import finance.models
 import util.datetime
-from finance.responses.credit_card import CreditCardGetResponse, CreditCardBillGetResponse
+from finance.requests.credit_card import CreditCardPostRequest
+from finance.responses.credit_card import CreditCardGetResponse, CreditCardBillGetResponse, CreditCardPostResponse
 from service.finance.finance import Finance
 
 
 class CreditCard(Finance):
-    def __init__(self, owner=None):
+    def __init__(self, owner=None, request=None):
 
-        super().__init__(owner=owner)
+        super().__init__(owner=owner, request=request)
 
     def get_credit_card(self):
         """
@@ -40,6 +43,37 @@ class CreditCard(Finance):
             'statusCode': status.HTTP_200_OK,
             'quantity': len(credit_cards),
             'creditCards': credit_cards,
+        }).data
+
+        return response
+
+    def set_credit_card(self, credit_card: CreditCardPostRequest):
+        new_credit_card = finance.models.CreditCard()
+
+        new_credit_card.owner = self.request.user
+        new_credit_card.name = credit_card.validated_data.get('name')
+        new_credit_card.account_id = credit_card.validated_data.get('accountId')
+        new_credit_card.description = credit_card.validated_data.get('description')
+        new_credit_card.closing_at = credit_card.validated_data.get('closingAt')
+        new_credit_card.due_at = credit_card.validated_data.get('dueAt')
+        new_credit_card.start_at = credit_card.validated_data.get('startAt')
+        new_credit_card.end_at = credit_card.validated_data.get('endAt')
+
+        new_credit_card.save(request_=self.request)
+
+        response = CreditCardPostResponse({
+            'success': True,
+            'statusCode': status.HTTP_201_CREATED,
+            'creditCard': {
+                'creditCardId': new_credit_card.pk,
+                'accountId': new_credit_card.account_id,
+                'name': new_credit_card.name,
+                'description': new_credit_card.description,
+                'startAt': new_credit_card.start_at,
+                'endAt': new_credit_card.end_at,
+                'closingAt': new_credit_card.closing_at,
+                'dueAt': new_credit_card.due_at
+            }
         }).data
 
         return response

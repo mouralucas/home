@@ -1,6 +1,7 @@
 from decouple import config
 from rest_framework import status
 from rest_framework.test import APITestCase
+from django.utils import timezone
 
 
 class TestCreditCard(APITestCase):
@@ -29,6 +30,30 @@ class TestCreditCard(APITestCase):
         response = self.client.get(self.credit_card_url)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_set_new_user_credit_card(self):
+        closing_at = 10
+        due_at = 15
+
+        payload = {
+            'name': 'Cartão novo de teste',
+            'description': 'Essa é a descrição deste cartão maroto',
+            'startAt': timezone.localdate(),
+            'closingAt': closing_at,
+            'dueAt': due_at
+        }
+        response = self.client.post(self.credit_card_url, data=payload)
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        self.assertTrue(response.data['success'])
+
+        self.assertIn('creditCard', response.data)
+        self.assertIn('creditCardId', response.data['creditCard'])
+        self.assertIn('closingAt', response.data['creditCard'])
+        self.assertIn('dueAt', response.data['creditCard'])
+
+        self.assertEqual(closing_at, response.data['creditCard']['closingAt'])
+        self.assertEqual(due_at, response.data['creditCard']['dueAt'])
 
 
 class TestCreditCardBill(APITestCase):

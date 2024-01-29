@@ -8,7 +8,7 @@ import service.finance.credit_card
 import service.finance.finance
 from base.responses import NotImplementedResponse, InvalidRequestError
 from finance.requests.credit_card import CreditCardBillGetRequest, BillHistoryRequest, CreditCardBillPostRequest, CreditCardPostRequest, CreditCardGetSerializer
-from finance.responses.credit_card import CreditCardBillGetResponse, CreditCardGetResponse
+from finance.responses.credit_card import CreditCardBillGetResponse, CreditCardGetResponse, CreditCardPostResponse
 
 
 class CreditCard(APIView):
@@ -27,12 +27,16 @@ class CreditCard(APIView):
 
         return Response(response, status=response['statusCode'])
 
-    @extend_schema(summary='This endpoint was not implemented yet.', description='This endpoint is used to create a new credit card for the user.',
-                   request=CreditCardPostRequest, responses={501: NotImplementedResponse})
+    @extend_schema(summary='Create a new credit card.', description='This endpoint is used to create a new credit card for the user.',
+                   request=CreditCardPostRequest, responses={201: CreditCardPostResponse, 400: InvalidRequestError})
     def post(self, *args, **kwargs):
         data = CreditCardPostRequest(data=self.request.data)
+        if not data.is_valid():
+            return Response(InvalidRequestError(data.errors).data, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(NotImplementedResponse({}).data, status=status.HTTP_501_NOT_IMPLEMENTED)
+        response = service.finance.credit_card.CreditCard(request=self.request).set_credit_card(credit_card=data)
+
+        return Response(response, status=response['statusCode'])
 
 
 class CreditCardBill(APIView):
