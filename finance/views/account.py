@@ -77,7 +77,8 @@ class Balance(APIView):
 
         return Response(response)
 
-    @extend_schema(summary='Update user statement (in test)', request=BalancePostRequest, responses={200: None, 400: InvalidRequestError})
+    @extend_schema(summary='Update user balance (in test)',
+                   request=BalancePostRequest, responses={200: None, 400: InvalidRequestError})
     def post(self, *args, **kwargs):
         data = BalancePostRequest(data=self.request.data)
         if not data.is_valid():

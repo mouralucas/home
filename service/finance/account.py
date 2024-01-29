@@ -149,18 +149,25 @@ class Account(Finance):
         if start_period:
             filters['period__gte'] = start_period
 
-        account_registers = finance.models.AccountStatement.objects.values('period') \
+        account_entries = finance.models.AccountStatement.objects.values('period') \
             .filter(account_id=account_id, status=True).filter(**filters).order_by('period')
 
-        incoming = pd.DataFrame(account_registers.exclude(category_id__in=['rendimento']).filter(cash_flow='INCOMING').annotate(incoming=Sum('amount')))
-        outgoing = pd.DataFrame(account_registers.exclude(category_id__in=['rendimento']).filter(cash_flow='OUTGOING').annotate(outgoing=Sum('amount')))
-        transactions = pd.DataFrame(account_registers.exclude(category_id__in=['rendimento']).annotate(transactions=Sum('amount')))
+        incoming = pd.DataFrame(account_entries.exclude(category_id__in=['rendimento']).filter(cash_flow='INCOMING').annotate(incoming=Sum('amount')))
+        if incoming.empty:
+            incoming = pd.DataFrame(columns=['period', 'incoming'])
+
+        outgoing = pd.DataFrame(account_entries.exclude(category_id__in=['rendimento']).filter(cash_flow='OUTGOING').annotate(outgoing=Sum('amount')))
+        if outgoing.empty:
+            outgoing = pd.DataFrame(columns=['period', 'outgoing'])
+
+        transactions = pd.DataFrame(account_entries.exclude(category_id__in=['rendimento']).annotate(transactions=Sum('amount')))
         transactions = pd.merge(transactions, incoming, on='period', how='outer')
         transactions = pd.merge(transactions, outgoing, on='period', how='outer')
+
         if transactions.empty:
             transactions = pd.DataFrame(columns=['period', 'transactions'])
 
-        earnings = pd.DataFrame(account_registers.filter(category_id='rendimento').annotate(earnings=Sum('amount')))
+        earnings = pd.DataFrame(account_entries.filter(category_id='rendimento').annotate(earnings=Sum('amount')))
         if earnings.empty:
             earnings = pd.DataFrame(columns=['period', 'earnings'])
 
@@ -175,7 +182,7 @@ class Account(Finance):
         min_period = merged_df['period'].min()
         max_period = datetime.get_period_from_date(account.close_at) if account.close_at else datetime.current_period()
         all_periods = list(range(min_period, max_period + 1))
-        missing_periods = [p for p in all_periods if p not in merged_df['period'].tolist() and 12 >= p % 100 > 1]
+        missing_periods = [p for p in all_periods if p not in merged_df['period'].tolist() and 12 >= p % 100 >= 1]
 
         # Create row with missing reference
         new_rows = []
