@@ -73,14 +73,13 @@ class BankAccount(Log):
 
 
 class CreditCard(Log):
-    id = models.CharField(max_length=100, primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
-    name = models.CharField(max_length=100)
-    bank_account = models.ForeignKey('finance.BankAccount', on_delete=models.DO_NOTHING, null=True)
+    nickname = models.CharField(max_length=100)
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING, null=True)
     description = models.CharField(max_length=500, null=True)
-    start_at = models.DateField(null=True, help_text=_('Data de início do contrato'))
-    end_at = models.DateField(null=True, help_text=_('Data de fim do contrato'))
+    issued_at = models.DateField(null=True, help_text=_('Data da primeira emissão do cartão'))
+    cancelled_at = models.DateField(null=True, help_text=_('Data do cancelamento o cartão'))
     due_at = models.IntegerField(null=True)
     closing_at = models.IntegerField(null=True, help_text=_('Data de fechamento da fatura'))
 
@@ -168,7 +167,7 @@ class TaxFeeType(Log):
 
 
 class InvestmentGoal(Log):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4())
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=150)
     description = models.TextField(null=True)
@@ -185,21 +184,6 @@ class InvestmentGoalAllocation(Log):
     class Meta:
         db_table = 'finance"."investment_goal_allocation'
 
-
-# class InvestmentObjective(Log):
-#     name = models.CharField(max_length=150)
-#     goal_amount = models.DecimalField(max_length=12, decimal_places=2, null=True)
-#     goal_at = models.DateField(null=True, help_text='Date to achieve the goal')
-#     objective = models.CharField(max_length=500, null=True)
-#     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
-#
-#     class Meta:
-#         db_table = 'finance.investment_objective'
-
-
-# class InvestmentObjectiveInvestment(Log):
-#     investment_objective = models.ForeignKey('finance.InvestmentObjective', on_delete=models.DO_NOTHING)
-#     investment = models.ForeignKey('finance.Investment', on_delete=models.DO_NOTHING)
 
 class AccountStatement(Log):
     account = models.ForeignKey('finance.Account', on_delete=models.DO_NOTHING, related_name='bank_statement_account')
@@ -252,6 +236,7 @@ class AccountBalance(Log):
 
 
 class CreditCardBill(Log):
+    credit_card_old = models.CharField(max_length=100, null=True)
     credit_card = models.ForeignKey('finance.CreditCard', on_delete=models.DO_NOTHING, null=True)
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     period = models.IntegerField(null=True, help_text=_('Período de referência'))

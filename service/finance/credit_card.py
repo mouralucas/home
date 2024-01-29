@@ -32,7 +32,7 @@ class CreditCard(Finance):
         Return: the list of saved credit cards
         """
         # TODO: mudar para receber parâmetro de status
-        credit_cards = (finance.models.CreditCard.objects.values('name', 'description')
+        credit_cards = (finance.models.CreditCard.objects.values('nickname', 'description')
                         .annotate(creditCardId=F('id'),
                                   closingAt=F('closing_at'),
                                   dueAt=F('due_at'))
@@ -51,13 +51,13 @@ class CreditCard(Finance):
         new_credit_card = finance.models.CreditCard()
 
         new_credit_card.owner = self.request.user
-        new_credit_card.name = credit_card.validated_data.get('name')
+        new_credit_card.nickname = credit_card.validated_data.get('nickname')
         new_credit_card.account_id = credit_card.validated_data.get('accountId')
         new_credit_card.description = credit_card.validated_data.get('description')
         new_credit_card.closing_at = credit_card.validated_data.get('closingAt')
         new_credit_card.due_at = credit_card.validated_data.get('dueAt')
-        new_credit_card.start_at = credit_card.validated_data.get('startAt')
-        new_credit_card.end_at = credit_card.validated_data.get('endAt')
+        new_credit_card.issued_at = credit_card.validated_data.get('issuedAt')
+        new_credit_card.cancelled_at = credit_card.validated_data.get('cancelledAt')
 
         new_credit_card.save(request_=self.request)
 
@@ -67,10 +67,10 @@ class CreditCard(Finance):
             'creditCard': {
                 'creditCardId': new_credit_card.pk,
                 'accountId': new_credit_card.account_id,
-                'name': new_credit_card.name,
+                'nickname': new_credit_card.nickname,
                 'description': new_credit_card.description,
-                'startAt': new_credit_card.start_at,
-                'endAt': new_credit_card.end_at,
+                'issuedAt': new_credit_card.issued_at,
+                'cancelledAt': new_credit_card.cancelled_at,
                 'closingAt': new_credit_card.closing_at,
                 'dueAt': new_credit_card.due_at
             }
@@ -100,7 +100,7 @@ class CreditCard(Finance):
                       purchaseAt=F('purchase_at'),
                       paymentAt=F('payment_at'),
                       creditCardId=F('credit_card_id'),
-                      creditCardName=F('credit_card__name'),
+                      creditCardNickname=F('credit_card__nickname'),
                       categoryId=F('category_id'),
                       categoryName=F('category__description'),
                       currencyReferenceId=F('currency_reference_id'),
