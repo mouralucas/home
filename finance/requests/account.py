@@ -2,21 +2,22 @@ from rest_framework import serializers
 
 from base.serializers import CustomSerializer
 from util import datetime
+from django.utils.translation import gettext_lazy as _
 
 
 class AccountGetRequest(CustomSerializer):
-    accountType = serializers.CharField(required=True, help_text='Account type (checking, investment, etc)')
+    accountTypeId = serializers.IntegerField(required=True, help_text=_('Tipo da conta, corrente, PJ, investimento, etc'))
 
 
 class AccountPostRequest(CustomSerializer):
-    bank = serializers.UUIDField(required=True, help_text='Id of the bank')
-    nickname = serializers.CharField(max_length=100, required=True, help_text='The nickname of the account')
-    description = serializers.CharField(max_length=500, required=False, help_text='The description of the account')
-    branch = serializers.CharField(max_length=30, required=False, help_text='The branch of the bank')
-    account = serializers.CharField(max_length=30, required=False, help_text='The account number')
-    openAt = serializers.DateField(required=True, help_text='The date the account was opened')
-    closeAt = serializers.DateField(required=False, help_text='The date the account was closed')
-    type = serializers.CharField(max_length=150, required=True, help_text='Account type (checking, investment, business, etc)')
+    bankId = serializers.UUIDField(required=True, help_text=_('Id do banco'))
+    nickname = serializers.CharField(max_length=100, required=True, help_text=_('Apelido dado a conta pelo usuário'))
+    description = serializers.CharField(max_length=500, required=False, help_text=_('Descrição da conta'))
+    branch = serializers.CharField(max_length=30, required=False, help_text=_('Número da agência'))
+    accountNumber = serializers.CharField(max_length=30, required=False, help_text=_('Número da conta'))
+    openAt = serializers.DateField(required=True, help_text=_('Data da abertura da conta'))
+    closeAt = serializers.DateField(required=False, help_text=_('Data do encerramento da conta'))
+    accountTypeId = serializers.IntegerField(required=True, help_text=_('Tipo da conta, corrente, PJ, investimento, etc'))
 
 
 class StatementGetRequest(CustomSerializer):

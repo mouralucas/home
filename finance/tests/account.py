@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 
-class TestAccount(APITestCase):
+class TestStatement(APITestCase):
     def setUp(self):
         self.url_statement = '/finance/account/statement'
 
@@ -13,12 +13,6 @@ class TestAccount(APITestCase):
         }
         response = self.client.post('/user/login', data=user_info)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer {}'.format(response.data['access']))
-
-    def test_get_account(self):
-        response = self.client.get('/finance/account')
-
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(response.data['success'])
 
     def test_get_statement_with_period(self):
         payload = {
@@ -97,6 +91,61 @@ class TestAccount(APITestCase):
 
     def tearDown(self):
         pass
+
+
+class Testa(APITestCase):
+    def setUp(self):
+        self.url_account = '/finance/account'
+
+        user_info = {
+            'username': config('TEST_USER'),
+            'password': config('TEST_USER_PASS'),
+        }
+        response = self.client.post('/user/login', data=user_info)
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer {}'.format(response.data['access']))
+
+    def test_get_account(self):
+        response = self.client.get(self.url_account)
+
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data['success'])
+
+    def test_set_account(self):
+        bank_id = '989e932e-2217-4f81-baca-14cd4917f214'
+        nickname = 'Conta de teste'
+        branch = '1489-7'
+        account_number = '123489-7'
+        open_at = '2024-01-30'
+        account_type_id = 1
+
+        payload = {
+            'bankId': bank_id,
+            'nickname': nickname,
+            'description': 'Descrição da conta',
+            'branch': branch,
+            'accountNumber': account_number,
+            'openAt': open_at,
+            'accountTypeId': account_type_id
+        }
+        response = self.client.post(self.url_account, data=payload)
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        self.assertTrue(response.data['success'])
+
+        self.assertIn('account', response.data)
+        self.assertIn('accountId', response.data['account'])
+        self.assertIn('nickname', response.data['account'])
+        self.assertIn('branch', response.data['account'])
+        self.assertIn('accountNumber', response.data['account'])
+        self.assertIn('openAt', response.data['account'])
+        self.assertIn('accountTypeId', response.data['account'])
+        self.assertIn('accountTypeName', response.data['account'])
+
+        self.assertEquals(bank_id, response.data['account']['bankId'])
+        self.assertEquals(nickname, response.data['account']['nickname'])
+        self.assertEquals(account_number, response.data['account']['accountNumber'])
+        self.assertEquals(str(open_at), response.data['account']['openAt'])
+        self.assertEquals(account_type_id, response.data['account']['accountTypeId'])
 
 
 def build_requirements(test_name):

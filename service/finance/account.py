@@ -5,14 +5,56 @@ from django.utils import timezone
 from rest_framework import status
 
 import finance.models
+from finance.requests.account import AccountPostRequest
 from util import datetime
-from finance.responses.account import AccountGetResponse, StatementPostResponse, StatementGetResponse
+from finance.responses.account import AccountGetResponse, StatementPostResponse, StatementGetResponse, AccountPostResponse
 from service.finance.finance import Finance
 
 
 class Account(Finance):
-    def __init__(self, owner=None):
-        super().__init__(owner=owner)
+    def __init__(self, owner=None, request=None):
+        super().__init__(request=request, owner=owner)
+
+    def set_account(self, account: AccountPostRequest):
+        new_account = finance.models.Account()
+
+        cleaned_branch = self._clean_account_info(account.validated_data.get('branch'))
+        cleaned_number = self._clean_account_info(account.validated_data.get('accountNumber'))
+
+        new_account.owner = self.request.user
+        new_account.nickname = account.validated_data.get('nickname')
+        new_account.bank_id = account.validated_data.get('bankId')
+        new_account.description = account.validated_data.get('description')
+        new_account.branch = cleaned_branch['number'] if cleaned_branch is not None else None
+        new_account.digit = cleaned_branch['digit'] if cleaned_branch is not None else None
+        new_account.branch_formatted = account.validated_data.get('branch')
+        new_account.account_number = cleaned_number['number'] if cleaned_number is not None else None
+        new_account.digit = cleaned_number['digit'] if cleaned_number is not None else None
+        new_account.account_number_formatted = account.validated_data.get('accountNumber')
+        new_account.open_at = account.validated_data.get('openAt')
+        new_account.close_at = account.validated_data.get('closeAt')
+        new_account.type_id = account.validated_data.get('accountTypeId')
+
+        new_account.save(request_=self.request)
+
+        response = AccountPostResponse({
+            'success': True,
+            'statusCode': status.HTTP_201_CREATED,
+            'account': {
+                'accountId': new_account.pk,
+                'nickname': new_account.nickname,
+                'bankId': new_account.bank_id,
+                'bankName': new_account.bank.name,
+                'branch': new_account.branch_formatted,
+                'accountNumber': new_account.account_number_formatted,
+                'openAt': new_account.open_at,
+                'closeAt': new_account.close_at,
+                'accountTypeId': new_account.type_id,
+                'accountTypeName': new_account.type.name
+            }
+        }).data
+
+        return response
 
     def get_accounts(self, is_investment):
         """
@@ -32,10 +74,14 @@ class Account(Finance):
         accounts = (finance.models.Account.objects
                     .values('nickname')
                     .annotate(accountId=F('id'),
+                              bankId=F('bank_id'),
+                              bankName=F('bank__name'),
                               branch=F('branch_formatted'),
-                              number=F('account_number_formatted'),
+                              accountNumber=F('account_number_formatted'),
                               openAt=F('open_at'),
-                              closeAt=F('close_at'))
+                              closeAt=F('close_at'),
+                              typeId=F('type_id'),
+                              typeName=F('type__name'))
                     .filter(owner=self.owner).active())
 
         response = AccountGetResponse({

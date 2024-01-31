@@ -31,7 +31,7 @@ class Account(Log):
     bank = models.ForeignKey('finance.Bank', on_delete=models.DO_NOTHING)
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
     nickname = models.CharField(max_length=100, null=True)
-    description = models.TextField(_('Descrição da conta'), null=True)
+    description = models.TextField(null=True, help_text=_('Descrição da conta'))
     branch = models.IntegerField(null=True)
     branch_formatted = models.CharField(max_length=30, null=True)
     account_number = models.IntegerField(null=True)
@@ -39,37 +39,37 @@ class Account(Log):
     account_number_formatted = models.CharField(max_length=150, null=True)
     open_at = models.DateField(null=True, help_text=_('Data de início do contrato'))
     close_at = models.DateField(null=True, help_text=_('Data de fim do contrato'))
-    type = models.ForeignKey('finance.AccountType', on_delete=models.DO_NOTHING, null=True)  # remove null after first migrate
+    type = models.ForeignKey('finance.AccountType', on_delete=models.DO_NOTHING)  # remove null after first migrate
 
     class Meta:
         db_table = 'finance"."account'
 
 
 # Deprecated
-class BankAccount(Log):
-    """
-        Essa tabela deve mudar para só contar dados básicos de uma conta bancária/banco (ver como salvar tickets)
-        Uma nova tabela Account deve ser criada para lincar user e banco
-    """
-    id = models.CharField(_('Identificador da conta'), max_length=100, primary_key=True)
-    nm_bank = models.CharField(_('Nome da conta'), max_length=150, null=True)
-    description = models.TextField(_('Descrição da conta'), null=True)
-    branch = models.IntegerField(null=True)
-    branch_formatted = models.CharField(max_length=30, null=True)
-    account_number = models.IntegerField(null=True)
-    digit = models.SmallIntegerField(null=True)
-    account_number_formatted = models.CharField(max_length=150, null=True)
-    dat_start = models.DateField(null=True, help_text='Data de início do contrato')
-    dat_end = models.DateField(null=True, help_text='Data de fim do contrato')
-    is_pj = models.BooleanField(default=False, null=True)
-    is_debit = models.BooleanField(default=False, null=True,
-                                   help_text='Indica se a conta tem possibilidade de cartão de débito')
-    is_credit = models.BooleanField(default=False, null=True,
-                                    help_text='Indica se a conta tem possibilidade de cartão de crédito')
-    is_investment = models.BooleanField(default=False, help_text='Indica se a conta é para aplicações financeiras')
-
-    class Meta:
-        db_table = 'finance"."bank_account'
+# class BankAccount(Log):
+#     """
+#         Essa tabela deve mudar para só contar dados básicos de uma conta bancária/banco (ver como salvar tickets)
+#         Uma nova tabela Account deve ser criada para lincar user e banco
+#     """
+#     id = models.CharField(_('Identificador da conta'), max_length=100, primary_key=True)
+#     nm_bank = models.CharField(_('Nome da conta'), max_length=150, null=True)
+#     description = models.TextField(_('Descrição da conta'), null=True)
+#     branch = models.IntegerField(null=True)
+#     branch_formatted = models.CharField(max_length=30, null=True)
+#     account_number = models.IntegerField(null=True)
+#     digit = models.SmallIntegerField(null=True)
+#     account_number_formatted = models.CharField(max_length=150, null=True)
+#     dat_start = models.DateField(null=True, help_text='Data de início do contrato')
+#     dat_end = models.DateField(null=True, help_text='Data de fim do contrato')
+#     is_pj = models.BooleanField(default=False, null=True)
+#     is_debit = models.BooleanField(default=False, null=True,
+#                                    help_text='Indica se a conta tem possibilidade de cartão de débito')
+#     is_credit = models.BooleanField(default=False, null=True,
+#                                     help_text='Indica se a conta tem possibilidade de cartão de crédito')
+#     is_investment = models.BooleanField(default=False, help_text='Indica se a conta é para aplicações financeiras')
+#
+#     class Meta:
+#         db_table = 'finance"."bank_account'
 
 
 class CreditCard(Log):

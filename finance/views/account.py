@@ -7,7 +7,7 @@ import service.finance.account
 import service.finance.finance
 from base.responses import InvalidRequestError, NotImplementedResponse
 from finance.requests.account import StatementPostRequest, StatementGetRequest, BalancePostRequest, AccountGetRequest, AccountPostRequest, BalanceGetRequest
-from finance.responses.account import AccountGetResponse, StatementGetResponse, StatementPostResponse, BalanceGetResponse
+from finance.responses.account import AccountGetResponse, StatementGetResponse, StatementPostResponse, BalanceGetResponse, AccountPostResponse
 from service.security.security import IsAuthenticated
 
 
@@ -30,10 +30,18 @@ class Account(APIView):
 
         return Response(response, status=response['statusCode'])
 
-    @extend_schema(summary='Not implemented', description='Create a new account',
-                   request=AccountPostRequest, responses={501: NotImplementedResponse})
+    @extend_schema(summary='Create a new account', description='Create a new account for the logged user',
+                   request=AccountPostRequest, responses={201: AccountPostResponse, 400: InvalidRequestError})
     def post(self, *args, **kwargs):
-        return Response(NotImplementedResponse({}).data, status=status.HTTP_501_NOT_IMPLEMENTED)
+        data = AccountPostRequest(data=self.request.data)
+        if not data.is_valid():
+            return Response(InvalidRequestError(data.errors).data, status=status.HTTP_400_BAD_REQUEST)
+
+        user = self.request.user.id
+
+        response = service.finance.account.Account(request=self.request, owner=user).set_account(account=data)
+
+        return Response(response, status=response['statusCode'])
 
 
 class Statement(APIView):

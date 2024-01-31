@@ -1,14 +1,19 @@
 from base.serializers import CustomSerializer
 from rest_framework import serializers
+from django.utils.translation import gettext_lazy as _
 
 
 class AccountSerializer(CustomSerializer):
-    accountId = serializers.UUIDField(required=True, help_text='The account identifier')
-    nickname = serializers.CharField(max_length=100, help_text='The name of the account, given by the user')
+    accountId = serializers.UUIDField(required=True, help_text=_('Id da conta'))
+    nickname = serializers.CharField(max_length=100, required=True, help_text=_('Apelido da conta dado pelo usuário'))
+    bankId = serializers.UUIDField(required=True)
+    bankName = serializers.CharField(max_length=150, required=True)
     branch = serializers.CharField(max_length=30, help_text='The branch number of the account')
-    number = serializers.CharField(max_length=150, help_text='The number of the account')
+    accountNumber = serializers.CharField(max_length=150, help_text='The number of the account')
     openAt = serializers.DateField(help_text='The date that the account was opened')
     closeAt = serializers.DateField(help_text='The date that the account was closed')
+    accountTypeId = serializers.IntegerField(required=True)
+    accountTypeName = serializers.CharField(max_length=150, required=True)
 
 
 class StatementSerializer(CustomSerializer):

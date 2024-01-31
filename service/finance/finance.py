@@ -234,3 +234,14 @@ class Finance:
         year = self.purchase_at.year
         month = self.purchase_at.month
         self.period = year * 100 + month
+
+    def _clean_account_info(self, value):
+        if value is not None:
+            number, digit = value.split('-')
+
+            return {
+                'number': number,
+                'digit': digit
+            }
+
+        return value
