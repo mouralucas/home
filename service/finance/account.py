@@ -80,8 +80,8 @@ class Account(Finance):
                               accountNumber=F('account_number_formatted'),
                               openAt=F('open_at'),
                               closeAt=F('close_at'),
-                              typeId=F('type_id'),
-                              typeName=F('type__name'))
+                              accountTypeId=F('type_id'),
+                              accountTypeName=F('type__name'))
                     .filter(owner=self.owner).active())
 
         response = AccountGetResponse({

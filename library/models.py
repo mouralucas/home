@@ -7,7 +7,6 @@ import core.models
 
 
 class Serie(core.models.Log):
-    # nome = models.CharField(max_length=200, primary_key=True)
     name = models.CharField(max_length=200, null=True)
     nm_original = models.CharField(max_length=200, null=True)
     description = models.TextField(null=True)
