@@ -108,6 +108,10 @@ class TestReadingProgress(APITestCase):
         self.page_second_entry = 50
         self.page_third_entry = 80
 
+        self.percentage = 10
+        self.percentage_second_entry = 25
+        self.percentage_third_entry = 90
+
         if self._testMethodName in ['test_get_progress_success']:
             create_progress(self.reading_id, self.page)
             create_progress(self.reading_id, self.page_second_entry)
@@ -149,6 +153,21 @@ class TestReadingProgress(APITestCase):
         self.assertIn('quantity', response.data)
         self.assertEquals(3, response.data['quantity'])
         self.assertEquals(str(self.reading_id), response.data['readingProgressEntries'][0]['readingId'])
+
+    def test_set_progress_with_percentage(self):
+        payload = {
+            'readingId': self.reading_id,
+            'percentage': self.percentage
+        }
+        response = self.client.post(self.url_reading_progress, data=payload)
+
+        self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+        self.assertTrue(response.data['success'])
+
+        self.assertIn('readingProgress', response.data)
+        self.assertEquals(str(self.reading_id), response.data['readingProgress']['readingId'])
+        self.assertEquals(self.percentage, response.data['readingProgress']['percentage'])
+        self.assertEquals(10, response.data['readingProgress']['page'])
 
 
 def create_item(item_id):

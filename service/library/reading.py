@@ -114,8 +114,8 @@ class Reading(Library):
             new_progress_entry.percentage = perc
 
         if percentage is not None:
-            page = 0
-            new_progress_entry.page = page
+            page = (percentage / 100) * item_pages if item_pages else 0
+            new_progress_entry.page = int(page)
             new_progress_entry.percentage = percentage
 
         new_progress_entry.save(request_=self.request)
