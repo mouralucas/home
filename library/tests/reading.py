@@ -117,7 +117,7 @@ class TestReadingProgress(APITestCase):
             create_progress(self.reading_id, self.page_second_entry)
             create_progress(self.reading_id, self.page_third_entry)
 
-    def test_set_progress_success(self):
+    def test_set_progress_with_page_success(self):
         payload = {
             'readingId': self.reading_id,
             'page': self.page
@@ -131,9 +131,50 @@ class TestReadingProgress(APITestCase):
         self.assertEquals(str(self.reading_id), response.data['readingProgress']['readingId'])
         self.assertEquals(self.page, response.data['readingProgress']['page'])
 
-    def test_set_progress_fail(self):
+    def test_set_progress_with_percentage_success(self):
         payload = {
             'readingId': self.reading_id,
+            'percentage': self.percentage
+        }
+        response = self.client.post(self.url_reading_progress, data=payload)
+
+        self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+        self.assertTrue(response.data['success'])
+
+        self.assertIn('readingProgress', response.data)
+        self.assertEquals(str(self.reading_id), response.data['readingProgress']['readingId'])
+        self.assertEquals(self.percentage, response.data['readingProgress']['percentage'])
+        self.assertEquals(10, response.data['readingProgress']['page'])
+
+    def test_set_progress_without_page_percentage(self):
+        payload = {
+            'readingId': self.reading_id,
+        }
+        response = self.client.post(self.url_reading_progress, data=payload)
+
+        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+    def test_set_progress_with_page_percentage(self):
+        payload = {
+            'readingId': self.reading_id,
+        }
+        response = self.client.post(self.url_reading_progress, data=payload)
+
+        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+    def test_set_progress_invalid_percentage(self):
+        payload = {
+            'readingId': self.reading_id,
+            'percentage': 105
+        }
+        response = self.client.post(self.url_reading_progress, data=payload)
+
+        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+    def test_set_progress_invalid_page(self):
+        payload = {
+            'readingId': self.reading_id,
+            'page': 0
         }
         response = self.client.post(self.url_reading_progress, data=payload)
 
@@ -153,21 +194,6 @@ class TestReadingProgress(APITestCase):
         self.assertIn('quantity', response.data)
         self.assertEquals(3, response.data['quantity'])
         self.assertEquals(str(self.reading_id), response.data['readingProgressEntries'][0]['readingId'])
-
-    def test_set_progress_with_percentage(self):
-        payload = {
-            'readingId': self.reading_id,
-            'percentage': self.percentage
-        }
-        response = self.client.post(self.url_reading_progress, data=payload)
-
-        self.assertEquals(status.HTTP_201_CREATED, response.status_code)
-        self.assertTrue(response.data['success'])
-
-        self.assertIn('readingProgress', response.data)
-        self.assertEquals(str(self.reading_id), response.data['readingProgress']['readingId'])
-        self.assertEquals(self.percentage, response.data['readingProgress']['percentage'])
-        self.assertEquals(10, response.data['readingProgress']['page'])
 
 
 def create_item(item_id):

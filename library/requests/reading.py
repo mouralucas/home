@@ -22,7 +22,7 @@ class ProgressGetRequest(CustomSerializer):
 
 class ProgressPostRequest(CustomSerializer):
     readingId = serializers.UUIDField(required=True)
-    page = serializers.IntegerField(required=False)
+    page = serializers.IntegerField(required=False, min_value=1)
     percentage = serializers.IntegerField(required=False, min_value=1, max_value=100)
     rate = serializers.IntegerField(required=False, min_value=0, max_value=5)
     comment = serializers.CharField(required=False)
