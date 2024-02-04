@@ -1,5 +1,6 @@
 from django.urls import path, re_path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from core.views import Swagger
 
 FINANCE_SWAGGER_SETTINGS = {
     'TITLE': 'Finance Module',
@@ -32,7 +33,7 @@ USER_SWAGGER_SETTINGS = {
 urlpatterns = [
     # Swagger/Schemas URLs
     re_path(r'^schema/$', SpectacularAPIView.as_view(), name='schema'),
-    re_path("^$", SpectacularSwaggerView.as_view(template_name='swagger/another_swagger_ui.html', url_name='schema'), name='swagger-ui'),
+    re_path("^$", Swagger.as_view(template_name='swagger/another_swagger_ui.html', url_name='schema'), name='swagger-ui'),
 
     re_path(r'schema/core$', SpectacularAPIView.as_view(urlconf='core.urls', custom_settings=CORE_SWAGGER_SETTINGS), name='schema-core'),
     re_path(r'^core$', SpectacularSwaggerView.as_view(url_name='schema-core', template_name='swagger/another_swagger_ui.html'), name='swagger-ui-core'),

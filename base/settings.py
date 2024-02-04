@@ -168,8 +168,8 @@ SIMPLE_JWT = {
 # https://swagger.io/blog/api-documentation/building-a-documentation-portal-for-multiple-apis/
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Your Project API',
-    'DESCRIPTION': 'Your project description',
+    'TITLE': 'Home API',
+    'DESCRIPTION': 'This project contains all the endpoints for Finance and Library services',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'OPENAPI_AUTO_SCHEMA': 'drf_spectacular.openapi.AutoSchema',

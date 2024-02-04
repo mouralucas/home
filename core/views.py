@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from drf_spectacular.utils import extend_schema
+from drf_spectacular.views import SpectacularSwaggerView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,6 +10,8 @@ import util.datetime
 from base.responses import NotImplementedResponse, InvalidRequestError
 from core.requests import ReferenceGetRequest, CategoryGetRequest, CategoryPostRequest, StatusGetRequest
 from core.responses import CategoryGetResponse, CountryPostResponse
+
+from drf_spectacular.settings import patched_settings, spectacular_settings
 
 
 class Country(APIView):
@@ -48,7 +51,6 @@ class Category(APIView):
     @extend_schema(summary='', description='Not yet implemented',
                    request=CategoryPostRequest, responses={501: NotImplementedResponse})
     def post(self, *args, **kwargs):
-
         return Response(NotImplementedResponse({}).data, status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
@@ -97,3 +99,25 @@ class Version(APIView):
         response = service.core.core.Misc().get_version()
 
         return Response(response, status=status.HTTP_200_OK)
+
+
+class Swagger(SpectacularSwaggerView):
+
+    @extend_schema(exclude=True)
+    def get(self, request, *args, **kwargs):
+        return Response(
+            data={
+                'title': self.title,
+                'swagger_ui_css': self._swagger_ui_resource('swagger-ui.css'),
+                'swagger_ui_bundle': self._swagger_ui_resource('swagger-ui-bundle.js'),
+                'swagger_ui_standalone': self._swagger_ui_resource('swagger-ui-standalone-preset.js'),
+                'favicon_href': self._swagger_ui_favicon(),
+                'schema_url': self._get_schema_url(request),
+                'settings': self._dump(spectacular_settings.SWAGGER_UI_SETTINGS),
+                'oauth2_config': self._dump(spectacular_settings.SWAGGER_UI_OAUTH2_CONFIG),
+                'template_name_js': self.template_name_js,
+                'csrf_header_name': self._get_csrf_header_name(),
+                'schema_auth_names': self._dump(self._get_schema_auth_names()),
+            },
+            template_name=self.template_name,
+        )
