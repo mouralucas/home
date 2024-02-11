@@ -46,7 +46,7 @@ class BancoCentralAPI(Integration):
                 name='CDI',
                 index_id='2a2b100f-17d9-4c61-b3b4-f06662113953',
                 date=item['data'],
-                reference=self.__set_reference(item['data']),
+                period=self.__set_reference(item['data']),
                 value=item['valor'],
                 periodicity_id='b9f83ad5-7701-4098-bdaf-ee092f3247eb',
                 unit='% a.d.'
@@ -67,7 +67,7 @@ class BancoCentralAPI(Integration):
                 name='CDI',
                 index_id='2a2b100f-17d9-4c61-b3b4-f06662113953',
                 date=item['data'],
-                reference=self.__set_reference(item['data']),
+                period=self.__set_reference(item['data']),
                 value=item['valor'],
                 periodicity_id='dc5b3bf8-2b84-423a-9a90-e7e194e355fa',
                 unit='% a.m.'
@@ -98,7 +98,7 @@ class BancoCentralAPI(Integration):
                 name='SELIC',
                 index_id='b7e5c4a0-3b65-4b1f-86d8-3797ef1a91a0',
                 date=item['data'],
-                reference=self.__set_reference(item['data']),
+                pariod=self.__set_reference(item['data']),
                 value=item['valor'],
                 periodicity_id='b9f83ad5-7701-4098-bdaf-ee092f3247eb',
                 unit='% a.d.'
@@ -120,7 +120,7 @@ class BancoCentralAPI(Integration):
                 name='IPCA',
                 index_id='ef07cbb0-9b29-43c6-a060-bef73f1cc000',
                 date=item['data'],
-                reference=self.__set_reference(item['data']),
+                period=self.__set_reference(item['data']),
                 value=item['valor'],
                 periodicity_id='dc5b3bf8-2b84-423a-9a90-e7e194e355fa',
                 unit='% a.m.'

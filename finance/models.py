@@ -329,15 +329,12 @@ class FinanceData(Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=100)
     index = models.ForeignKey('finance.Index', on_delete=models.DO_NOTHING)
-    index_name = models.CharField(max_length=100, null=True,
-                                  help_text=_('Nome na tabela index, para auxiliar na validação diretamente na tabela'))
+    index_name = models.CharField(max_length=100, null=True, help_text=_('Nome na tabela index, para auxiliar na validação diretamente na tabela'))
     date = models.DateField()
     period = models.IntegerField()
     value = models.DecimalField(max_digits=17, decimal_places=6)
-    periodicity = models.ForeignKey('core.Periodicity', on_delete=models.DO_NOTHING, null=True,
-                                    related_name='finance_data_periodicity')
-    periodicity_name = models.CharField(max_length=100, null=True, help_text=_(
-        'Nome na tabela periodicity, para auxiliar na validação diretamente na tabela'))
+    periodicity = models.ForeignKey('core.Periodicity', on_delete=models.DO_NOTHING, null=True, related_name='finance_data_periodicity')
+    periodicity_name = models.CharField(max_length=100, null=True, help_text=_('Nome na tabela periodicity, para auxiliar na validação diretamente na tabela'))
     unit = models.CharField(max_length=10, null=True)
 
     class Meta:

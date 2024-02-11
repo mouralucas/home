@@ -83,7 +83,7 @@ class Status(APIView):
 
         response = service.core.core.Misc().get_status(status_type=status_type)
 
-        return JsonResponse(response, safe=False)
+        return Response(response, status=response['statusCode'])
 
 
 class State(APIView):

@@ -195,12 +195,12 @@ class Misc:
         Implicit params (passed in the class instance or set by other functions):
         None
         """
-        status = core.models.Status.objects.values('description', 'order', 'image', 'type') \
+        list_status = core.models.Status.objects.values('description', 'order', 'image', 'type') \
             .annotate(statusId=F('id'),
                       statusName=F('name')) \
             .filter(type=status_type).active().order_by('order')
 
-        if not status:
+        if not list_status:
             response = {
                 'status': False,
                 'message': _('Nenhum status encontrado')
@@ -209,7 +209,8 @@ class Misc:
 
         response = {
             'success': True,
-            'status': list(status)
+            'statusCode': status.HTTP_200_OK,
+            'status': list(list_status)
         }
 
         return response

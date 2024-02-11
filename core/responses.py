@@ -1,11 +1,10 @@
-from rest_framework import serializers, status
-
 from base.responses import DefaultSuccessResponse
 from base.serializers import CustomSerializer
-from core.serializers import CategorySerializer, CountrySerializer
+from core.serializers import CategorySerializer, CountrySerializer, StatusSerializer
 
 
-# from base.responses import DefaultSuccessResponse
+class StatusGetResponse(DefaultSuccessResponse, CategorySerializer):
+    status = StatusSerializer(many=True, read_only=True)
 
 
 class CategoryGetResponse(DefaultSuccessResponse, CustomSerializer):
