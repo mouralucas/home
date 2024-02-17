@@ -19,12 +19,14 @@
         <img class="nav-bar-img" src="{% static 'img/logo_lucas.svg' %}" alt="Logo">
     </a>
     <a class="nav-bar-title">
-        My company
+        Lord Serviços Digitais
     </a>
     <select class="classic nav-bar-select" id="service-selector" onchange="changeSwaggerUI()">
-        <option value="{% url 'schema' %}">Geral</option>
-        <option value="{% url 'schema-core' %}">Core</option>
-        <option value="{% url 'schema-finance' %}">Finance</option>
+        {% for i in list_schemas %}
+            <option class="text-uppercase" value={% url i.schema %}>
+                {{ i.name }}
+            </option>
+        {% endfor %}
     </select>
 </div>
 <div id="swagger-ui"></div>

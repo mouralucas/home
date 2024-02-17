@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from drf_spectacular.settings import spectacular_settings
 from drf_spectacular.utils import extend_schema
 from drf_spectacular.views import SpectacularSwaggerView
 from rest_framework import status
@@ -10,8 +11,6 @@ import util.datetime
 from base.responses import NotImplementedResponse, InvalidRequestError
 from core.requests import ReferenceGetRequest, CategoryGetRequest, CategoryPostRequest, StatusGetRequest
 from core.responses import CategoryGetResponse, CountryPostResponse
-
-from drf_spectacular.settings import patched_settings, spectacular_settings
 
 
 class Country(APIView):
@@ -105,6 +104,30 @@ class Swagger(SpectacularSwaggerView):
 
     @extend_schema(exclude=True)
     def get(self, request, *args, **kwargs):
+
+        list_schemas = [
+            {
+                'name': 'Geral',
+                'schema': 'schema'
+            },
+            {
+                'name': 'Finance',
+                'schema': 'schema-finance'
+            },
+            {
+                'name': 'Library',
+                'schema': 'schema-library'
+            },
+            {
+                'name': 'User',
+                'schema': 'schema-user'
+            },
+            {
+                'name': 'Core',
+                'schema': 'schema-core'
+            }
+        ]
+
         return Response(
             data={
                 'title': self.title,
@@ -118,6 +141,7 @@ class Swagger(SpectacularSwaggerView):
                 'template_name_js': self.template_name_js,
                 'csrf_header_name': self._get_csrf_header_name(),
                 'schema_auth_names': self._dump(self._get_schema_auth_names()),
+                'list_schemas': list_schemas,
             },
             template_name=self.template_name,
         )

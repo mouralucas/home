@@ -76,7 +76,7 @@ class Reading(Library):
     def get_progress(self, reading_id):
         entries = (ReadingProgressModel.objects.values('date', 'page', 'percentage', 'rate', 'comment')
                    .annotate(readingProgressEntryId=F('pk'),
-                             readingId=F('reading_id')).filter(reading_id=reading_id))
+                             readingId=F('reading_id')).filter(reading_id=reading_id)).order_by('-date')
 
         response = ProgressGetResponse({
             'success': True,

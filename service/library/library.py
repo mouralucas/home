@@ -1,11 +1,13 @@
 from django.db.models import F, Case, When, BooleanField
 from django.utils.translation import gettext_lazy as _
+from rest_framework import status
 
 import core.models
 import library.models
 import util.Format
 import util.datetime
 from library.requests.item import ItemPostRequest
+from library.responses.item import ItemPostResponse
 
 
 class Library:
@@ -75,7 +77,10 @@ class Library:
 
         response = {
             'success': True,
-            'item': None,
+            'statusCode': status.HTTP_200_OK,
+            'item': ItemPostResponse({
+                'itemId': item.pk
+            }).data,
         }
 
         return response
