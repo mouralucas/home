@@ -38,7 +38,7 @@ class Reading(Library):
     def set_reading(self, start_at, end_at=None):
         past_readings = library.models.Reading.objects.filter(item_id=self.item_id).order_by('-created_at')
 
-        if past_readings and not past_readings.first().end_at:
+        if past_readings and not past_readings.first().finish_date:
             # Add error return that current reading is not done
             return DefaultErrorResponse({
                 'status': False,
@@ -64,8 +64,8 @@ class Reading(Library):
                 'readingId': new_reading.pk,
                 'itemId': new_reading.item_id,
                 'itemTitle': new_reading.item.title,
-                'startAt': new_reading.start_at,
-                'endAt': new_reading.end_at,
+                'startAt': new_reading.start_date,
+                'endAt': new_reading.finish_date,
                 'readingNumber': new_reading.number,
                 'isDropped': new_reading.is_dropped
             }

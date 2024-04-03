@@ -138,8 +138,8 @@ class Reading(core.models.Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING, null=True)
     item = models.ForeignKey('library.Item', on_delete=models.DO_NOTHING)
-    start_at = models.DateField(null=True)
-    end_at = models.DateField(null=True)
+    start_date = models.DateField(null=True)
+    finish_date = models.DateField(null=True)
     number = models.SmallIntegerField(default=1, help_text='Indicate if it\'s the fist, second... time the user reads the item')
     is_dropped = models.BooleanField(default=False)
 
