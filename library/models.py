@@ -63,9 +63,9 @@ class Item(core.models.Log):
         MANGA = ('manga', _('Mangá'))
 
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING)
-    isbn = models.BigIntegerField(null=True)
+    isbn = models.BigIntegerField(null=True)  # deprecated
     isbn_formatted = models.CharField(max_length=100, null=True)
-    isbn10 = models.BigIntegerField(null=True)
+    isbn10 = models.BigIntegerField(null=True)  # deprecated
     isbn10_formatted = models.CharField(max_length=100, null=True)
 
     title = models.CharField(max_length=500, null=True)

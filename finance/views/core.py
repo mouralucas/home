@@ -5,7 +5,9 @@ from rest_framework.views import APIView
 
 import service.finance.core
 import service.finance.finance
+from base.responses import InvalidRequestError
 from finance.requests.core import TransactionByCategoryListGetSerializer, TransactionsByCategoryAggregatedGetSerializer
+from finance.serializers.core import SummaryGetSerializer
 from service.security.security import IsAuthenticated
 from util import datetime
 
@@ -21,9 +23,16 @@ class Bank(APIView):
 class Summary(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        summary='Get the finance summary.', description='Fetch information about accounts and credit for the user',
+        parameters=[SummaryGetSerializer], responses={200: None, 400: InvalidRequestError},
+    )
     def get(self, *args, **kwargs):
-        # TODO: add serializer
-        period = self.request.query_params.get('period', datetime.current_period())
+        data = SummaryGetSerializer(data=self.request.query_params)
+        if not data.is_valid():
+            return Response(InvalidRequestError(data.errors).data, status=status.HTTP_400_BAD_REQUEST)
+
+        period = data.validated_data.get('period')
         user = self.request.user.id
 
         response = service.finance.finance.Finance(period=period, owner=user).get_summary()

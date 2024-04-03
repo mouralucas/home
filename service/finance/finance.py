@@ -213,12 +213,19 @@ class Finance:
         bank_statement_outgoing = sum(list(bank_statement.values_list('amount', flat=True).filter(cash_flow='OUTGOING').exclude(category_id__in=list(cat_not_expense))))
         bank_statement_balance = bank_statement_incoming + bank_statement_outgoing
 
+        if self.period == util.datetime.current_period():
+            reference_date = datetime.today()
+        else:
+            # Create function in datetime to date last day from period
+            reference_date = '2023-10-13'
+
         summary = {
             'period': self.period,
-            'referenceDate': '2023-10-13',
+            'referenceDate': reference_date,
             'periodIncoming': bank_statement_incoming,
             'periodOutgoing': bank_statement_outgoing,
             'periodBalance': bank_statement_balance,
+
             'periodCreditCardBill': sum(list(credit_card_bill)) * -1,
             'periodCreditCardPurchaseQuantity': len(credit_card_bill),
         }

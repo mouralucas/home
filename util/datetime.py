@@ -1,3 +1,4 @@
+import calendar
 import warnings
 from datetime import datetime, timedelta
 
@@ -83,6 +84,7 @@ def list_period(s_year=None, s_month=None, e_year=None, e_month=None):
 
     return response
 
+
 def validate_period(value, raise_exception=False):
     """
     :Name: logout
@@ -105,6 +107,19 @@ def validate_period(value, raise_exception=False):
             raise ValueError
 
         return False
+
+
+def get_last_day_of_month(period: int = None, month=None):
+    if period and month:
+        return False
+
+    last_date = None
+    if period:
+        date_str = str(period)
+        date = datetime.strptime(date_str, '%Y%m')
+        _, last_date = calendar.monthrange(date.year, date.month)
+
+    return last_date
 
 
 ##### OLDER FUNCTIONS REVIEW AND REMOVE UNUSED #####

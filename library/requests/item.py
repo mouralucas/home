@@ -29,10 +29,10 @@ class ItemPostRequest(CustomSerializer):
     languageId = serializers.CharField(required=False)
     coverPrice = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
     paidPrice = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
-    dimensions = serializers.CharField(required=False)
-    height = serializers.IntegerField(required=False, allow_null=True)
-    width = serializers.IntegerField(required=False, allow_null=True)
-    thickness = serializers.IntegerField(required=False, allow_null=True)
+    dimensions = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    height = serializers.IntegerField(required=False)
+    width = serializers.IntegerField(required=False)
+    thickness = serializers.IntegerField(required=False)
     summary = serializers.CharField(required=False)
 
 

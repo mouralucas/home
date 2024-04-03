@@ -75,13 +75,13 @@ class Library:
         self.__set_author(item=item, author_list=data.validated_data.get('mainAuthorId'), is_main=True)
         self.__set_author(item=item, author_list=[])
 
-        response = {
+        response = ItemPostResponse({
             'success': True,
             'statusCode': status.HTTP_200_OK,
-            'item': ItemPostResponse({
+            'item': {
                 'itemId': item.pk
-            }).data,
-        }
+            },
+        }).data
 
         return response
 
