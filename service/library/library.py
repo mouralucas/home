@@ -52,8 +52,8 @@ class Library:
         item.pages = data.validated_data.get('pages')
         item.volume = data.validated_data.get('volume')
         item.edition = data.validated_data.get('edition')
-        item.published_at = data.validated_data.get('publishedAt')
-        item.published_original_at = data.validated_data.get('publishedOriginalAt')
+        item.publication_date = data.validated_data.get('publishedAt')
+        item.original_publication_date = data.validated_data.get('publishedOriginalAt')
         item.serie_id = data.validated_data.get('serieId')
         item.collection_id = data.validated_data.get('collectionId')
         item.publisher_id = data.validated_data.get('publisherId')
@@ -66,7 +66,7 @@ class Library:
         item.width = data.validated_data.get('width')
         item.thickness = data.validated_data.get('thickness')
         item.summary = data.validated_data.get('summary')
-        item.last_status_at = data.validated_data.get('lastStatusAt')
+        item.last_status_date = data.validated_data.get('lastStatusAt')
         item.owner_id = self.owner
         item.save(request_=request)
 

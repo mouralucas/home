@@ -11,7 +11,7 @@ class ItemPostRequest(CustomSerializer):
     mainAuthorId = serializers.IntegerField(required=True)
     authorsId = serializers.IntegerField(required=False)
     title = serializers.CharField(required=True)
-    subtitle = serializers.CharField(required=False, allow_null=True)
+    subtitle = serializers.CharField(required=False, allow_null=True, allow_blank=True)
     titleOriginal = serializers.CharField(required=False)
     subtitleOriginal = serializers.CharField(required=False, allow_null=True)
     isbnFormatted = serializers.CharField(required=False)

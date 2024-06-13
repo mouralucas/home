@@ -24,7 +24,7 @@ class Author(APIView):
     permission_classes = [IsAuthenticated]
     """
     :Nome da classe/função: Author
-    :descrição: View to handle informatiom about authors
+    :descrição: View to handle information about authors
     :Criação: Lucas Penha de Moura - 20/02/2022
     :Edições:
     :return

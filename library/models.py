@@ -73,8 +73,8 @@ class Item(core.models.Log):
     subtitle = models.CharField(max_length=500, null=True)
     subtitle_original = models.CharField(max_length=500, null=True)
     pages = models.IntegerField(null=True)
-    published_at = models.DateField(null=True)
-    published_original_at = models.DateField(null=True)
+    publication_date = models.DateField(null=True)
+    original_publication_date = models.DateField(null=True)
     edition = models.IntegerField(null=True)
     serie = models.ForeignKey('library.Serie', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_serie')
     language = models.ForeignKey('core.Language', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_language')
@@ -90,7 +90,7 @@ class Item(core.models.Log):
     type = models.CharField(max_length=30, choices=ItemType.choices)
 
     last_status = models.ForeignKey('core.Status', on_delete=models.DO_NOTHING, null=True)
-    last_status_at = models.DateField(null=True)
+    last_status_date = models.DateField(null=True)
     log_status = models.ManyToManyField('core.Status', through='library.ItemStatus', through_fields=('item', 'log_status'), related_name='%(app_label)s_%(class)s_logstatus')
     cover_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     paid_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
@@ -136,12 +136,13 @@ class ItemStatus(core.models.Log):
 
 class Reading(core.models.Log):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    active = models.BooleanField(default=True)
     owner = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING, null=True)
     item = models.ForeignKey('library.Item', on_delete=models.DO_NOTHING)
     start_date = models.DateField(null=True)
     finish_date = models.DateField(null=True)
     number = models.SmallIntegerField(default=1, help_text='Indicate if it\'s the fist, second... time the user reads the item')
-    is_dropped = models.BooleanField(default=False)
+    status = models.ForeignKey('core.Status', on_delete=models.DO_NOTHING, null=True)
 
     class Meta:
         db_table = 'library"."reading'

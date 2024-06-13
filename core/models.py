@@ -52,7 +52,7 @@ class Log(models.Model):
     normal_objects = models.Manager()
     objects = CustomManager()
 
-    status = models.BooleanField(null=True, default=True)
+    status = models.BooleanField(null=True, default=True)  # TODO: change name to active
 
     created_by = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_created_by')
     last_edited_by = models.ForeignKey('user.Account', on_delete=models.DO_NOTHING, null=True, related_name='%(app_label)s_%(class)s_last_edit_by')
