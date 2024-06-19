@@ -19,11 +19,10 @@ class Reading(Library):
             readingId=F('pk'),
             itemId=F('item_id'),
             itemTitle=F('item__title'),
-            startAt=F('start_at'),
-            endAt=F('end_at'),
-            readingNumber=F('number'),
-            isDropped=F('is_dropped')
-        ).values('readingId', 'itemId', 'itemTitle', 'startAt', 'endAt', 'readingNumber', 'isDropped')
+            startAt=F('start_date'),
+            endAt=F('finish_date'),
+            readingNumber=F('number')
+        ).values('readingId', 'itemId', 'itemTitle', 'startAt', 'endAt', 'readingNumber')
                     .filter(item_id=self.item_id)).order_by('number')
 
         response = ReadingGetResponse({
