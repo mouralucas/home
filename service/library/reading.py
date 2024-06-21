@@ -50,8 +50,8 @@ class Reading(Library):
         new_reading = library.models.Reading(
             owner_id=self.owner,
             item_id=self.item_id,
-            start_at=start_at,
-            end_at=end_at,
+            start_date=start_at,
+            finish_date=end_at,
             number=total_readings + 1
         )
         new_reading.save(request_=self.request)
@@ -66,7 +66,6 @@ class Reading(Library):
                 'startAt': new_reading.start_date,
                 'endAt': new_reading.finish_date,
                 'readingNumber': new_reading.number,
-                'isDropped': new_reading.is_dropped
             }
         }).data
 
