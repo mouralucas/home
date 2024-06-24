@@ -70,7 +70,7 @@ class Library:
         item.owner_id = self.owner
         item.save(request_=request)
 
-        self.__update_status(item=item, status=data.validated_data.get('lastStatusId'), date=data.validated_data.get('lastStatusAt'), is_update=False, request=request)
+        self.__update_status(item=item, item_status=data.validated_data.get('lastStatusId'), date=data.validated_data.get('lastStatusAt'), is_update=False, request=request)
 
         self.__set_author(item=item, author_list=data.validated_data.get('mainAuthorId'), is_main=True)
         self.__set_author(item=item, author_list=[])
@@ -400,7 +400,7 @@ class Library:
         return response
 
     @staticmethod
-    def __update_status(item, status, date, is_update=True, request=None):
+    def __update_status(item, item_status, date, is_update=True, request=None):
         """
         :Name: __update_status
         :Description: Update item status and add new register in itemStatus
@@ -410,7 +410,7 @@ class Library:
         Explicit params:
         :param item: Item object
         :param date: The date that occur the new status
-        :param status: The new status
+        :param item_status: The new status
         :param is_update: Update the dat_last_edited and last_edited_by in correspondent table
         :param request: Request
         :return: Update status
@@ -421,16 +421,16 @@ class Library:
 
         try:
             current_status = library.models.ItemStatus.objects.filter(item=item).order_by('-date').first()
-            if not current_status or status != current_status.log_status_id:
+            if not current_status or item_status != current_status.log_status_id:
                 new_status = library.models.ItemStatus(
-                    log_status_id=status,
+                    log_status_id=item_status,
                     item=item,
                     date=date
                 )
                 new_status.save(request_=request, is_update=False)
 
                 if item:
-                    item.last_status_id = status
+                    item.last_status_id = item_status
                     item.save(request_=request, is_update=is_update)
 
             return True
