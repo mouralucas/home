@@ -1,5 +1,5 @@
 djangorestframework~=3.14.0
-django==4.2.10
+django==4.2.15
 
 # Django Rest Framework Simple JWT
 pyjwt==2.7.0
