@@ -201,7 +201,7 @@ class AccountStatement(Log):
     currency_reference = models.ForeignKey('finance.Currency', on_delete=models.DO_NOTHING, default='BRL', related_name='finance_statement_currency_reference', help_text=_('Moeda de referência'))
     amount_reference = models.DecimalField(max_digits=14, decimal_places=2, default=0, help_text=_('Total na moeda de referência, no caso de câmbio, senão o mesmo valor de amount'))
 
-    dollar_quote = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Para conta em outras moedas, em relação a moeda de referência'))
+    dollar_quote = models.DecimalField(max_digits=14, decimal_places=5, null=True, help_text=_('Para conta em outras moedas, em relação a moeda de referência')) # Change to currency_exchange_rate (in this case not all transactions are in dollar)
 
     tax = models.DecimalField(max_digits=14, decimal_places=5, default=0, help_text=_('Iof, aplicado sobre a cotação'))
     perc_tax = models.DecimalField(max_digits=7, decimal_places=2, default=0, help_text=_('Percentagem do IOF'))

@@ -42,9 +42,9 @@ class CustomToken(Token):
             raise TokenError(format_lazy(_("Token has no '{}' claim"), "jti"))
 
         # if not present in Redis it raises an exception
-        user_token = self.redis.get(claim_id)
-        if not user_token:
-            raise TokenError(format_lazy(_("Token was revoked"), claim))
+        # user_token = self.redis.get(claim_id)
+        # if not user_token:
+        #     raise TokenError(format_lazy(_("Token was revoked"), claim))
 
         claim_time = datetime_from_epoch(claim_value)
         leeway = self.get_token_backend().get_leeway()

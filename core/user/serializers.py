@@ -45,9 +45,9 @@ class LoginSerializer(TokenObtainSerializer):
             refresh = self.get_token(user=user)
             access_token = refresh.access_token
 
-            # Add tokens to redis (yet to create the value field, maybe will contain permissions data in access token)
-            self.redis.set(access_token.payload['jti'], 'value', access_token.payload['exp'])
-            self.redis.set(refresh.payload['jti'], 'value_refresh', refresh.payload['exp'])
+            # # Add tokens to redis (yet to create the value field, maybe will contain permissions data in access token)
+            # self.redis.set(access_token.payload['jti'], 'value', access_token.payload['exp'])
+            # self.redis.set(refresh.payload['jti'], 'value_refresh', refresh.payload['exp'])
 
             # return refresh
             return {'access': str(access_token), 'refresh': str(refresh)}
